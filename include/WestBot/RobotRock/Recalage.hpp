@@ -1,0 +1,68 @@
+// Copyright (c) 2018 All Rights Reserved WestBot
+
+#ifndef WESTBOT_ROBOTROCK_RECALAGE_HPP_
+#define WESTBOT_ROBOTROCK_RECALAGE_HPP_
+
+#include "ItemRegister.hpp"
+
+namespace WestBot {
+namespace RobotRock {
+
+typedef struct
+{
+    double x;
+    double y;
+    double theta;
+} RobotPos;
+
+class Hal;
+
+class Recalage
+{
+public:
+    Recalage();
+
+    bool init( Hal& hal );
+
+    void errorInit( double errX, double errY, double errTheta );
+
+    void errorModify( double errX, double errY, double errTheta );
+
+	bool calibrate(
+        int len,
+        const double* mesR,
+        const double* mesTheta );
+
+    RobotPos getPos(); // Unused for now
+    RobotPos sendPos( const RobotPos& robotPos );
+
+private:
+    ItemRegister::Ptr _odoThetaReg;
+    ItemRegister::Ptr _odoXReg;
+    ItemRegister::Ptr _odoYReg;
+    bool _attached;
+
+    RobotPos error = { 0, 0, 0 };
+
+    struct {
+        bool dir;
+        double	ax;
+        double	ay;
+        double	bx;
+        double	by;
+    } tableBorder[6] = {
+        { 0,      0, -1500,      0,      1500 },
+        { 1,      0,  1500,   2000,      1500 },
+        { 0,   2000,  1500,   2000,     -1500 },
+        { 1,   2000, -1500,      0,     -1500 },
+        { 0, 360+22, -1500, 360+22, -1500+710 },
+        { 0, 360+22,  1500, 360+22,  1500-710 },
+    };
+
+    int tableBorderNb = sizeof( tableBorder ) / sizeof( tableBorder[ 0 ] );
+};
+
+}
+}
+
+#endif // WESTBOT_ROBOTROCK_RECALAGE_HPP_
