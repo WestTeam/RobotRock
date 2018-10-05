@@ -16,7 +16,7 @@ using namespace WestBot::HumanAfterAll::Logging;
 
 namespace
 {
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "main" )
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Main" )
 }
 
 int main( int argc, char *argv[] )
@@ -39,7 +39,7 @@ int main( int argc, char *argv[] )
     if( ! system.init() )
     {
         tWarning( LOG ) << "Failed to init system manager";
-        return EXIT_FAILURE;
+        return -1;
     }
 
     return app.exec();
