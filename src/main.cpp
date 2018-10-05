@@ -21,7 +21,7 @@ namespace
 
 int main( int argc, char *argv[] )
 {
-	QCoreApplication app( argc, argv );
+    QCoreApplication app( argc, argv );
 
     Handler handler( app.instance() );
     ConsoleAppender consoleAppender;
