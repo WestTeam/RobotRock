@@ -21,10 +21,8 @@ namespace
 
 StrategyManager::StrategyManager(
     SystemManager& systemManager,
-    TrajectoryManager& trajectoryManager,
-    QObject* parent )
-    : QObject( parent )
-    , _systemManager( systemManager )
+    TrajectoryManager& trajectoryManager )
+    : _systemManager( systemManager )
     , _trajectoryManager( trajectoryManager )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
@@ -63,8 +61,8 @@ void StrategyManager::buildStrat( const Color& color )
         offset = 90.0;
     }
 
-    WaitAction::Ptr wait85s =
-        std::make_shared< WaitAction >( 85 * 1000 );
+    WaitAction::Ptr wait5s =
+        std::make_shared< WaitAction >( 5 * 1000 );
 
     WaitAction::Ptr wait2s =
         std::make_shared< WaitAction >( 2 * 1000 );
@@ -81,7 +79,136 @@ void StrategyManager::buildStrat( const Color& color )
     */
 
     // >>>>>>>>>>>>>>>>>>>>>>>>>>>><< OUR STRAT
-    _actions.push_back( wait85s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
+    _actions.push_back( wait5s );
     _actions.push_back( wait2s );
     //_actions.push_back( moveTotem1 );
 }
@@ -103,14 +230,8 @@ void StrategyManager::doStrat( const Color& color )
 		action->execute();
 
 		_actions.removeOne( action );
-        tDebug( LOG ) << "Execute action number" << i;
+        tDebug( LOG ) << "Action" << i << "executed";
 		i++;
-
-		/*if( ! _stratIsRunning )
-		{
-			qDebug() << QTime::currentTime().toString() << "Finish current action and stop after";
-			break;
-		}*/
 	}
 
     tDebug( LOG )
@@ -118,4 +239,11 @@ void StrategyManager::doStrat( const Color& color )
 
 	_stratIsRunning = false;
 	_actions.clear();
+}
+
+void StrategyManager::hardStop()
+{
+    tDebug( LOG ) << ">>>> Hard stop";
+    _stratIsRunning = false;
+    _actions.clear();
 }

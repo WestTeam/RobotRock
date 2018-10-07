@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include "Common.hpp"
+#include "GameThread.hpp"
 #include "Hal.hpp"
 #include "Input.hpp"
 #include "Output.hpp"
@@ -50,6 +51,8 @@ public:
 
     const Color& color() const;
 
+    bool isSafe() const;
+
 private:
     void initRecalage();
     void blinkColorLed();
@@ -70,6 +73,7 @@ private:
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
     StrategyManager _strategyManager;
+    GameThread _game;
 };
 
 }

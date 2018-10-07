@@ -29,9 +29,9 @@ int main( int argc, char *argv[] )
     ConsoleAppender consoleAppender;
     handler.addAppender( & consoleAppender );
 
-   #ifdef DEBUG
-       handler.setEnableDebugLevel( true );
-   #endif
+#ifdef DEBUG
+    handler.setEnableDebugLevel( true );
+#endif
 
     Hal hal;
     SystemManager system( hal );
@@ -45,6 +45,14 @@ int main( int argc, char *argv[] )
 #ifdef SIMU
     hal._modeSimu.write( 1 );
 #endif
+
+    if( ! system.isSafe() )
+    {
+        tCritical( LOG )
+            << "System not safe to start: Odometry check failed";
+    }
+
+    tInfo( LOG ) << "==== System ready ! ==== ";
 
     return app.exec();
 }

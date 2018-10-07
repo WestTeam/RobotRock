@@ -4,7 +4,6 @@
 #define WESTBOT_ROBOTROCK_STRATEGYMANAGER_HPP_
 
 #include <QList>
-#include <QObject>
 #include <QString>
 
 #include "Action.hpp"
@@ -20,20 +19,20 @@ namespace RobotRock {
 * \brief This class manage the robot strategy by handling data from FPGA
 *        and push action in the action queue of the game manager.
 */
-class StrategyManager : public QObject
+class StrategyManager
 {
 public:
     StrategyManager(
         SystemManager& systemManager,
-        TrajectoryManager& trajectoryManager,
-        QObject* parent = nullptr );
-    ~StrategyManager() override = default;
+        TrajectoryManager& trajectoryManager );
 
     void stop();
 
     void doStrat( const Color& color );
 
     void buildStrat( const Color& color );
+
+    void hardStop();
 
 private:
     SystemManager& _systemManager;

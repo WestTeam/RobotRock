@@ -16,6 +16,7 @@ INCLUDEPATH += include \
 
 SOURCES += \
     src/Action.cpp \
+    src/GameThread.cpp \	
     src/Hal.cpp \
     src/Input.cpp \
     src/ItemRegister.cpp \
@@ -35,6 +36,7 @@ HEADERS += \
     include/Macros.hpp \
     include/WestBot/RobotRock/Action.hpp \
     include/WestBot/RobotRock/Common.hpp \
+    include/WestBot/RobotRock/GameThread.hpp \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \
     include/WestBot/RobotRock/ItemRegister.hpp \

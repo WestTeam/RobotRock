@@ -44,28 +44,25 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
     , _strategyManager( *this, _trajectoryManager )
+    , _game( _strategyManager )
 {
     connect(
         & _gameTimer,
         & QTimer::timeout,
-       this,
-       [ this ]()
-       {
-           tInfo( LOG ) << "Game ended";
-           _aliveTimer.stop();
-       } );
+        this,
+        [ this ]()
+        {
+            tInfo( LOG ) << "Game ended";
 
+            stop();
+        } );
 
     // Task to notify that the robot is alive
     connect(
         & _aliveTimer,
         & QTimer::timeout,
         this,
-        [ this ]()
-        {
-            tDebug( LOG ) << "Robot alive";
-            robotAlive();
-        } );
+        & SystemManager::robotAlive );
 
     connect(
         _startButton.get(),
@@ -99,8 +96,12 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
         [ this ]( const DigitalValue& value )
         {
             tInfo( LOG ) << "Hardstop button changed to:" << value;
-            _gameTimer.stop();
-            _aliveTimer.stop();
+
+            if( value == DigitalValue::ON )
+            {
+                tInfo( LOG ) << "Hardstop requested";
+                stop();
+            }
         } );
 }
 
@@ -182,13 +183,26 @@ void SystemManager::start()
     _gameTimer.start( GAME_DURATION );
     _gameTimer.setSingleShot( true );
 
-    _strategyManager.doStrat( _color );
-   // TODO: DO STRAT
+    _game.setGameColor( _color );
+    _game.start();
 }
 
 void SystemManager::stop()
 {
+    _gameTimer.stop();
+    _aliveTimer.stop();
+
+    _game.terminate();
+    hardStop();
+
     tInfo( LOG ) << "System stopped";
+}
+
+void SystemManager::hardStop()
+{
+    // Stop traj
+    _trajectoryManager.hardStop();
+    _trajectoryManager.disable();
 }
 
 void SystemManager::reset()
@@ -219,6 +233,26 @@ SystemManager::SystemMode SystemManager::mode() const
 const Color& SystemManager::color() const
 {
     return _color;
+}
+
+bool SystemManager::isSafe() const
+{
+    // ODOMETRY check
+    int16_t x = _hal._odometryX.read< int16_t >();
+    int16_t y = _hal._odometryY.read< int16_t >();
+    int16_t theta = _hal._odometryTheta.read< int16_t >();
+
+    tDebug( LOG )
+        << "X:" << x << " Y:" << y << " Theta:" << theta;
+
+    int16_t safe = x + y + theta;
+
+    if( safe > 0 )
+    {
+        return false;
+    }
+
+    return true;
 }
 
 //
