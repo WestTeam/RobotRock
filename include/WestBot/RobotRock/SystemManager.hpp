@@ -11,6 +11,7 @@
 #include "Input.hpp"
 #include "Output.hpp"
 #include "Recalage.hpp"
+#include "StrategyManager.hpp"
 #include "TrajectoryManager.hpp"
 
 class QState;
@@ -68,6 +69,7 @@ private:
     Recalage _recalage;
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
+    StrategyManager _strategyManager;
 };
 
 }

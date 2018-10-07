@@ -15,6 +15,7 @@ INCLUDEPATH += include \
                3rdparty/Eigen
 
 SOURCES += \
+    src/Action.cpp \
     src/Hal.cpp \
     src/Input.cpp \
     src/ItemRegister.cpp \
@@ -23,13 +24,16 @@ SOURCES += \
     src/Output.cpp \
     src/Recalage.cpp \
     src/Servo.cpp \
+    src/StrategyManager.cpp \
     src/SystemManager.cpp \
     src/TrajectoryManager.cpp \
+    src/WaitAction.cpp \
     src/main.cpp
 
 HEADERS += \
     3rdparty/Eigen/src/* \
     include/Macros.hpp \
+    include/WestBot/RobotRock/Action.hpp \
     include/WestBot/RobotRock/Common.hpp \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \
@@ -39,9 +43,11 @@ HEADERS += \
     include/WestBot/RobotRock/Output.hpp \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
+    include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
-    include/WestBot/RobotRock/TrajectoryManager.hpp
-
+    include/WestBot/RobotRock/TrajectoryManager.hpp \
+    include/WestBot/RobotRock/WaitAction.hpp
+	
 INCLUDEPATH += ../human-after-all/include/
 LIBS += -L../robot-rock/libs -lHumanAfterAll
 

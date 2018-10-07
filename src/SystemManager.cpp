@@ -43,6 +43,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
     , _color( Color::Unknown )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
+    , _strategyManager( *this, _trajectoryManager )
 {
     connect(
         & _gameTimer,
@@ -181,6 +182,7 @@ void SystemManager::start()
     _gameTimer.start( GAME_DURATION );
     _gameTimer.setSingleShot( true );
 
+    _strategyManager.doStrat( _color );
    // TODO: DO STRAT
 }
 
