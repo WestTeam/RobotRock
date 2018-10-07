@@ -3,6 +3,8 @@
 #include <iostream>
 #include <math.h>
 
+#include <WestBot/HumanAfterAll/Category.hpp>
+
 #include <WestBot/RobotRock/Hal.hpp>
 #include <WestBot/RobotRock/Recalage.hpp>
 
@@ -11,6 +13,8 @@ using namespace WestBot::RobotRock;
 
 namespace
 {
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Recalage" )
+
     const double TELEM_THETA0 = -0.118;
     const double TELEM_X = 206.08;
     const double TELEM_Y = 101.1;
@@ -40,6 +44,9 @@ bool Recalage::init( Hal& hal )
     }
 
     _attached = true;
+
+    tInfo( LOG ) << "Recalage initialized";
+
     return true;
 }
 

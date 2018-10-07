@@ -4,9 +4,12 @@
 #define WESTBOT_ROBOTROCK_SYSTEMMANAGER_HPP_
 
 #include <QObject>
+#include <QTimer>
 
 #include "Common.hpp"
 #include "Hal.hpp"
+#include "Input.hpp"
+#include "Output.hpp"
 #include "Recalage.hpp"
 #include "TrajectoryManager.hpp"
 
@@ -38,13 +41,30 @@ public:
 
     void start();
     void stop();
+    void hardStop();
     void reset();
 
     void setMode( SystemMode mode );
     SystemMode mode() const;
 
+    const Color& color() const;
+
+private:
+    void initRecalage();
+    void blinkColorLed();
+    void robotAlive();
+    void displayColor( const DigitalValue& value );
+
 private:
     Hal _hal;
+    QTimer _gameTimer;
+    QTimer _aliveTimer;
+    Input::Ptr _startButton;
+    Input::Ptr _colorButton;
+    Input::Ptr _hardstopButton;
+    Output::Ptr _ledYellow;
+    Output::Ptr _ledBlue;
+    Color _color;
     Recalage _recalage;
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;

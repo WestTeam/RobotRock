@@ -12,7 +12,7 @@ Input::Input( const ItemRegister::Ptr& inputRegister, const QString& name )
     , _name( name )
     , _digitalValue( DigitalValue::OFF )
 {
-	/*_eventTimer = new QTimer( this );
+    _eventTimer = new QTimer( this );
 
     connect(
         _eventTimer,
@@ -23,7 +23,6 @@ Input::Input( const ItemRegister::Ptr& inputRegister, const QString& name )
     _eventTimer->start( 100 );
 
     check();
-	*/
 }
 
 const QString& Input::name() const

@@ -139,6 +139,7 @@ Hal::Hal()
     , _trajOutBlocked( _layer3, 15 * 4 + 2, 8 )
     , _trajOutInWindow( _layer3, 15 * 4 + 3, 8 )
 {
+    init();
 }
 
 Hal::~Hal()
@@ -185,7 +186,7 @@ void Hal::init()
     }
 #endif
 
-    tInfo( LOG ) << "Successfully initialized Hal module";
+    tInfo( LOG ) << "Hal module initialized";
 }
 
 void Hal::clearRegisters()

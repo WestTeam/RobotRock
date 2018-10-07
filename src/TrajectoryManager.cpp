@@ -92,7 +92,7 @@ void TrajectoryManager::init()
        tDebug( LOG ) << "wait cmd ack";
     }
 
-    tDebug( LOG ) << "Trajectory manager successfully initialized";
+    tInfo( LOG ) << "Trajectory manager initialized";
 }
 
 void TrajectoryManager::waitTrajReady()
