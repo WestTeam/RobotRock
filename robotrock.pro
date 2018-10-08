@@ -52,8 +52,8 @@ HEADERS += \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
     include/WestBot/RobotRock/WaitAction.hpp
 	
-INCLUDEPATH += ../human-after-all/include/
-LIBS += -L../robot-rock/libs -lHumanAfterAll
+INCLUDEPATH += ../human-after-all/include/ ../rplidar/include/
+LIBS += -L../robot-rock/libs -lHumanAfterAll -lRPLidar
 
 # The following define makes your compiler emit warnings if you use
 # any feature of Qt which as been marked deprecated (the exact warnings

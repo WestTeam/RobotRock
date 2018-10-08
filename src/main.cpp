@@ -48,7 +48,7 @@ int main( int argc, char *argv[] )
 
     if( ! system.isSafe() )
     {
-        tCritical( LOG )
+        tFatal( LOG )
             << "System not safe to start: Odometry check failed";
     }
 

@@ -42,6 +42,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
               std::make_shared< ItemRegister >( _hal._output2 ),
               "Blue" ) )
     , _color( Color::Unknown )
+    , _lidar( "/dev/ttyUSB0" )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
     , _strategyManager( _trajectoryManager )
@@ -149,6 +150,12 @@ bool SystemManager::init()
     _hal._pidAngleTarget.write( _hal._pidAnglePosition.read< float >() );
     _hal._pidAngleEnable.write( 1 );
 
+    if( ! _lidar.connect() )
+    {
+       tWarning( LOG ) << "Cannot connect to RPLidar";
+       return false;
+    }
+
     if( ! _recalage.init( _hal ) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
@@ -168,6 +175,14 @@ bool SystemManager::init()
 void SystemManager::start()
 {
     tInfo( LOG ) << "System starting...";
+
+    _lidar.startMotor();
+
+    _lidar.startScan();
+
+    QThread::sleep( 2 );
+
+    _lidar.stopMotor();
 
     initRecalage();
 
@@ -229,7 +244,7 @@ bool SystemManager::isSafe() const
 
     int16_t safe = x + y + theta;
 
-    if( safe > 0 )
+    if( safe != 0 )
     {
         return false;
     }
