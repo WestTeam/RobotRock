@@ -7,9 +7,9 @@ namespace WestBot {
 namespace RobotRock {
 
 /*!
-* \brief Define a page of memory representing a base layer of 64 blocks
-*        of 32 bits.
-*/
+ * \brief Define a page of memory representing a base layer of 64 blocks
+ *        of 32 bits.
+ */
 typedef struct Layer
 {
     uint32_t registers[ 64 ];

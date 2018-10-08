@@ -14,9 +14,10 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Action" )
 }
 
-Action::Action( QObject* parent )
+Action::Action( const QString& name, QObject* parent )
     : QObject( parent )
     , _state( Action::State::Pending )
+    , _name( name )
 {
     _timeout = new QTimer( this );
 
@@ -24,9 +25,10 @@ Action::Action( QObject* parent )
         _timeout,
         & QTimer::timeout,
         this,
-        []()
+        [ this ]()
         {
             tWarning( LOG ) << "Action timed out";
+            _state = Action::State::TimedOut;
         } );
 }
 
@@ -46,5 +48,11 @@ void Action::setState( Action::State state )
 
 bool Action::hasError() const
 {
-    return _state == Action::State::InError;
+    return _state == Action::State::InError ||
+           _state == Action::State::TimedOut;
+}
+
+const QString& Action::name() const
+{
+    return _name;
 }

@@ -35,8 +35,8 @@ public:
     Input( const ItemRegister::Ptr& inputRegister, const QString& name );
 
     /*!
-    * \brief Destructor.
-    */
+     * \brief Destructor.
+     */
     ~Input() override = default;
 
     /*!
@@ -53,8 +53,8 @@ public:
     DigitalValue digitalRead();
 
     /*!
-    * \brief Check the input state and update it's internal state.
-    */
+     * \brief Check the input state and update it's internal state.
+     */
     void check();
 
 signals:

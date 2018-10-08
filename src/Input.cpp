@@ -32,18 +32,8 @@ const QString& Input::name() const
 
 DigitalValue Input::digitalRead()
 {
-	DigitalValue tmpVal;
-	if( _inputRegister->read< uint32_t >() == 0x01 )
-	{
-	   tmpVal = DigitalValue::ON;
-	}
-	else
-	{
-		tmpVal = DigitalValue::OFF;
-	}
-	//check();
-	//return _digitalValue;
-	return tmpVal;
+	check();
+	return _digitalValue;
 }
 
 void Input::check()

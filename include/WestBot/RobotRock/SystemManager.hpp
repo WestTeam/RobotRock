@@ -8,7 +8,6 @@
 
 #include "Common.hpp"
 #include "GameThread.hpp"
-#include "Hal.hpp"
 #include "Input.hpp"
 #include "Output.hpp"
 #include "Recalage.hpp"
@@ -23,15 +22,13 @@ namespace RobotRock {
 
 class SystemManager : public QObject
 {
-    Q_OBJECT
-
 public:
     enum class SystemMode
     {
-        Free, //No PID -> register = 0x00
-        DistanceOnly, //PIDD -> register = 0x01
-        AngleOnly, //PIDA -> register = 0x02
-        Full, //All PID -> register = 0x03
+        Free, // No PID -> register = 0x00
+        DistanceOnly, // PIDD -> register = 0x01
+        AngleOnly, // PIDA -> register = 0x02
+        Full, // All PID -> register = 0x03
         Unused // 0xFF : Unused for now
     };
 
@@ -43,13 +40,10 @@ public:
 
     void start();
     void stop();
-    void hardStop();
     void reset();
 
     void setMode( SystemMode mode );
     SystemMode mode() const;
-
-    const Color& color() const;
 
     bool isSafe() const;
 
@@ -73,7 +67,7 @@ private:
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
     StrategyManager _strategyManager;
-    GameThread _game;
+    GameThread::Ptr _game;
 };
 
 }

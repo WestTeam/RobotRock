@@ -18,8 +18,8 @@ namespace RobotRock {
     };
 
     /*!
-    * \brief List of available color.
-    */
+     * \brief List of available color.
+     */
     enum class Color
     {
         Unknown,
@@ -28,8 +28,8 @@ namespace RobotRock {
     };
 
     /*!
-    * \brief Overload stream operator for color enum class.
-    */
+     * \brief Overload stream operator for color enum class.
+     */
     inline QDebug operator<<( QDebug debug, const Color& color )
     {
         switch( color )
@@ -50,8 +50,8 @@ namespace RobotRock {
     }
 
     /*!
-    * \brief Overload stream operator for digital value enum class.
-    */
+     * \brief Overload stream operator for digital value enum class.
+     */
     inline QDebug operator<<( QDebug debug, const DigitalValue& value )
     {
         switch( value )

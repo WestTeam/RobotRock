@@ -3,8 +3,9 @@
 #ifndef WESTBOT_ROBOTROCK_GAMETHREAD_HPP_
 #define WESTBOT_ROBOTROCK_GAMETHREAD_HPP_
 
+#include <memory>
+
 #include <QThread>
-#include <QObject>
 
 #include "Common.hpp"
 #include "StrategyManager.hpp"
@@ -14,14 +15,16 @@ namespace RobotRock {
 
 class GameThread : public QThread
 {
-	Q_OBJECT
-
 	void run();
 
 public:
-    GameThread( const StrategyManager& strategyManager );
+    using Ptr = std::unique_ptr< GameThread >;
 
-    void setGameColor( const Color& color );
+    GameThread(
+        const StrategyManager& strategyManager,
+        const Color& color );
+
+    const Color& color() const;
 
 private:
     StrategyManager _strategyManager;

@@ -19,23 +19,16 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.StrategyManager" )
 }
 
-StrategyManager::StrategyManager(
-    SystemManager& systemManager,
-    TrajectoryManager& trajectoryManager )
-    : _systemManager( systemManager )
-    , _trajectoryManager( trajectoryManager )
+StrategyManager::StrategyManager( TrajectoryManager& trajectoryManager )
+    : _trajectoryManager( trajectoryManager )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
-    , _color( Color::Unknown )
 {
 }
 
 void StrategyManager::stop()
 {
-    tDebug( LOG ) << ">>> GAME ENDED";
-
-    _actions.clear();
-    _stratIsRunning = false;
+    hardStop();
 
     // Stop traj
     _trajectoryManager.hardStop();
@@ -67,18 +60,7 @@ void StrategyManager::buildStrat( const Color& color )
     WaitAction::Ptr wait2s =
         std::make_shared< WaitAction >( 2 * 1000 );
 
-  /*  MoveAction::Ptr moveTotem1 =
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-            0.0,
-            0.0,
-            600.0,
-            500.0 * inv,
-			false );
-    */
-
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>><< OUR STRAT
+    // Our strat begins here
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );
@@ -109,108 +91,6 @@ void StrategyManager::buildStrat( const Color& color )
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait2s );
-    //_actions.push_back( moveTotem1 );
 }
 
 void StrategyManager::doStrat( const Color& color )
@@ -220,8 +100,6 @@ void StrategyManager::doStrat( const Color& color )
 
     tDebug( LOG ) << "Do strat for color:" << color;
 
-    tDebug( LOG ) << ">>>>>>>> ACTIONS SIZE" << _actions.size();
-
 	// Strat loop
 	int i = 0;
 	for( const auto& action: _actions )
@@ -230,12 +108,11 @@ void StrategyManager::doStrat( const Color& color )
 		action->execute();
 
 		_actions.removeOne( action );
-        tDebug( LOG ) << "Action" << i << "executed";
+        tDebug( LOG ) << "Action" << i << "/" << _actions.size() << "executed";
 		i++;
 	}
 
-    tDebug( LOG )
-		<< "Strat is over. Make sure we have clear the action list";
+    tDebug( LOG ) << "Strat is over. Make sure we have clear the action list";
 
 	_stratIsRunning = false;
 	_actions.clear();
@@ -243,7 +120,6 @@ void StrategyManager::doStrat( const Color& color )
 
 void StrategyManager::hardStop()
 {
-    tDebug( LOG ) << ">>>> Hard stop";
     _stratIsRunning = false;
     _actions.clear();
 }

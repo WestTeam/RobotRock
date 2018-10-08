@@ -13,18 +13,14 @@
 namespace WestBot {
 namespace RobotRock {
 
-    class SystemManager;
-
 /*!
-* \brief This class manage the robot strategy by handling data from FPGA
-*        and push action in the action queue of the game manager.
-*/
+ * \brief This class manage the robot strategy by handling data from FPGA
+ *        and push action in the action queue.
+ */
 class StrategyManager
 {
 public:
-    StrategyManager(
-        SystemManager& systemManager,
-        TrajectoryManager& trajectoryManager );
+    StrategyManager( TrajectoryManager& trajectoryManager );
 
     void stop();
 
@@ -35,13 +31,11 @@ public:
     void hardStop();
 
 private:
-    SystemManager& _systemManager;
     TrajectoryManager& _trajectoryManager;
 
     QList< Action::Ptr > _actions;
     Action::Ptr _currentAction;
     bool _stratIsRunning;
-    Color _color;
 };
 
 }

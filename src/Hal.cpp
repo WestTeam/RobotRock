@@ -1,12 +1,12 @@
 // Copyright (c) 2018 All Rights Reserved WestBot
 
-#define DEBUG
-
 #include <hps_arm.h> // For our base address
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
+
+#define DEBUG
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;

@@ -6,6 +6,7 @@
 #include <memory>
 
 #include <QObject>
+#include <QString>
 
 class QTimer;
 
@@ -31,68 +32,78 @@ public:
         Running,
         Finished,
         InError,
-        Flushed
+        Flushed,
+        TimedOut
     };
 
     /*!
      * \brief Constructor of Action.
+     * \param name The action name.
      * \param parent Parent class for lifetime management.
      */
-    Action( QObject* parent = nullptr );
+    Action( const QString& name, QObject* parent = nullptr );
 
     /*!
-    * \brief Destructor
-    */
+     * \brief Destructor
+     */
     ~Action() override = default;
 
     /*!
-    * \brief Virtual method to be override by daughter class.
-    *        The base method allows to execute the action. This will push back
-    *        the action on layer 1, 2 or 3 based on the action type.
-    */
+     * \brief Virtual method to be override by daughter class.
+     *        The base method allows to execute the action. This will push back
+     *        the action on layer 1, 2 or 3 based on the action type.
+     */
     virtual void execute() = 0;
 
     /*!
-    * \brief Get the current state of the action.
-    *
-    * \return Return an enum state element.
-    */
+     * \brief Get the current state of the action.
+     *
+     * \return Return an enum state element.
+     */
     State state() const;
 
     /*!
-    * \brief Set the state of the action.
-    *
-    * \param state The new state of the action.
-    */
+     * \brief Set the state of the action.
+     *
+     * \param state The new state of the action.
+     */
 
     void setState( State state );
 
     /*!
-    * \brief Check if the action is in error or not.
-    *
-    * \return If true, the action is in error, else not.
-    */
+     * \brief Check if the action is in error or not.
+     *
+     * \return If true, the action is in error, else not.
+     */
     bool hasError() const;
+
+    /*!
+     * \brief Get the action name.
+     *
+     * \return The acrion name.
+     */
+    const QString& name() const;
 
 signals:
     /*!
-    * \brief Notify of a state changed.
-    */
+     * \brief Notify of a state changed.
+     */
     void stateChanged();
 
     /*!
-    * \brief Notify of the action completion.
-    */
+     * \brief Notify of the action completion.
+     */
     void complete();
 
     /*!
-    * \brief Notify that the action was skipped.
-    */
+     * \brief Notify that the action was skipped.
+     */
     void skipped();
 
 private:
     State _state;
     QTimer* _timeout;
+    QString _name;
 };
 
 }

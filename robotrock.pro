@@ -3,7 +3,7 @@
 QT += core network serialport
 QT -= gui
 
-CONFIG += c++11
+CONFIG += c++14
 
 TARGET = robotrock
 CONFIG += console

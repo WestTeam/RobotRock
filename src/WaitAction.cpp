@@ -15,14 +15,14 @@ namespace
 }
 
 WaitAction::WaitAction( int waitMs )
-    : Action()
+    : Action( "Wait" )
     , _waitMs( waitMs )
 {
 }
 
 void WaitAction::execute()
 {
-    tDebug( LOG ) << "Running WaitAction";
+    tDebug( LOG ) << "Running" << name() << "action";
     QThread::msleep( _waitMs );
 
     emit complete();

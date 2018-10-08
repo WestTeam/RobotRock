@@ -20,6 +20,7 @@ namespace
 
 SystemManager::SystemManager( Hal& hal, QObject* parent )
     : QObject( parent )
+    , _hal( hal )
     , _startButton(
           new Input(
               std::make_shared< ItemRegister >( _hal._input0 ),
@@ -35,16 +36,16 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
     , _ledYellow(
           new Output(
               std::make_shared< ItemRegister >( _hal._output0 ),
-              "yellow" ) )
+              "Yellow" ) )
     , _ledBlue(
           new Output(
               std::make_shared< ItemRegister >( _hal._output2 ),
-              "blue" ) )
+              "Blue" ) )
     , _color( Color::Unknown )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
-    , _strategyManager( *this, _trajectoryManager )
-    , _game( _strategyManager )
+    , _strategyManager( _trajectoryManager )
+    , _game( nullptr )
 {
     connect(
         & _gameTimer,
@@ -53,7 +54,6 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
         [ this ]()
         {
             tInfo( LOG ) << "Game ended";
-
             stop();
         } );
 
@@ -70,7 +70,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
         this,
         [ this ]( const DigitalValue& value )
         {
-            tInfo( LOG ) << "Start button changed to:" << value;
+            tDebug( LOG ) << "Start button changed to:" << value;
 
             if( value == DigitalValue::ON &&
                 _hardstopButton->digitalRead() == DigitalValue::OFF )
@@ -85,7 +85,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
         this,
         [ this ]( const DigitalValue& value )
         {
-            tInfo( LOG ) << "Color button changed to:" << value;
+            tDebug( LOG ) << "Color button changed to:" << value;
             displayColor( value );
         } );
 
@@ -95,7 +95,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
         this,
         [ this ]( const DigitalValue& value )
         {
-            tInfo( LOG ) << "Hardstop button changed to:" << value;
+            tDebug( LOG ) << "Hardstop button changed to:" << value;
 
             if( value == DigitalValue::ON )
             {
@@ -162,9 +162,6 @@ bool SystemManager::init()
 
     displayColor( _colorButton->digitalRead() );
 
-    tDebug( LOG ) << "Start button is:" << _startButton->digitalRead();
-    tDebug( LOG ) << "Color button is:" << _colorButton->digitalRead();
-
     return true;
 }
 
@@ -176,15 +173,13 @@ void SystemManager::start()
 
     displayColor( _colorButton->digitalRead() );
 
-    tInfo( LOG ) << "System started with color " << _color;
-
     blinkColorLed();
 
     _gameTimer.start( GAME_DURATION );
     _gameTimer.setSingleShot( true );
 
-    _game.setGameColor( _color );
-    _game.start();
+    _game = std::make_unique< GameThread >( _strategyManager, _color );
+    _game->start();
 }
 
 void SystemManager::stop()
@@ -192,17 +187,10 @@ void SystemManager::stop()
     _gameTimer.stop();
     _aliveTimer.stop();
 
-    _game.terminate();
-    hardStop();
+    _game->terminate();
+    _strategyManager.stop();
 
     tInfo( LOG ) << "System stopped";
-}
-
-void SystemManager::hardStop()
-{
-    // Stop traj
-    _trajectoryManager.hardStop();
-    _trajectoryManager.disable();
 }
 
 void SystemManager::reset()
@@ -230,11 +218,6 @@ SystemManager::SystemMode SystemManager::mode() const
     return _systemMode;
 }
 
-const Color& SystemManager::color() const
-{
-    return _color;
-}
-
 bool SystemManager::isSafe() const
 {
     // ODOMETRY check
@@ -242,8 +225,7 @@ bool SystemManager::isSafe() const
     int16_t y = _hal._odometryY.read< int16_t >();
     int16_t theta = _hal._odometryTheta.read< int16_t >();
 
-    tDebug( LOG )
-        << "X:" << x << " Y:" << y << " Theta:" << theta;
+    tDebug( LOG ) << "X:" << x << " Y:" << y << " Theta:" << theta;
 
     int16_t safe = x + y + theta;
 

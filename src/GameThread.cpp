@@ -1,31 +1,23 @@
 // Copyright (c) 2018 All Rights Reserved WestBot
 
-#include <QCoreApplication>
 #include <QThread>
-
-#include <Defines.hpp>
 
 #include <WestBot/RobotRock/GameThread.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
-namespace
-{
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.GameThread" )
-}
-
 GameThread::GameThread(
-    const StrategyManager& strategyManager )
+    const StrategyManager& strategyManager,
+    const Color& color )
     : _strategyManager( strategyManager )
-    , _color( Color::Unknown )
+    , _color( color )
 {
 }
 
-void GameThread::setGameColor(
-    const Color& color )
+const Color& GameThread::color() const
 {
-    _color = color;
+    return _color;
 }
 
 void GameThread::run()
