@@ -178,7 +178,7 @@ void SystemManager::start()
     _gameTimer.start( GAME_DURATION );
     _gameTimer.setSingleShot( true );
 
-    _game = std::make_unique< GameThread >( _strategyManager, _color );
+    _game.reset( new GameThread( _strategyManager, _color ) );
     _game->start();
 }
 

@@ -6,10 +6,10 @@
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
-#include <WestBot/RobotRock/SystemManager.hpp>
-//#include <WestBot/RobotRock/MoveAction.hpp>
-#include <WestBot/RobotRock/WaitAction.hpp>
+#include <WestBot/RobotRock/MoveAction.hpp>
 #include <WestBot/RobotRock/StrategyManager.hpp>
+#include <WestBot/RobotRock/SystemManager.hpp>
+#include <WestBot/RobotRock/WaitAction.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -57,12 +57,19 @@ void StrategyManager::buildStrat( const Color& color )
     WaitAction::Ptr wait5s =
         std::make_shared< WaitAction >( 5 * 1000 );
 
-    WaitAction::Ptr wait2s =
-        std::make_shared< WaitAction >( 2 * 1000 );
+    MoveAction::Ptr move1 =
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+            0.0,
+            0.0,
+            100.0,
+            0.0 * inv,
+            false );
 
     // Our strat begins here
     _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
+    _actions.push_back( move1 );
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );

@@ -151,8 +151,86 @@ private:
 };
 
     /*!
-    * \brief Overload stream operator for color enum class.
-    */
+     * \brief Overload stream operator for trajectory state enum class.
+     */
+    inline QDebug operator<<(
+        QDebug debug,
+        const TrajectoryManager::TrajectoryType& type )
+    {
+        switch( type )
+        {
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ENABLE:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_STOP:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_HARDSTOP:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_D_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_A_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY_BEHIND:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_D_A_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_REL:
+            break;
+
+        case TrajectoryManager::TrajectoryType::DIST_CONFIG:
+            break;
+
+        case TrajectoryManager::TrajectoryType::ANGLE_CONFIG:
+            break;
+
+        case TrajectoryManager::TrajectoryType::WINDOW_CONFIG:
+            break;
+
+        case TrajectoryManager::TrajectoryType::WAIT_TRAJ_READY:
+            break;
+        }
+        return debug;
+    }
+
+    /*!
+     * \brief Overload stream operator for trajectory state enum class.
+     */
     inline QDebug operator<<(
         QDebug debug,
         const TrajectoryManager::TrajectoryState& state )

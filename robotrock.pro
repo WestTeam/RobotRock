@@ -3,7 +3,7 @@
 QT += core network serialport
 QT -= gui
 
-CONFIG += c++14
+CONFIG += c++11
 
 TARGET = robotrock
 CONFIG += console
@@ -22,6 +22,7 @@ SOURCES += \
     src/ItemRegister.cpp \
     src/Memory.cpp \
     src/MemoryManager.cpp \
+    src/MoveAction.cpp \
     src/Output.cpp \
     src/Recalage.cpp \
     src/Servo.cpp \
@@ -42,6 +43,7 @@ HEADERS += \
     include/WestBot/RobotRock/ItemRegister.hpp \
     include/WestBot/RobotRock/Memory.hpp \
     include/WestBot/RobotRock/MemoryManager.hpp \
+    include/WestBot/RobotRock/MoveAction.hpp \
     include/WestBot/RobotRock/Output.hpp \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
