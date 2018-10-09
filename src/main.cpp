@@ -46,12 +46,6 @@ int main( int argc, char *argv[] )
     hal._modeSimu.write( 1 );
 #endif
 
-    if( ! system.isSafe() )
-    {
-        tFatal( LOG )
-            << "System not safe to start: Odometry check failed";
-    }
-
     tInfo( LOG ) << "==== System ready ! ==== ";
 
     return app.exec();

@@ -176,6 +176,12 @@ void SystemManager::start()
 {
     tInfo( LOG ) << "System starting...";
 
+    if( ! isSafe() )
+    {
+        tFatal( LOG )
+            << "System not safe to start: Odometry check failed";
+    }
+
     _lidar.startMotor();
 
     _lidar.startScan();
@@ -206,6 +212,8 @@ void SystemManager::stop()
     _strategyManager.stop();
 
     tInfo( LOG ) << "System stopped";
+
+    reset();
 }
 
 void SystemManager::reset()
