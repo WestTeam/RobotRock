@@ -104,6 +104,8 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
                 stop();
             }
         } );
+
+    reset();
 }
 
 SystemManager::~SystemManager()
@@ -117,8 +119,7 @@ SystemManager::~SystemManager()
 
 bool SystemManager::init()
 {
-    // Always reset the system at startup
-    reset();
+    tInfo( LOG ) << "System manager initializing...";
 
     // Config PID Distance
     _hal._pidDistanceEnable.write( 0 );
@@ -168,6 +169,8 @@ bool SystemManager::init()
     _hal._outputOverride.write( 0x01010101 );
 
     displayColor( _colorButton->digitalRead() );
+
+    tInfo( LOG ) << "System manager initialized";
 
     return true;
 }

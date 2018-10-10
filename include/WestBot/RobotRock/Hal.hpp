@@ -15,7 +15,7 @@ public:
     Hal();
     ~Hal();
 
-    void init();
+    void dump();
 
     void clearRegisters();
 

@@ -6,8 +6,6 @@
 
 #include <WestBot/RobotRock/Hal.hpp>
 
-#define DEBUG
-
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
@@ -139,7 +137,6 @@ Hal::Hal()
     , _trajOutBlocked( _layer3, 15 * 4 + 2, 8 )
     , _trajOutInWindow( _layer3, 15 * 4 + 3, 8 )
 {
-    init();
 }
 
 Hal::~Hal()
@@ -149,9 +146,8 @@ Hal::~Hal()
     _layer3.reset();
 }
 
-void Hal::init()
+void Hal::dump()
 {
-#ifdef DEBUG
     // Read layer 1 registers
     tDebug( LOG ) << "Layer 1 registers:";
     tDebug( LOG ) << "==================";
@@ -184,9 +180,6 @@ void Hal::init()
             << "Read register" << i << ":"
             << QString::number( _layer3.read( i * 4, 32 ), 16 );
     }
-#endif
-
-    tInfo( LOG ) << "Hal module initialized";
 }
 
 void Hal::clearRegisters()

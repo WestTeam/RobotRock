@@ -9,6 +9,7 @@
 #include <WestBot/RobotRock/Hal.hpp>
 #include <WestBot/RobotRock/SystemManager.hpp>
 
+#define DEBUG
 #define SIMU
 
 using namespace WestBot;
@@ -41,6 +42,10 @@ int main( int argc, char *argv[] )
         tWarning( LOG ) << "Failed to init system manager";
         return -1;
     }
+
+#ifdef DEBUG
+    hal.dump();
+#endif
 
 #ifdef SIMU
     hal._modeSimu.write( 1 );
