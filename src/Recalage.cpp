@@ -68,8 +68,8 @@ RobotPos Recalage::getPos()
     RobotPos pos;
 
     double odoTheta = _odoThetaReg->read< int16_t >();
-    double odoX = _odoThetaReg->read< int16_t >();
-    double odoY = _odoThetaReg->read< int16_t >();
+    double odoX = _odoXReg->read< int16_t >();
+    double odoY = _odoYReg->read< int16_t >();
 
     pos.x = odoX * cos( error.theta ) + odoY * sin( error.theta ) + error.x;
     pos.y = -odoX * sin( error.theta ) + odoY * cos( error.theta ) + error.y;
