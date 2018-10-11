@@ -20,6 +20,7 @@ SOURCES += \
     src/Hal.cpp \
     src/Input.cpp \
     src/ItemRegister.cpp \
+    src/Lidar.cpp \
     src/Memory.cpp \
     src/MemoryManager.cpp \
     src/MoveAction.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \
     include/WestBot/RobotRock/ItemRegister.hpp \
+    include/WestBot/RobotRock/Lidar.hpp \
     include/WestBot/RobotRock/Memory.hpp \
     include/WestBot/RobotRock/MemoryManager.hpp \
     include/WestBot/RobotRock/MoveAction.hpp \

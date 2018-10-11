@@ -1,7 +1,5 @@
 // Copyright (c) 2018 All Rights Reserved WestBot
 
-#include <QThread>
-
 #include <WestBot/RobotRock/GameThread.hpp>
 
 using namespace WestBot;

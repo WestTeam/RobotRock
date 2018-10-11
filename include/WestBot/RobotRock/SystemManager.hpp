@@ -6,11 +6,10 @@
 #include <QObject>
 #include <QTimer>
 
-#include <WestBot/RPLidar/RPLidar.hpp>
-
 #include "Common.hpp"
 #include "GameThread.hpp"
 #include "Input.hpp"
+#include "Lidar.hpp"
 #include "Output.hpp"
 #include "Recalage.hpp"
 #include "StrategyManager.hpp"
@@ -65,7 +64,7 @@ private:
     Output::Ptr _ledYellow;
     Output::Ptr _ledBlue;
     Color _color;
-    RPLidar::RPLidar _lidar;
+    Lidar _lidar;
     Recalage _recalage;
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
