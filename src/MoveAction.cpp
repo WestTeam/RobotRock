@@ -80,7 +80,11 @@ void MoveAction::execute()
         break;
 
     case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_A_REL:
-        _trajectoryManager.moveToDARel( _theta, _distance, _correction, _doNotBlock );
+        _trajectoryManager.moveToDARel( 
+            _theta, 
+            _distance, 
+            _correction, 
+            _doNotBlock );
         break;
 
     case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY:

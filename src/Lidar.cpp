@@ -143,8 +143,12 @@ bool Lidar::init()
 
         for( int pos = 0; pos < ( int ) count; ++pos )
         {
-            mesR[ pos ] = static_cast< double >( nodes[ pos ].distance_q2 );
-            mesTheta[ pos ] = static_cast< double >( ( nodes[ pos ].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
+            mesR[ pos ] = 
+                static_cast< double >( nodes[ pos ].distance_q2 / 4.0f );
+            mesTheta[ pos ] = 
+                static_cast< double >( 
+                    ( nodes[ pos ].angle_q6_checkbit >> 
+                      RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
         }
 
         _recalage.calibrate( count, mesR, mesTheta );

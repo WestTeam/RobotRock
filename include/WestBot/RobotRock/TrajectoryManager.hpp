@@ -305,6 +305,7 @@ private:
             debug << "Trajectory: RUNNING_CLITOID_CURVE";
             break;
         }
+        
         return debug;
     }
 }
