@@ -15,7 +15,7 @@ namespace RobotRock {
 class Lidar : public QThread
 {
 public:
-    Lidar( const Recalage& recalage );
+    Lidar( Recalage& recalage );
 
     bool init();
 
@@ -26,7 +26,7 @@ private:
 
 private:
     RPLidar::RPLidar _lidar;
-    Recalage _recalage;
+    Recalage& _recalage;
 };
 
 }

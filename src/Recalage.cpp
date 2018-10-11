@@ -66,31 +66,31 @@ RobotPos Recalage::getPos()
 {
     QMutexLocker locker( _lock );
     RobotPos pos;
-	double odoTheta = _odoThetaReg->read< int16_t >();
-	double odoX = _odoThetaReg->read< int16_t >();
-	double odoY = _odoThetaReg->read< int16_t >();
+
+    double odoTheta = _odoThetaReg->read< int16_t >();
+    double odoX = _odoThetaReg->read< int16_t >();
+    double odoY = _odoThetaReg->read< int16_t >();
 
     pos.x = odoX * cos( error.theta ) + odoY * sin( error.theta ) + error.x;
     pos.y = -odoX * sin( error.theta ) + odoY * cos( error.theta ) + error.y;
     pos.theta = odoTheta - error.theta;
-	return pos;
+
+    return pos;
 }
 
 RobotPos Recalage::sendPos( const RobotPos& robotPos )
 {
-    QMutexLocker locker( _lock );
     RobotPos pos;
     pos.x = ( robotPos.x - error.x ) * cos( error.theta ) -
             ( robotPos.y - error.y ) * sin( error.theta );
     pos.y = ( robotPos.x - error.x ) * sin( error.theta ) +
             ( robotPos.y - error.y ) * cos( error.theta );
     pos.theta = robotPos.theta + error.theta;
-	return pos;
+    return pos;
 }
 
 void Recalage::errorInit( double errX, double errY, double errTheta )
 {
-    QMutexLocker locker( _lock );
     error.x = errX;
 	error.y = errY;
 	error.theta = errTheta;
@@ -98,7 +98,6 @@ void Recalage::errorInit( double errX, double errY, double errTheta )
 
 void Recalage::errorModify( double errX, double errY, double errTheta )
 {
-    QMutexLocker locker( _lock );
     error.x = error.x * cos( errTheta ) +
               error.y * sin( errTheta ) +
               errX;
@@ -113,14 +112,21 @@ bool Recalage::calibrate(
     const double* mesR,			// mesure télémètre
     const double* mesTheta )    // angle correspondant à la masure
 {
-    QMutexLocker locker( _lock );
+    tInfo( LOG ) << "Calibrating...";
+
+    for( int i = 0; i < len; ++i )
+    {
+        std::cout << "Mes R: " << mesR[ i ]  << " Theta: " << mesTheta[ i ] << std::endl;
+    }
+
     double errX;
     double errY;
     double errTheta;
 
     RobotPos robotPos = getPos();
 
-	{
+    QMutexLocker locker( _lock );
+    {
 		//position du télémètre
 		double telemTheta = robotPos.theta + TELEM_THETA0;
 		double telemX = robotPos.x + TELEM_R*cos(robotPos.theta+TELEM_THETA);
@@ -265,11 +271,11 @@ bool Recalage::calibrate(
 
 	errorModify(errX,errY,errTheta);
 
-    std::cout
+    tDebug( LOG )
         << "Calibration done with error: "
         << errX << " "
         << errY << " "
-        << errTheta << std::endl;
+        << errTheta;
 
 	return true;
 }

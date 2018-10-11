@@ -151,15 +151,15 @@ bool SystemManager::init()
     _hal._pidAngleTarget.write( _hal._pidAnglePosition.read< float >() );
     _hal._pidAngleEnable.write( 1 );
 
-    if( ! _lidar.init() )
-    {
-        tWarning( LOG ) << "Failed to init lidar module";
-        return false;
-    }
-
     if( ! _recalage.init( _hal ) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
+        return false;
+    }
+
+    if( ! _lidar.init() )
+    {
+        tWarning( LOG ) << "Failed to init lidar module";
         return false;
     }
 

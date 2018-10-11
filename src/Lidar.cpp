@@ -91,7 +91,7 @@ namespace
     }
 }
 
-Lidar::Lidar( const Recalage& recalage )
+Lidar::Lidar( Recalage& recalage )
     : _lidar( "/dev/ttyUSB0" )
     , _recalage( recalage )
 {
@@ -117,6 +117,45 @@ bool Lidar::init()
 
     tInfo( LOG ) << "Lidar module initialized";
 
+    _lidar.startMotor();
+
+    QThread::msleep( 200 );
+
+    _lidar.startScan();
+
+    RPLidar::measurementNode_t nodes[ 8192 ];
+    size_t count = _countof(nodes);
+
+    double mesR[ ( int ) count ];
+    double mesTheta[ ( int ) count ];
+
+    tDebug( LOG ) << "waiting for data...";
+
+    // Fetch exactly one 0-360 degrees' scan
+    if( _lidar.grabScanData(nodes, count) )
+    {
+        tDebug( LOG ) << "Grabing scan data: OK";
+
+        if( ! _lidar.ascendScanData( nodes, count ) )
+        {
+            return false;
+        }
+
+        for( int pos = 0; pos < ( int ) count; ++pos )
+        {
+            mesR[ pos ] = static_cast< double >( nodes[ pos ].distance_q2 );
+            mesTheta[ pos ] = static_cast< double >( ( nodes[ pos ].angle_q6_checkbit >> RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
+        }
+
+        _recalage.calibrate( count, mesR, mesTheta );
+    }
+    else
+    {
+        tFatal( LOG ) << "Lidar scan and calibration failure";
+    }
+
+    stop();
+
     return true;
 }
 
@@ -136,7 +175,6 @@ void Lidar::run()
 
     while( 1 )
     {
-        //_recalage.calibrate();
         capture_and_display( _lidar );
         QThread::msleep( 1000 );
     }
