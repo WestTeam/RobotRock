@@ -91,8 +91,9 @@ namespace
     }
 }
 
-Lidar::Lidar()
+Lidar::Lidar( const Recalage& recalage )
     : _lidar( "/dev/ttyUSB0" )
+    , _recalage( recalage )
 {
 }
 
@@ -135,6 +136,7 @@ void Lidar::run()
 
     while( 1 )
     {
+        //_recalage.calibrate();
         capture_and_display( _lidar );
         QThread::msleep( 1000 );
     }

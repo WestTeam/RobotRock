@@ -64,8 +64,8 @@ private:
     Output::Ptr _ledYellow;
     Output::Ptr _ledBlue;
     Color _color;
-    Lidar _lidar;
     Recalage _recalage;
+    Lidar _lidar;
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
     StrategyManager _strategyManager;

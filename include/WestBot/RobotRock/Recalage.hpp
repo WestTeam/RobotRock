@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_RECALAGE_HPP_
 #define WESTBOT_ROBOTROCK_RECALAGE_HPP_
 
+#include <QMutex>
+
 #include "ItemRegister.hpp"
 
 namespace WestBot {
@@ -17,10 +19,19 @@ typedef struct
 
 class Hal;
 
+/*!
+ * \brief The Recalage class allow to process lidar measurement
+ *        to update the robot internal odometry.
+ *
+ *        This module is thread-safe because it can be called
+ *        from multiple thread such as: Lidar and Strategy threads.
+ */
 class Recalage
 {
 public:
     Recalage();
+
+    ~Recalage();
 
     bool init( Hal& hal );
 
@@ -60,6 +71,8 @@ private:
     };
 
     int tableBorderNb = sizeof( tableBorder ) / sizeof( tableBorder[ 0 ] );
+
+    QMutex* _lock;
 };
 
 }

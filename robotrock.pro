@@ -12,7 +12,7 @@ CONFIG -= app_bundle
 TEMPLATE = app
 
 INCLUDEPATH += include \
-               3rdparty/Eigen
+               3rdparty/Eigen/
 
 SOURCES += \
     src/Action.cpp \
@@ -34,7 +34,6 @@ SOURCES += \
     src/main.cpp
 
 HEADERS += \
-    3rdparty/Eigen/src/* \
     include/Macros.hpp \
     include/WestBot/RobotRock/Action.hpp \
     include/WestBot/RobotRock/Common.hpp \

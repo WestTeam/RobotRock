@@ -3,11 +3,16 @@
 #include <iostream>
 #include <math.h>
 
+#include <3rdparty/Eigen/Dense>
+
+#include <QMutexLocker>
+
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
 #include <WestBot/RobotRock/Recalage.hpp>
 
+using namespace Eigen;
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
@@ -31,7 +36,14 @@ Recalage::Recalage()
     , _odoXReg( nullptr )
     , _odoYReg( nullptr )
     , _attached( false )
+    , _lock( new QMutex( QMutex::NonRecursive ) )
 {
+}
+
+
+Recalage::~Recalage()
+{
+    delete _lock;
 }
 
 bool Recalage::init( Hal& hal )
@@ -52,6 +64,7 @@ bool Recalage::init( Hal& hal )
 
 RobotPos Recalage::getPos()
 {
+    QMutexLocker locker( _lock );
     RobotPos pos;
 	double odoTheta = _odoThetaReg->read< int16_t >();
 	double odoX = _odoThetaReg->read< int16_t >();
@@ -65,7 +78,8 @@ RobotPos Recalage::getPos()
 
 RobotPos Recalage::sendPos( const RobotPos& robotPos )
 {
-	RobotPos pos;
+    QMutexLocker locker( _lock );
+    RobotPos pos;
     pos.x = ( robotPos.x - error.x ) * cos( error.theta ) -
             ( robotPos.y - error.y ) * sin( error.theta );
     pos.y = ( robotPos.x - error.x ) * sin( error.theta ) +
@@ -76,13 +90,15 @@ RobotPos Recalage::sendPos( const RobotPos& robotPos )
 
 void Recalage::errorInit( double errX, double errY, double errTheta )
 {
-	error.x = errX;
+    QMutexLocker locker( _lock );
+    error.x = errX;
 	error.y = errY;
 	error.theta = errTheta;
 }
 
 void Recalage::errorModify( double errX, double errY, double errTheta )
 {
+    QMutexLocker locker( _lock );
     error.x = error.x * cos( errTheta ) +
               error.y * sin( errTheta ) +
               errX;
@@ -97,7 +113,8 @@ bool Recalage::calibrate(
     const double* mesR,			// mesure télémètre
     const double* mesTheta )    // angle correspondant à la masure
 {
-    /*double errX;
+    QMutexLocker locker( _lock );
+    double errX;
     double errY;
     double errTheta;
 
@@ -182,7 +199,7 @@ bool Recalage::calibrate(
 
 
 				MatrixXd in(mesure[k].len,2);
-				VectorXd out(mesure[k].len);
+                VectorXd out(mesure[k].len);
 				for(int j =0; j<mesure[k].len; j++) {
 					in(j,0) = mesure[k].dot(j,X);
 					in(j,1) = 1;
@@ -253,6 +270,6 @@ bool Recalage::calibrate(
         << errX << " "
         << errY << " "
         << errTheta << std::endl;
-    */
+
 	return true;
 }

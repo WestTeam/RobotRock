@@ -42,6 +42,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
               std::make_shared< ItemRegister >( _hal._output2 ),
               "Blue" ) )
     , _color( Color::Unknown )
+    , _lidar( _recalage )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
     , _strategyManager( _trajectoryManager )

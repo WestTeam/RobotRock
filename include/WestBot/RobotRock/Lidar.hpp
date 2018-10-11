@@ -7,13 +7,15 @@
 
 #include <WestBot/RPLidar/RPLidar.hpp>
 
+#include "Recalage.hpp"
+
 namespace WestBot {
 namespace RobotRock {
 
 class Lidar : public QThread
 {
 public:
-    Lidar();
+    Lidar( const Recalage& recalage );
 
     bool init();
 
@@ -24,6 +26,7 @@ private:
 
 private:
     RPLidar::RPLidar _lidar;
+    Recalage _recalage;
 };
 
 }
