@@ -116,12 +116,11 @@ bool Recalage::calibrate(
 
     for( int i = 0; i < len; ++i )
     {
-        std::cout 
+        tDebug( LOG )
             << "Mes R: " 
             << mesR[ i ]  
             << " Theta: " 
-            << mesTheta[ i ] 
-            << std::endl;
+            << mesTheta[ i ];
     }
 
     double errX;
