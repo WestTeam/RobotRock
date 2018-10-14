@@ -114,20 +114,18 @@ bool Recalage::calibrate(
 {
     tInfo( LOG ) << "Calibrating...";
 
-    for( int i = 0; i < len; ++i )
-    {
-        tDebug( LOG )
-            << "Mes R: " 
-            << mesR[ i ]  
-            << " Theta: " 
-            << mesTheta[ i ];
-    }
-
     double errX;
     double errY;
     double errTheta;
 
     RobotPos robotPos = getPos();
+
+#ifdef DEBUG
+    for( int pos = 0; pos < len; ++pos )
+    {
+        tDebug( LOG ) << "Dist:" << mesR[ pos ] << "Theta:" << mesTheta[ pos ];
+    }
+#endif
 
     QMutexLocker locker( _lock );
     {
@@ -207,8 +205,8 @@ bool Recalage::calibrate(
 					Y = 0;
 				}
 
-
 				MatrixXd in(mesure[k].len,2);
+
                 VectorXd out(mesure[k].len);
 				for(int j =0; j<mesure[k].len; j++) {
 					in(j,0) = mesure[k].dot(j,X);
@@ -243,7 +241,7 @@ bool Recalage::calibrate(
 		{
 			MatrixXd in(len,3);
 			VectorXd out(len);
-			int i = 0;
+            int i = 0;
 			for(int k=0; k<tableBorderNb; k++) {
 				if(mesure[k].len==0)
 					continue;
@@ -265,15 +263,15 @@ bool Recalage::calibrate(
 				}
 			}
 
-			MatrixXd A = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
-			errX = A(1,0);
-			errY = A(2,0);
-			errTheta = asin(A(0,0));
-		}
-
+            // TODO: UNCOMMENT AND FIX
+            //MatrixXd A = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
+            //errX = A(1,0);
+            //errY = A(2,0);
+            //errTheta = asin(A(0,0));
+        }
 	}
 
-	errorModify(errX,errY,errTheta);
+    errorModify(errX,errY,errTheta);
 
     tDebug( LOG )
         << "Calibration done with error: "

@@ -19,7 +19,9 @@ public:
 
     bool init();
 
-    void stop();
+    void startScan();
+    void stopScan();
+    bool calibrate();
 
 private:
     void run();

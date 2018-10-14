@@ -206,10 +206,17 @@ void SystemManager::stop()
     _gameTimer.stop();
     _aliveTimer.stop();
 
-    _lidar.terminate();
-    _lidar.stop();
+    if( _lidar.isRunning() )
+    {
+        _lidar.terminate();
+        _lidar.stopScan();
+    }
 
-    _game->terminate();
+    if( nullptr != _game && _game->isRunning() )
+    {
+        _game->terminate();
+    }
+
     _strategyManager.stop();
 
     tInfo( LOG ) << "System stopped";
