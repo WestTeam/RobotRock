@@ -108,176 +108,195 @@ void Recalage::errorModify( double errX, double errY, double errTheta )
 }
 
 bool Recalage::calibrate(
-    int len,					// nb de mesures télémètre
+    int mesLen,					// nb de mesures télémètre
     const double* mesR,			// mesure télémètre
     const double* mesTheta )    // angle correspondant à la masure
 {
     tInfo( LOG ) << "Calibrating...";
 
-    double errX;
-    double errY;
-    double errTheta;
+    double errX = 0;
+    double errY = 0;
+    double errTheta = 0;
 
-    RobotPos robotPos = getPos();
+    RobotPos robotPos = getPos(); // Position du robot
 
 #ifdef DEBUG
-    for( int pos = 0; pos < len; ++pos )
+    for( int pos = 0; pos < mesLen; ++pos )
     {
         tDebug( LOG ) << "Dist:" << mesR[ pos ] << "Theta:" << mesTheta[ pos ];
     }
 #endif
 
     QMutexLocker locker( _lock );
-    {
-		//position du télémètre
-		double telemTheta = robotPos.theta + TELEM_THETA0;
-		double telemX = robotPos.x + TELEM_R*cos(robotPos.theta+TELEM_THETA);
-		double telemY = robotPos.y + TELEM_R*sin(robotPos.theta+TELEM_THETA);
 
-		//initialisation tableaux de point associés à une bordure
-		typedef struct {
-			MatrixXd dot;
-			int len;
-		}Mesure;
-		Mesure mesure[tableBorderNb];
-		for(int k=0; k<tableBorderNb; k++) {
-			mesure[k].dot.resize(len,2);
-			mesure[k].len = 0;
-		}
+    //position du télémètre
+    double telemTheta = robotPos.theta + TELEM_THETA0;
+    double telemX = robotPos.x + TELEM_R*cos(robotPos.theta+TELEM_THETA);
+    double telemY = robotPos.y + TELEM_R*sin(robotPos.theta+TELEM_THETA);
 
-		//association point bordure
-		for(int j =0; j<len; j++) {
-			//drop false points
-			if(mesR[j]<ALGO_TELEM_DROP_MESURE)
-				continue;
+    //initialisation tableaux de point associés à une bordure
+    typedef struct {
+        MatrixXd dot;
+        int len;
+    }Mesure;
+    Mesure mesure[tableBorderNb];
+    for(int k=0; k<tableBorderNb; k++) {
+        mesure[k].dot.resize(mesLen,2);
+        mesure[k].len = 0;
+    }
 
-			//position du point mesuré
-			double theta = telemTheta + mesTheta[j];
-			double x = telemX + mesR[j]*cos(theta);
-			double y = telemY + mesR[j]*sin(theta);
+    //association point bordure
+    for(unsigned int j =0; j<mesLen; j++) {
+        //drop false points
+        if(mesR[j]<ALGO_TELEM_DROP_MESURE)
+            continue;
 
-			//associate dot to border
-			double d = INFINITY;
-			int K = 0;
-			for(int k=0; k<tableBorderNb; k++) {
-				double dist;
-				//AB.AP<0 => distance = AP
-				if( (tableBorder[k].bx-tableBorder[k].ax)*(x-tableBorder[k].ax) + (tableBorder[k].by-tableBorder[k].ay)*(y-tableBorder[k].ay) < 0 )
-					dist = sqrt( (x-tableBorder[k].ax)*(x-tableBorder[k].ax) + (y-tableBorder[k].ay)*(y-tableBorder[k].ay) );
-				//BA.BP<0 => distance = BP
-				else if( (tableBorder[k].ax-tableBorder[k].bx)*(x-tableBorder[k].bx) + (tableBorder[k].ay-tableBorder[k].by)*(y-tableBorder[k].by) < 0 )
-					dist = sqrt( (x-tableBorder[k].bx)*(x-tableBorder[k].bx) + (y-tableBorder[k].by)*(y-tableBorder[k].by) );
-				//sinon => distance = norm(AB^AP)/norm(AB)
-				else
-					dist = abs( (tableBorder[k].bx-tableBorder[k].ax)*(y-tableBorder[k].ay) + (tableBorder[k].by-tableBorder[k].ay)*(x-tableBorder[k].ax) )/( sqrt((tableBorder[k].ax-tableBorder[k].bx)*(tableBorder[k].ax-tableBorder[k].bx)+(tableBorder[k].ay-tableBorder[k].by)*(tableBorder[k].ay-tableBorder[k].by)) );
+        //position du point mesuré
+        double theta = telemTheta + mesTheta[j];
+        double x = telemX + mesR[j]*cos(theta);
+        double y = telemY + mesR[j]*sin(theta);
 
-				if(dist<d) {
-					d = dist;
-					K = k;
-				}
-			}
-			if(d<ALGO_BORDER_ASSOCIATE_DROP) {
-				mesure[K].dot(mesure[K].len,0) = x;
-				mesure[K].dot(mesure[K].len,1) = y;
-				mesure[K].len++;
-			}
-		}
+        //associate dot to border
+        double d = INFINITY;
+        int K = 0;
+        for(int k=0; k<tableBorderNb; k++) {
+            double dist;
+            //AB.AP<0 => distance = AP
+            if( (tableBorder[k].bx-tableBorder[k].ax)*(x-tableBorder[k].ax) + (tableBorder[k].by-tableBorder[k].ay)*(y-tableBorder[k].ay) < 0 )
+                dist = sqrt( (x-tableBorder[k].ax)*(x-tableBorder[k].ax) + (y-tableBorder[k].ay)*(y-tableBorder[k].ay) );
+            //BA.BP<0 => distance = BP
+            else if( (tableBorder[k].ax-tableBorder[k].bx)*(x-tableBorder[k].bx) + (tableBorder[k].ay-tableBorder[k].by)*(y-tableBorder[k].by) < 0 )
+                dist = sqrt( (x-tableBorder[k].bx)*(x-tableBorder[k].bx) + (y-tableBorder[k].by)*(y-tableBorder[k].by) );
+            //sinon => distance = norm(AB^AP)/norm(AB)
+            else
+                dist = abs( (tableBorder[k].bx-tableBorder[k].ax)*(y-tableBorder[k].ay) + (tableBorder[k].by-tableBorder[k].ay)*(x-tableBorder[k].ax) )/( sqrt((tableBorder[k].ax-tableBorder[k].bx)*(tableBorder[k].ax-tableBorder[k].bx)+(tableBorder[k].ay-tableBorder[k].by)*(tableBorder[k].ay-tableBorder[k].by)) );
 
-		//suppression points
-		{
-			int lenUpdate = 0;
-			for(int k=0; k<tableBorderNb; k++) {
-
-				//qDebug() << "border" << k << mesure[k].len << "dir" << tableBorder[k].dir;
-
-				if(mesure[k].len<5){
-					mesure[k].len = 0;
-					continue;
-				}
-
-				int X,Y;
-				if(tableBorder[k].dir) {
-					X = 0;
-					Y = 1;
-				}
-				else {
-					X = 1;
-					Y = 0;
-				}
-
-				MatrixXd in(mesure[k].len,2);
-
-                VectorXd out(mesure[k].len);
-				for(int j =0; j<mesure[k].len; j++) {
-					in(j,0) = mesure[k].dot(j,X);
-					in(j,1) = 1;
-					out(j) = mesure[k].dot(j,Y);
-				}
-
-				MatrixXd droite = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
-				VectorXf u(2);
-				u(0) = -droite(0,0);
-				u(1) = 1;
-				u = u/u.norm();
-
-				int len = 0;
-				for(int j =0; j<mesure[k].len; j++) {
-					double d = abs( (mesure[k].dot(j,X))*(u[0]) + (mesure[k].dot(j,Y)-droite(1,0))*(u[1]) );
-					if(d<ALGO_BORDER_FILTER_DROP) {
-						mesure[k].dot(len,0) = mesure[k].dot(j,0);
-						mesure[k].dot(len,1) = mesure[k].dot(j,1);
-						len++;
-					}
-				}
-				mesure[k].len = len;
-				lenUpdate += len;
-
-				//qDebug() << "border end" << k << mesure[k].len << "dir" << tableBorder[k].dir;
-			}
-			len = lenUpdate;
-		}
-
-		//calcul erreur odometrie
-		{
-			MatrixXd in(len,3);
-			VectorXd out(len);
-            int i = 0;
-			for(int k=0; k<tableBorderNb; k++) {
-				if(mesure[k].len==0)
-					continue;
-
-				for(int j =0; j<mesure[k].len; j++) {
-					if(tableBorder[k].dir) {
-						in(i,0) = -mesure[k].dot(j,0);
-						in(i,1) = 0;
-						in(i,2) = 1;
-						out(i) = tableBorder[k].ay - mesure[k].dot(j,1);
-					}
-					else {
-						in(i,0) = mesure[k].dot(j,1);
-						in(i,1) = 1;
-						in(i,2) = 0;
-						out(i) = tableBorder[k].ax - mesure[k].dot(j,0);
-					}
-					i++;
-				}
-			}
-
-            // TODO: UNCOMMENT AND FIX
-            //MatrixXd A = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
-            //errX = A(1,0);
-            //errY = A(2,0);
-            //errTheta = asin(A(0,0));
+            if(dist<d) {
+                d = dist;
+                K = k;
+            }
         }
-	}
+        if(d<ALGO_BORDER_ASSOCIATE_DROP) {
+            mesure[K].dot(mesure[K].len,0) = x;
+            mesure[K].dot(mesure[K].len,1) = y;
+            mesure[K].len++;
+        }
+    }
 
-    errorModify(errX,errY,errTheta);
+    //suppression points
+    int mesureLen = 0;
+    {
+        for(int k=0; k<tableBorderNb; k++) {
 
-    tDebug( LOG )
-        << "Calibration done with error: "
-        << errX << " "
-        << errY << " "
-        << errTheta;
+            //qDebug() << "border" << k << mesure[k].len << "dir" << tableBorder[k].dir;
 
-	return true;
+            if(mesure[k].len<5){
+                mesure[k].len = 0;
+                continue;
+            }
+
+            int X,Y;
+            if(tableBorder[k].dir) {
+                X = 0;
+                Y = 1;
+            }
+            else {
+                X = 1;
+                Y = 0;
+            }
+
+
+            MatrixXd in(mesure[k].len,2);
+            VectorXd out(mesure[k].len);
+            for(int j =0; j<mesure[k].len; j++) {
+                in(j,0) = mesure[k].dot(j,X);
+                in(j,1) = 1;
+                out(j) = mesure[k].dot(j,Y);
+            }
+
+            MatrixXd droite = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
+            VectorXf u(2);
+            u(0) = -droite(0,0);
+            u(1) = 1;
+            u = u/u.norm();
+
+            int len = 0;
+            for(int j =0; j<mesure[k].len; j++) {
+                double d = abs( (mesure[k].dot(j,X))*(u[0]) + (mesure[k].dot(j,Y)-droite(1,0))*(u[1]) );
+                if(d<ALGO_BORDER_FILTER_DROP) {
+                    mesure[k].dot(len,0) = mesure[k].dot(j,0);
+                    mesure[k].dot(len,1) = mesure[k].dot(j,1);
+                    len++;
+                }
+            }
+            mesure[k].len = len;
+            mesureLen += len;
+
+            //qDebug() << "border end" << k << mesure[k].len << "dir" << tableBorder[k].dir;
+        }
+    }
+
+    if( mesureLen < 50 )
+    {
+        tDebug( LOG ) << "No object found";
+        return false;
+    }
+
+    //calcul erreur odometrie
+    int lenX = 0;
+    int lenY = 0;
+    {
+        MatrixXd in(mesureLen,3);
+        VectorXd out(mesureLen);
+        int i = 0;
+        for(int k=0; k<tableBorderNb; k++) {
+            if(mesure[k].len==0)
+                continue;
+
+            for(int j =0; j<mesure[k].len; j++) {
+                if(tableBorder[k].dir) {
+                    in(i,0) = -mesure[k].dot(j,0);
+                    in(i,1) = 0;
+                    in(i,2) = 1;
+                    out(i) = tableBorder[k].ay - mesure[k].dot(j,1);
+                    lenY ++;
+                }
+                else {
+                    in(i,0) = mesure[k].dot(j,1);
+                    in(i,1) = 1;
+                    in(i,2) = 0;
+                    out(i) = tableBorder[k].ax - mesure[k].dot(j,0);
+                    lenX ++;
+                }
+                i++;
+            }
+        }
+
+        MatrixXd A = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
+        errX = A(1,0);
+        errY = A(2,0);
+        errTheta = asin(A(0,0));
+    }
+
+    double qualityX = (double)lenX / 400.0;
+    double qualityY = (double)lenY / 400.0;
+    double qualityTheta;
+    if(qualityX>1)
+        qualityX = 1;
+    if(qualityY>1)
+        qualityY = 1;
+    if(qualityX>qualityY)
+        qualityTheta = qualityX;
+    else
+        qualityTheta = qualityY;
+
+    tDebug( LOG ) << "Calibrate quality" << qualityX << qualityY << qualityTheta;
+
+    errorModify(errX*qualityX,errY*qualityY,errTheta*qualityTheta);
+
+    tDebug( LOG ) << "Calibrate error" << errX << errY << errTheta;
+
+    sendPos( robotPos ); // Apply new robot position based on previous computed error
+
+    return true;
 }

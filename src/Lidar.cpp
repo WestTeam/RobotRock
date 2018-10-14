@@ -11,6 +11,8 @@
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
 #endif
 
+#define SIMU
+
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
@@ -108,7 +110,16 @@ bool Lidar::calibrate()
                      RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
         }
 
-        _recalage.calibrate( count, mesR, mesTheta );
+        if( ! _recalage.calibrate( count, mesR, mesTheta ) )
+        {
+            tWarning( LOG ) << "Calibration failed: No object found";
+
+#ifdef SIMU
+            return true;
+#else
+            return false;
+#endif
+        }
     }
     else
     {
