@@ -177,6 +177,12 @@ bool SystemManager::init()
 
 void SystemManager::start()
 {
+    if( nullptr != _game && _game->isRunning() )
+    {
+        tWarning( LOG ) << "Game is already running";
+        return;
+    }
+
     tInfo( LOG ) << "System starting...";
 
     if( ! isSafe() )
