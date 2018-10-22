@@ -67,13 +67,9 @@ RobotPos Recalage::getPos()
     QMutexLocker locker( _lock );
     RobotPos pos;
 
-    double odoTheta = _odoThetaReg->read< int16_t >();
-    double odoX = _odoXReg->read< int16_t >();
-    double odoY = _odoYReg->read< int16_t >();
-
-    pos.x = odoX * cos( error.theta ) + odoY * sin( error.theta ) + error.x;
-    pos.y = -odoX * sin( error.theta ) + odoY * cos( error.theta ) + error.y;
-    pos.theta = odoTheta - error.theta;
+    pos.theta = _odoThetaReg->read< int16_t >();
+    pos.x = _odoXReg->read< int16_t >();
+    pos.y = _odoYReg->read< int16_t >();
 
     return pos;
 }
@@ -86,6 +82,11 @@ RobotPos Recalage::sendPos( const RobotPos& robotPos )
     pos.y = ( robotPos.x - error.x ) * sin( error.theta ) +
             ( robotPos.y - error.y ) * cos( error.theta );
     pos.theta = robotPos.theta + error.theta;
+
+    _odoThetaReg->write( static_cast< int >( pos.theta ) );
+    _odoXReg->write( static_cast< int >( pos.x ) );
+    _odoYReg->write( static_cast< int >( pos.y ) );
+
     return pos;
 }
 
