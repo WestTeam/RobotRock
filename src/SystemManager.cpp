@@ -8,6 +8,8 @@
 
 #include <WestBot/RobotRock/SystemManager.hpp>
 
+#define NO_LIDAR
+
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
@@ -73,7 +75,7 @@ SystemManager::SystemManager( Hal& hal, QObject* parent )
         {
             tDebug( LOG ) << "Start button changed to:" << value;
 
-            if( value == DigitalValue::ON &&
+            if( value == DigitalValue::OFF &&
                 _hardstopButton->digitalRead() == DigitalValue::OFF )
             {
                 start();
@@ -157,11 +159,15 @@ bool SystemManager::init()
         return false;
     }
 
+#ifndef NO_LIDAR
+
     if( ! _lidar.init() )
     {
         tWarning( LOG ) << "Failed to init lidar module";
         return false;
     }
+
+#endif
 
     _trajectoryManager.init();
 
@@ -191,8 +197,10 @@ void SystemManager::start()
             << "System not safe to start: Odometry check failed";
     }
 
+#ifndef NO_LIDAR
     // This run the lidar thread for data acquisition.
     _lidar.start();
+#endif
 
     initRecalage();
 
@@ -212,11 +220,13 @@ void SystemManager::stop()
     _gameTimer.stop();
     _aliveTimer.stop();
 
+#ifdef NO_LIDAR
     if( _lidar.isRunning() )
     {
         _lidar.terminate();
         _lidar.stopScan();
     }
+#endif
 
     if( nullptr != _game && _game->isRunning() )
     {
@@ -243,6 +253,8 @@ void SystemManager::reset()
     _hal._colorEnable.write( 1 );
 
     tInfo( LOG ) << "System was reset";
+
+    init();
 }
 
 void SystemManager::setMode( SystemManager::SystemMode mode )
@@ -281,11 +293,11 @@ void SystemManager::initRecalage()
 {
     if( _color == Color::Yellow )
     {
-        _recalage.errorInit( 36, 580, 0 ); // TODO: Change y pos
+        _recalage.errorInit( 0, 0, 0 );
     }
     else
     {
-        _recalage.errorInit( 36, -610, 0 ); // TODO: Change y pos
+        _recalage.errorInit( 0, 0, 0 );
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color;

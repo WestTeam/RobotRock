@@ -10,7 +10,7 @@
 #include <WestBot/RobotRock/SystemManager.hpp>
 
 //#define DEBUG
-#define SIMU
+//#define SIMU
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;

@@ -60,20 +60,16 @@ void StrategyManager::buildStrat( const Color& color )
     MoveAction::Ptr move1 =
         std::make_shared< MoveAction >(
             _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-            0.0,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
             0.0,
             100.0,
+            0.0,
             0.0 * inv,
-            false );
+            true );
 
     // Our strat begins here
-    _actions.push_back( wait5s );
+    //_actions.push_back( wait5s );
     _actions.push_back( move1 );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );
     _actions.push_back( wait5s );

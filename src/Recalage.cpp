@@ -83,9 +83,9 @@ RobotPos Recalage::sendPos( const RobotPos& robotPos )
             ( robotPos.y - error.y ) * cos( error.theta );
     pos.theta = robotPos.theta + error.theta;
 
-    _odoThetaReg->write( static_cast< int >( pos.theta ) );
-    _odoXReg->write( static_cast< int >( pos.x ) );
-    _odoYReg->write( static_cast< int >( pos.y ) );
+    //_odoThetaReg->write( static_cast< int >( pos.theta ) );
+    //_odoXReg->write( static_cast< int >( pos.x ) );
+    //_odoYReg->write( static_cast< int >( pos.y ) );
 
     return pos;
 }

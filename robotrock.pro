@@ -53,7 +53,7 @@ HEADERS += \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
     include/WestBot/RobotRock/WaitAction.hpp
 	
-INCLUDEPATH += ../human-after-all/include/ ../rplidar/include/
+INCLUDEPATH += ../HumanAfterAll/include/ ../rplidar/include/
 LIBS += -L../robot-rock/libs -lHumanAfterAll -lRPLidar
 
 # The following define makes your compiler emit warnings if you use
