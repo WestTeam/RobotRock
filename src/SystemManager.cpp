@@ -131,6 +131,7 @@ bool SystemManager::init()
     _hal._pidDistanceKi.write( ( float ) 0.0 );
     _hal._pidDistanceKd.write( ( float ) 0.0 );
 
+    // We set it but this is override by the TrajectoryManager
     _hal._pidDistanceSpeed.write( ( float ) 0.01 );
     _hal._pidDistanceAcceleration.write( ( float ) 0.0001 );
     _hal._pidDistanceSaturation.write( 25000 );

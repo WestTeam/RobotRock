@@ -20,6 +20,7 @@ TrajectoryManager::TrajectoryManager( Hal& hal, Recalage& recalage )
 {
 }
 
+// We set some default values for speed and acceleration
 void TrajectoryManager::init()
 {
     _hal._trajFreqHz.write( 10 );
@@ -58,7 +59,7 @@ void TrajectoryManager::init()
     _hal._trajCmdId.write( commandId++ );
     _hal._trajCmdType.write( CMD_TYPE_CFG_DISTANCE );
     _hal._trajCmdCfgSpeed.write( ( float ) 0.12 );
-    _hal._trajCmdCfgAcc.write( ( float ) 0.00001 );
+    _hal._trajCmdCfgAcc.write( ( float ) 0.00004 );
     _hal._trajCmdValid.write( 0x1 );
 
     while( _hal._trajOutAck.read< uint8_t >() != commandId )
