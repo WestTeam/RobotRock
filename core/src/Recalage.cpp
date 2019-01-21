@@ -3,7 +3,7 @@
 #include <iostream>
 #include <math.h>
 
-#include <3rdparty/Eigen/Dense>
+#include <../3rdparty/Eigen/Dense>
 
 #include <QMutexLocker>
 
