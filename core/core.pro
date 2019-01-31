@@ -25,8 +25,7 @@ SOURCES += \
     src/StrategyManager.cpp \
     src/SystemManager.cpp \
     src/TrajectoryManager.cpp \
-    src/WaitAction.cpp \
-    src/main.cpp
+    src/WaitAction.cpp
 
 HEADERS += \
     include/Macros.hpp \
