@@ -84,6 +84,46 @@ Hal::Hal()
 	, _motor5Override( _layer1, 17 * 4 + 3, 8 )
 	, _motor5Value( _layer1, 17 * 4, 16 )
 
+    // Smart Servo commands
+    , _smartServoCmdValid( _layer1, 61 * 4 + 0, 8)
+    , _smartServoCmdId( _layer1, 61 * 4 + 1, 8)
+    , _smartServoCmdType( _layer1, 61 * 4 + 2, 8)
+    , _smartServoCmdDevId( _layer1, 61 * 4 + 3, 8)
+    , _smartServoCmdAck( _layer1, 63 * 4 + 2, 8)
+    , _smartServoCmdError( _layer1, 63 * 4 + 3, 8)
+
+
+    , _smartServoCmdRawOnHold( _layer1, 62 * 4 + 0, 8)
+    , _smartServoCmdRawProtocol( _layer1, 62 * 4 + 1, 8)
+    , _smartServoCmdRawInstr( _layer1, 62 * 4 + 2, 8)
+    , _smartServoCmdRawAddr( _layer1, 62 * 4 + 3, 8)
+    , _smartServoCmdRawData( _layer1, 63 * 4 + 0, 16)
+
+
+    , _smartServoCmdRegisterProtocol( _layer1, 62 * 4 + 0, 8)
+    , _smartServoCmdRegisterBusId( _layer1, 62 * 4 + 1, 8)
+
+    , _smartServoCmdSetPosOnHold( _layer1, 62 * 4 + 0, 8)
+    , _smartServoCmdSetPosWaitPosition( _layer1, 62 * 4 + 1, 8)
+    , _smartServoCmdSetPosPosition( _layer1, 62 * 4 + 2, 16)
+
+    , _smartServoCmdSetPosAndSpeedOnHold( _layer1, 62 * 4 + 0, 8)
+    , _smartServoCmdSetPosAndSpeedWaitPosition( _layer1, 62 * 4 + 1, 8)
+    , _smartServoCmdSetPosAndSpeedPosition( _layer1, 62 * 4 + 2, 16)
+    , _smartServoCmdSetPosAndSpeedSpeed( _layer1, 63 * 4 + 0, 16)
+
+    , _smartServoCmdSetActionWaitPosition( _layer1, 62 * 4 + 0, 8)
+
+    , _smartServoCmdGetStatusPosition( _layer1, 62 * 4 + 0, 16)
+    , _smartServoCmdGetStatusLoad( _layer1, 62 * 4 + 2, 16)
+    , _smartServoCmdGetStatusVoltage( _layer1, 63 * 4 + 0, 8)
+    , _smartServoCmdGetStatusTemp( _layer1, 63 * 4 + 1, 8)
+
+    , _smartServoCmdSetEnableOnHold( _layer1, 62 * 4 + 0, 8)
+    , _smartServoCmdSetEnableEnable( _layer1, 62 * 4 + 1, 8)
+
+
+
     // Layer 2
     , _odometryTheta( _layer2, 13 * 4 + 2, 16 )
     , _odometryX( _layer2, 14 * 4, 16 )
@@ -154,7 +194,7 @@ void Hal::dump()
 
     for( int i = 0; i < 64; ++i )
     {
-        tDebug( LOG )
+        tLogStream( LOG, DebugLevel )
             << "Read register" << i << ":"
             << QString::number( _layer1.read( i * 4, 32 ), 16 );
     }

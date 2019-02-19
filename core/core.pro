@@ -25,7 +25,8 @@ SOURCES += \
     src/StrategyManager.cpp \
     src/SystemManager.cpp \
     src/TrajectoryManager.cpp \
-    src/WaitAction.cpp
+    src/WaitAction.cpp \
+    src/SmartServo.cpp
 
 HEADERS += \
     include/Macros.hpp \
@@ -45,7 +46,8 @@ HEADERS += \
     include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
-    include/WestBot/RobotRock/WaitAction.hpp
+    include/WestBot/RobotRock/WaitAction.hpp \
+    include/WestBot/RobotRock/SmartServo.hpp
 
 INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar

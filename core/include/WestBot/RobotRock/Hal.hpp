@@ -25,11 +25,12 @@ public:
 
 private:
     MemoryManager _memoryManager;
+
+
+public:
     Memory _layer1;
     Memory _layer2;
     Memory _layer3;
-
-public:
     // Layer 1
     ItemRegister _resetAll; // Reset for layer 1 / layer 2 / layer 3
     ItemRegister _colorEnable;
@@ -96,6 +97,50 @@ public:
 
 	ItemRegister _motor5Override;
 	ItemRegister _motor5Value;
+
+    // General Smart Servo Command
+    ItemRegister _smartServoCmdValid;
+    ItemRegister _smartServoCmdId;
+    ItemRegister _smartServoCmdType;
+    ItemRegister _smartServoCmdDevId;
+    ItemRegister _smartServoCmdAck;
+    ItemRegister _smartServoCmdError;
+
+
+    // RAW Command definition
+    ItemRegister _smartServoCmdRawOnHold;
+    ItemRegister _smartServoCmdRawProtocol;
+    ItemRegister _smartServoCmdRawInstr;
+    ItemRegister _smartServoCmdRawAddr;
+    ItemRegister _smartServoCmdRawData;
+
+    // Register Device Command definition
+    ItemRegister _smartServoCmdRegisterProtocol;
+    ItemRegister _smartServoCmdRegisterBusId;
+
+    // Set Pos Command definition
+    ItemRegister _smartServoCmdSetPosOnHold;
+    ItemRegister _smartServoCmdSetPosWaitPosition;
+    ItemRegister _smartServoCmdSetPosPosition;
+
+    // Set Pos And Speed Command definition
+    ItemRegister _smartServoCmdSetPosAndSpeedOnHold;
+    ItemRegister _smartServoCmdSetPosAndSpeedWaitPosition;
+    ItemRegister _smartServoCmdSetPosAndSpeedPosition;
+    ItemRegister _smartServoCmdSetPosAndSpeedSpeed;
+
+    // Set Action Command definition
+    ItemRegister _smartServoCmdSetActionWaitPosition;
+
+    // Get Status Command definition
+    ItemRegister _smartServoCmdGetStatusPosition;
+    ItemRegister _smartServoCmdGetStatusLoad;
+    ItemRegister _smartServoCmdGetStatusVoltage;
+    ItemRegister _smartServoCmdGetStatusTemp;
+
+    // Set Enable
+    ItemRegister _smartServoCmdSetEnableOnHold;
+    ItemRegister _smartServoCmdSetEnableEnable;
 
     // Layer 2
     ItemRegister _odometryTheta;
