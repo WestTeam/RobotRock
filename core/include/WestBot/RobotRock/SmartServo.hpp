@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_SMART_SERVO_HPP_
 #define WESTBOT_ROBOTROCK_SMART_SERVO_HPP_
