@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_MOVEACTION_HPP_
 #define WESTBOT_ROBOTROCK_MOVEACTION_HPP_
@@ -29,7 +29,7 @@ public:
     void execute() override;
 
 private:
-    TrajectoryManager& _trajectoryManager;
+    TrajectoryManager& _trajectoryManager; // Here we use a ref not a copy very important
     TrajectoryManager::TrajectoryType _type;
     float _theta;
     float _distance;

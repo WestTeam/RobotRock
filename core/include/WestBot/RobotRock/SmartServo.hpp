@@ -1,19 +1,46 @@
-// Copyright (c) 2018-2019 All Rights Reserved WestBot
+// Copyright (c) 2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_SMART_SERVO_HPP_
 #define WESTBOT_ROBOTROCK_SMART_SERVO_HPP_
 
-#include <QString>
+#include <array>
 #include <mutex>          // std::mutex, std::unique_lock
 #include <queue>
-#include <array>
 
+// Please use Qt Type bitch :D !!!
+
+//QMutex and QMutexLocker for the  locking mechanism
+/*
+class Foo
+{
+public:
+    Foo();
+
+    // need to be guarded
+    void bar()
+    {
+        const QMutexLocker locker( & _lock );
+
+        // DO WHAT YOU WANT
+        // lock is released when going out of the scope
+
+        //Example 2
+        {
+            QMutexLocker locker( & _lock );
+        }
+    }
+
+private:
+    QMutex _lock;
+}
+*/
+
+#include <QString>
 
 #include "Hal.hpp"
 
 namespace WestBot {
 namespace RobotRock {
-
 
 #define SMART_SERVO_FEETECH 0
 #define SMART_SERVO_DYNAMIXEL 1
@@ -41,7 +68,6 @@ namespace RobotRock {
 #define DYNAMIXEL_CMD_BULK_READ     0x92
 #define DYNAMIXEL_CMD_BULK_WRITE    0x93
 
-
 //FEETECH : Definition of regs
 // EEPROM
 #define FEETECH_REGS_ID 0x05
@@ -65,7 +91,6 @@ namespace RobotRock {
 #define FEETECH_REGS_D 0x17
 #define FEETECH_REGS_MIN_PWM_H 0x18
 
-
 // RAM
 #define FEETECH_REGS_TORQUE_SWITCH 0x28
 #define FEETECH_REGS_TARGET_POS_H 0x2a
@@ -79,7 +104,6 @@ namespace RobotRock {
 #define FEETECH_REGS_CURRENT_VOLTAGE 0x3e
 #define FEETECH_REGS_CURRENT_TEMP 0x3f
 #define FEETECH_REGS_REG_WRITE_SIGN 0x40
-
 
 //DYNAMIXEL : Definition of regs
 // EEPROM
@@ -95,7 +119,6 @@ namespace RobotRock {
 #define DYNAMIXEL_REGS_MAX_TORQUE_L (15)
 #define DYNAMIXEL_REGS_RETURN_LEVEL (17)
 #define DYNAMIXEL_REGS_ALARM_SHUTDOWN (18)
-
 
 // RAM
 #define DYNAMIXEL_REGS_TORQUE_ENABLE (24)
@@ -116,7 +139,6 @@ namespace RobotRock {
 #define DYNAMIXEL_REGS_HW_ERROR_STATUS (50)
 #define DYNAMIXEL_REGS_PUNCH (51)
 
-
 // Definition of Commands
 #define CMD_TYPE_RAW 0
 #define CMD_TYPE_REGISTER_DEV 1
@@ -125,7 +147,6 @@ namespace RobotRock {
 #define CMD_TYPE_SET_ACTION 4
 #define CMD_TYPE_GET_STATUS 5
 #define CMD_TYPE_SET_ENABLE 6
-
 
 // Definition of RAW instructions
 #define RAW_WR8B 0
@@ -141,14 +162,16 @@ class SmartServo;
 class SmartServoStaticData
 {
 public:
-    std::array<SmartServo*,HW_SERVO_COUNT> _deviceList = { nullptr };
-    std::queue<uint8_t> _qId;
+    std::array< SmartServo*, HW_SERVO_COUNT > _deviceList = { nullptr };
+    std::queue< uint8_t > _qId;
     std::mutex _mutex;
 
      SmartServoStaticData()
      {
-         for (int i=0;i<HW_SERVO_COUNT;i++)
-            _qId.push(i);
+         for( int i = 0; i < HW_SERVO_COUNT; ++i )
+         {
+            _qId.push( i );
+         }
      }
 };
 
@@ -159,14 +182,12 @@ public:
     ~SmartServo();
 
     bool attach(
-        Hal* hal,
+        Hal& hal,
         uint8_t protocol,
         uint8_t busId // id on the hw bus
-        //uint8_t devId  // internal device id (0 to 7)
     );
 
     const QString& name() const;
-
 
     uint16_t read();
     void write( uint16_t position );
@@ -176,41 +197,43 @@ public:
 
     bool isAttached() const;
 
-    void setRawWrite8(uint8_t addr, uint8_t data);
-    void setRawWrite16(uint8_t addr, uint16_t data);
-    uint8_t setRawRead8(uint8_t addr);
-    uint16_t setRawRead16(uint8_t addr);
-    void setRawAction(void);
+    void setRawWrite8( uint8_t addr, uint8_t data );
+    void setRawWrite16( uint8_t addr, uint16_t data );
+    uint8_t setRawRead8( uint8_t addr );
+    uint16_t setRawRead16( uint8_t addr );
+    void setRawAction();
 
-    void changeId(uint8_t newId);
+    void changeId( uint8_t newId );
 
-    void setPosition(bool onHold, bool waitPosition, uint16_t pos);
-    void setPositionAndSpeed(bool onHold, bool waitPosition, uint16_t pos, uint16_t speed);
-    void setAction(bool waitPosition);
+    void setPosition( bool onHold, bool waitPosition, uint16_t pos );
+    void setPositionAndSpeed(
+        bool onHold,
+        bool waitPosition,
+        uint16_t pos,
+        uint16_t speed );
+
+    void setAction( bool waitPosition );
     void checkStatus();
 
-    uint16_t getPosition(bool Update);
-    uint16_t getLoad(bool Update);
-    uint8_t getVoltage(bool Update);
-    uint8_t getTemp(bool Update);
+    uint16_t getPosition( bool Update );
+    uint16_t getLoad( bool Update );
+    uint8_t getVoltage( bool Update );
+    uint8_t getTemp( bool Update );
 
     bool moving();
 
-    void setEnable(bool onHold, bool enable);
+    void setEnable( bool onHold, bool enable );
+
+private:
+    void registerDevice();
 
 private:
     static SmartServoStaticData _staticData;
     static std::mutex _cmdMutex;
 
-
-    void registerDevice();
-
-
-
-
     const QString _name;
 
-    Hal* _hal;
+    Hal _hal;
     uint8_t _protocol;
     uint8_t _busId; // id on the hw bus
     uint8_t _devId;

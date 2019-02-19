@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_STRATEGYMANAGER_HPP_
 #define WESTBOT_ROBOTROCK_STRATEGYMANAGER_HPP_
@@ -31,7 +31,7 @@ public:
     void hardStop();
 
 private:
-    TrajectoryManager& _trajectoryManager;
+    TrajectoryManager& _trajectoryManager; // Here we use a ref not a copy very important
 
     QList< Action::Ptr > _actions;
     Action::Ptr _currentAction;

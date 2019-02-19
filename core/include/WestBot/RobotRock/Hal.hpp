@@ -25,12 +25,11 @@ public:
 
 private:
     MemoryManager _memoryManager;
-
-
-public:
     Memory _layer1;
     Memory _layer2;
     Memory _layer3;
+
+public:
     // Layer 1
     ItemRegister _resetAll; // Reset for layer 1 / layer 2 / layer 3
     ItemRegister _colorEnable;
