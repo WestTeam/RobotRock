@@ -6,34 +6,8 @@
 #include <array>
 #include <mutex>          // std::mutex, std::unique_lock
 #include <queue>
+#include <QMutex>
 
-// Please use Qt Type bitch :D !!!
-
-//QMutex and QMutexLocker for the  locking mechanism
-/*
-class Foo
-{
-public:
-    Foo();
-
-    // need to be guarded
-    void bar()
-    {
-        const QMutexLocker locker( & _lock );
-
-        // DO WHAT YOU WANT
-        // lock is released when going out of the scope
-
-        //Example 2
-        {
-            QMutexLocker locker( & _lock );
-        }
-    }
-
-private:
-    QMutex _lock;
-}
-*/
 
 #include <QString>
 
@@ -157,6 +131,8 @@ namespace RobotRock {
 
 #define HW_SERVO_COUNT 3
 
+
+
 class SmartServo;
 
 class SmartServoStaticData
@@ -165,6 +141,7 @@ public:
     std::array< SmartServo*, HW_SERVO_COUNT > _deviceList = { nullptr };
     std::queue< uint8_t > _qId;
     std::mutex _mutex;
+    QMutex _qmutex;
 
      SmartServoStaticData()
      {
@@ -174,6 +151,9 @@ public:
          }
      }
 };
+
+
+
 
 class SmartServo
 {
@@ -189,9 +169,6 @@ public:
 
     const QString& name() const;
 
-    uint16_t read();
-    void write( uint16_t position );
-
     void enable();
     void disable();
 
@@ -199,8 +176,8 @@ public:
 
     void setRawWrite8( uint8_t addr, uint8_t data );
     void setRawWrite16( uint8_t addr, uint16_t data );
-    uint8_t setRawRead8( uint8_t addr );
-    uint16_t setRawRead16( uint8_t addr );
+    uint8_t getRawRead8( uint8_t addr );
+    uint16_t getRawRead16( uint8_t addr );
     void setRawAction();
 
     void changeId( uint8_t newId );
@@ -224,15 +201,19 @@ public:
 
     void setEnable( bool onHold, bool enable );
 
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SmartServo" );
+
 private:
     void registerDevice();
 
 private:
     static SmartServoStaticData _staticData;
     static std::mutex _cmdMutex;
+    static QMutex _qcmdMutex;
 
     const QString _name;
 
+    bool _attached;
     Hal _hal;
     uint8_t _protocol;
     uint8_t _busId; // id on the hw bus
