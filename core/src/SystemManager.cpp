@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #include <QThread>
 
@@ -20,30 +20,31 @@ namespace
     const int GAME_DURATION = 90 * 1000; // 90s
 }
 
-SystemManager::SystemManager( Hal& hal, QObject* parent )
+SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
     : QObject( parent )
     , _hal( hal )
     , _startButton(
           new Input(
-              std::make_shared< ItemRegister >( _hal._input0 ),
+              std::make_shared< ItemRegister >( _hal->_input0 ),
              "Tirette" ) )
     , _colorButton(
           new Input(
-              std::make_shared< ItemRegister >( _hal._input1 ),
+              std::make_shared< ItemRegister >( _hal->_input1 ),
               "Color" ) )
     , _hardstopButton(
           new Input(
-              std::make_shared< ItemRegister >( _hal._input2 ),
+              std::make_shared< ItemRegister >( _hal->_input2 ),
               "AU" ) )
     , _ledYellow(
           new Output(
-              std::make_shared< ItemRegister >( _hal._output0 ),
+              std::make_shared< ItemRegister >( _hal->_output0 ),
               "Yellow" ) )
     , _ledBlue(
           new Output(
-              std::make_shared< ItemRegister >( _hal._output2 ),
+              std::make_shared< ItemRegister >( _hal->_output2 ),
               "Blue" ) )
     , _color( Color::Unknown )
+    , _recalage( std::make_shared< Recalage >() )
     , _lidar( _recalage )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
@@ -124,37 +125,37 @@ bool SystemManager::init()
     tInfo( LOG ) << "System manager initializing...";
 
     // Config PID Distance
-    _hal._pidDistanceEnable.write( 0 );
-    _hal._pidDistanceOverride.write( 0 );
-    _hal._pidDistanceInverted.write( 0 );
-    _hal._pidDistanceKp.write( ( float ) 2000.0 );
-    _hal._pidDistanceKi.write( ( float ) 0.0 );
-    _hal._pidDistanceKd.write( ( float ) 0.0 );
+    _hal->_pidDistanceEnable.write( 0 );
+    _hal->_pidDistanceOverride.write( 0 );
+    _hal->_pidDistanceInverted.write( 0 );
+    _hal->_pidDistanceKp.write( ( float ) 2000.0 );
+    _hal->_pidDistanceKi.write( ( float ) 0.0 );
+    _hal->_pidDistanceKd.write( ( float ) 0.0 );
 
     // We set it but this is override by the TrajectoryManager
-    _hal._pidDistanceSpeed.write( ( float ) 0.01 );
-    _hal._pidDistanceAcceleration.write( ( float ) 0.0001 );
-    _hal._pidDistanceSaturation.write( 25000 );
+    _hal->_pidDistanceSpeed.write( ( float ) 0.01 );
+    _hal->_pidDistanceAcceleration.write( ( float ) 0.0001 );
+    _hal->_pidDistanceSaturation.write( 25000 );
 
-    _hal._pidDistanceTarget.write( _hal._pidDistancePosition.read< float >() );
-    _hal._pidDistanceEnable.write( 1 );
+    _hal->_pidDistanceTarget.write( _hal->_pidDistancePosition.read< float >() );
+    _hal->_pidDistanceEnable.write( 1 );
 
     // Config PID Angle
-    _hal._pidAngleEnable.write( 0 );
-    _hal._pidAngleOverride.write( 0 );
-    _hal._pidAngleInverted.write( 1 );
-    _hal._pidAngleKp.write( ( float ) 500000.0 );
-    _hal._pidAngleKi.write( ( float ) 0.0 );
-    _hal._pidAngleKd.write( ( float ) 0.0 );
+    _hal->_pidAngleEnable.write( 0 );
+    _hal->_pidAngleOverride.write( 0 );
+    _hal->_pidAngleInverted.write( 1 );
+    _hal->_pidAngleKp.write( ( float ) 500000.0 );
+    _hal->_pidAngleKi.write( ( float ) 0.0 );
+    _hal->_pidAngleKd.write( ( float ) 0.0 );
 
-    _hal._pidAngleSpeed.write( ( float ) 0.0001 );
-    _hal._pidAngleAcceleration.write( ( float ) 0.00000002 );
-    _hal._pidAngleSaturation.write( 25000 );
+    _hal->_pidAngleSpeed.write( ( float ) 0.0001 );
+    _hal->_pidAngleAcceleration.write( ( float ) 0.00000002 );
+    _hal->_pidAngleSaturation.write( 25000 );
 
-    _hal._pidAngleTarget.write( _hal._pidAnglePosition.read< float >() );
-    _hal._pidAngleEnable.write( 1 );
+    _hal->_pidAngleTarget.write( _hal->_pidAnglePosition.read< float >() );
+    _hal->_pidAngleEnable.write( 1 );
 
-    if( ! _recalage.init( _hal ) )
+    if( ! _recalage->init( _hal ) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
@@ -173,7 +174,7 @@ bool SystemManager::init()
     _trajectoryManager.init();
 
     // Override output registers
-    _hal._outputOverride.write( 0x01010101 );
+    _hal->_outputOverride.write( 0x01010101 );
 
     displayColor( _colorButton->digitalRead() );
 
@@ -243,15 +244,15 @@ void SystemManager::stop()
 
 void SystemManager::reset()
 {
-    _hal._colorEnable.write( 0 );
+    _hal->_colorEnable.write( 0 );
 
-    _hal._resetAll.write( 1 );
+    _hal->_resetAll.write( 1 );
 
-    _hal.clearRegisters();
+    _hal->clearRegisters();
 
-    _hal._resetAll.write( 0 );
+    _hal->_resetAll.write( 0 );
 
-    _hal._colorEnable.write( 1 );
+    _hal->_colorEnable.write( 1 );
 
     tInfo( LOG ) << "System was reset";
 
@@ -271,9 +272,9 @@ SystemManager::SystemMode SystemManager::mode() const
 bool SystemManager::isSafe() const
 {
     // ODOMETRY check
-    int16_t x = _hal._odometryX.read< int16_t >();
-    int16_t y = _hal._odometryY.read< int16_t >();
-    int16_t theta = _hal._odometryTheta.read< int16_t >();
+    int16_t x = _hal->_odometryX.read< int16_t >();
+    int16_t y = _hal->_odometryY.read< int16_t >();
+    int16_t theta = _hal->_odometryTheta.read< int16_t >();
 
     tDebug( LOG ) << "X:" << x << " Y:" << y << " Theta:" << theta;
 
@@ -294,11 +295,11 @@ void SystemManager::initRecalage()
 {
     if( _color == Color::Yellow )
     {
-        _recalage.errorInit( 0, 0, 0 );
+        _recalage->errorInit( 0, 0, 0 );
     }
     else
     {
-        _recalage.errorInit( 0, 0, 0 );
+        _recalage->errorInit( 0, 0, 0 );
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color;

@@ -33,11 +33,11 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
-    Hal hal;
+    Hal::Ptr hal = std::make_shared< Hal >();
 
     tInfo( LOG ) << "DO WHAT YOU WANT...";
 
-    hal.dump();
+    hal->dump();
 
     return app.exec();
 }

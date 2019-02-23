@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #include <QCoreApplication>
 
@@ -34,7 +34,7 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
-    Hal hal;
+    Hal::Ptr hal = std::make_shared< Hal >();
     SystemManager system( hal );
 
     if( ! system.init() )
@@ -43,11 +43,11 @@ int main( int argc, char *argv[] )
     }
 
 #ifdef DEBUG
-    hal.dump();
+    hal->dump();
 #endif
 
 #ifdef SIMU
-    hal._modeSimu.write( 1 );
+    hal->_modeSimu.write( 1 );
 #endif
 
     tInfo( LOG ) << "==== System ready ! ==== ";

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_SERVO_HPP_
 #define WESTBOT_ROBOTROCK_SERVO_HPP_
@@ -16,7 +16,7 @@ public:
     Servo( const QString& name );
 
     bool attach(
-        Hal& hal,
+        const Hal::Ptr& hal,
         uint8_t ioNumber,
         uint16_t min,
         uint16_t max );

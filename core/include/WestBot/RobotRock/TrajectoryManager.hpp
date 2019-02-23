@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_TRAJECTORYMANAGER_HPP_
 #define WESTBOT_ROBOTROCK_TRAJECTORYMANAGER_HPP_
@@ -99,7 +99,7 @@ public:
         RUNNING_CLITOID_CURVE,   // Running a clitoid in the curve part
     };
 
-    TrajectoryManager( Hal& hal, Recalage& recalage );
+    TrajectoryManager( const Hal::Ptr& hal, const Recalage::Ptr& recalage );
 
     void init();
 
@@ -146,8 +146,8 @@ public:
     void moveToXYRel( float x, float y, bool doNotBlock = false );
 
 private:
-    Hal _hal;
-    Recalage& _recalage;
+    Hal::Ptr _hal;
+    Recalage::Ptr _recalage;
 };
 
     /*!

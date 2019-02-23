@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_LIDAR_HPP_
 #define WESTBOT_ROBOTROCK_LIDAR_HPP_
@@ -15,7 +15,7 @@ namespace RobotRock {
 class Lidar : public QThread
 {
 public:
-    Lidar( Recalage& recalage );
+    Lidar( const Recalage::Ptr& recalage );
 
     bool init();
 
@@ -28,7 +28,7 @@ private:
 
 private:
     RPLidar::RPLidar _lidar;
-    Recalage& _recalage;
+    Recalage::Ptr _recalage;
 };
 
 }

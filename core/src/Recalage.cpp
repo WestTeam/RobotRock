@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #include <iostream>
 #include <math.h>
@@ -46,13 +46,13 @@ Recalage::~Recalage()
     delete _lock;
 }
 
-bool Recalage::init( Hal& hal )
+bool Recalage::init( const Hal::Ptr& hal )
 {
     if( ! _attached )
     {
-        _odoThetaReg = std::make_shared< ItemRegister >( hal._odometryTheta );
-        _odoXReg = std::make_shared< ItemRegister >( hal._odometryX );
-        _odoYReg = std::make_shared< ItemRegister >( hal._odometryY );
+        _odoThetaReg = std::make_shared< ItemRegister >( hal->_odometryTheta );
+        _odoXReg = std::make_shared< ItemRegister >( hal->_odometryX );
+        _odoYReg = std::make_shared< ItemRegister >( hal->_odometryY );
     }
 
     _attached = true;

@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
@@ -21,7 +21,7 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
 }
 
-Lidar::Lidar( Recalage& recalage )
+Lidar::Lidar( const Recalage::Ptr& recalage )
     : _lidar( "/dev/ttyUSB0" )
     , _recalage( recalage )
 {
@@ -110,7 +110,7 @@ bool Lidar::calibrate()
                      RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
         }
 
-        if( ! _recalage.calibrate( count, mesR, mesTheta ) )
+        if( ! _recalage->calibrate( count, mesR, mesTheta ) )
         {
             tWarning( LOG ) << "Calibration failed: No object found";
 

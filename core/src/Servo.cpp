@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #include <QThread>
 
@@ -25,7 +25,7 @@ Servo::Servo( const QString& name )
 }
 
 bool Servo::attach(
-    Hal& hal,
+    const Hal::Ptr& hal,
     uint8_t ioNumber,
     uint16_t min,
     uint16_t max )
@@ -33,51 +33,51 @@ bool Servo::attach(
     switch( ioNumber )
     {
     case 0:
-        _servo = std::make_shared< ItemRegister >( hal._s0 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s0Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s0Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s0 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s0Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s0Override );
         break;
 
     case 1:
-        _servo = std::make_shared< ItemRegister >( hal._s1 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s1Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s1Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s1 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s1Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s1Override );
         break;
 
     case 2:
-        _servo = std::make_shared< ItemRegister >( hal._s2 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s2Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s2Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s2 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s2Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s2Override );
         break;
 
     case 3:
-        _servo = std::make_shared< ItemRegister >( hal._s3 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s3Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s3Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s3 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s3Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s3Override );
         break;
 
     case 4:
-        _servo = std::make_shared< ItemRegister >( hal._s4 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s4Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s4Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s4 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s4Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s4Override );
         break;
 
     case 5:
-        _servo = std::make_shared< ItemRegister >( hal._s5 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s5Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s5Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s5 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s5Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s5Override );
         break;
 
     case 6:
-        _servo = std::make_shared< ItemRegister >( hal._s6 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s6Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s6Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s6 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s6Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s6Override );
         break;
 
     case 7:
-        _servo = std::make_shared< ItemRegister >( hal._s7 );
-        _servoEnable = std::make_shared< ItemRegister >( hal._s7Enable );
-        _servoOverride = std::make_shared< ItemRegister >( hal._s7Override );
+        _servo = std::make_shared< ItemRegister >( hal->_s7 );
+        _servoEnable = std::make_shared< ItemRegister >( hal->_s7Enable );
+        _servoOverride = std::make_shared< ItemRegister >( hal->_s7Override );
         break;
 
     default:

@@ -1,10 +1,13 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_RECALAGE_HPP_
 #define WESTBOT_ROBOTROCK_RECALAGE_HPP_
 
+#include <memory>
+
 #include <QMutex>
 
+#include "Hal.hpp"
 #include "ItemRegister.hpp"
 
 namespace WestBot {
@@ -17,8 +20,6 @@ typedef struct
     double theta;
 } RobotPos;
 
-class Hal;
-
 /*!
  * \brief The Recalage class allow to process lidar measurement
  *        to update the robot internal odometry.
@@ -29,11 +30,12 @@ class Hal;
 class Recalage
 {
 public:
-    Recalage();
+    using Ptr = std::shared_ptr< Recalage >;
 
+    Recalage();
     ~Recalage();
 
-    bool init( Hal& hal );
+    bool init( const Hal::Ptr& hal );
 
     void errorInit( double errX, double errY, double errTheta );
 

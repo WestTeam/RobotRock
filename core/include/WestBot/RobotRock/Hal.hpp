@@ -1,7 +1,9 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_HAL_HPP_
 #define WESTBOT_ROBOTROCK_HAL_HPP_
+
+#include <memory>
 
 #include "ItemRegister.hpp"
 #include "MemoryManager.hpp"
@@ -12,6 +14,8 @@ namespace RobotRock {
 class Hal
 {
 public:
+    using Ptr = std::shared_ptr< Hal >;
+
     Hal();
     ~Hal();
 

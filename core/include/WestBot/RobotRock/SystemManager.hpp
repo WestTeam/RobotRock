@@ -1,4 +1,4 @@
-// COPYRIGHT (C) 2018 ALL RIGHTS RESERVED WESTBot
+// COPYRIGHT (C) 2018-2019 ALL RIGHTS RESERVED WESTBot
 
 #ifndef WESTBOT_ROBOTROCK_SYSTEMMANAGER_HPP_
 #define WESTBOT_ROBOTROCK_SYSTEMMANAGER_HPP_
@@ -33,7 +33,7 @@ public:
         Unused // 0xFF : Unused for now
     };
 
-    SystemManager( Hal& hal, QObject* parent = nullptr );
+    SystemManager( const Hal::Ptr& hal, QObject* parent = nullptr );
 
     ~SystemManager() override;
 
@@ -55,7 +55,7 @@ private:
     void displayColor( const DigitalValue& value );
 
 private:
-    Hal _hal;
+    Hal::Ptr _hal;
     QTimer _gameTimer;
     QTimer _aliveTimer;
     Input::Ptr _startButton;
@@ -64,7 +64,7 @@ private:
     Output::Ptr _ledYellow;
     Output::Ptr _ledBlue;
     Color _color;
-    Recalage _recalage;
+    Recalage::Ptr _recalage;
     Lidar _lidar;
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
