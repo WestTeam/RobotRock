@@ -63,7 +63,8 @@ QMutex SmartServo::_qcmdMutex;
 //#define USE_QMUTEX
 
 SmartServo::SmartServo( const QString& name )
-    : _name( name ),  _attached( false )
+    : _name( name )
+    , _attached( false )
 {
 }
 
@@ -97,13 +98,14 @@ SmartServo::~SmartServo()
 
 
 bool SmartServo::attach(
-        Hal& hal,
+        const Hal::Ptr& hal,
         uint8_t protocol,
         uint8_t busId) // id on the hw bus
 {
     bool ret = false;
     _protocol = protocol;
     _busId = busId;
+    _hal = hal;
 
     #ifndef USE_QMUTEX
     std::unique_lock<std::mutex> lck(_staticData._mutex);
@@ -140,29 +142,28 @@ void SmartServo::registerDevice()
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
     // REG DEVICE
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_REGISTER_DEV);
-    _hal._smartServoCmdDevId.write(_devId);
-    _hal._smartServoCmdRegisterProtocol.write(_protocol); // dyna
-    _hal._smartServoCmdRegisterBusId.write(_busId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_REGISTER_DEV);
+    _hal->_smartServoCmdDevId.write(_devId);
+    _hal->_smartServoCmdRegisterProtocol.write(_protocol); // dyna
+    _hal->_smartServoCmdRegisterBusId.write(_busId);
 
-    _hal._smartServoCmdValid.write(1);
-
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 
@@ -177,31 +178,31 @@ void SmartServo::setRawWrite8(uint8_t addr, uint8_t data)
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_RAW);
-    _hal._smartServoCmdDevId.write(_busId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_RAW);
+    _hal->_smartServoCmdDevId.write(_busId);
 
-    _hal._smartServoCmdRawOnHold.write(0);
-    _hal._smartServoCmdRawProtocol.write(_protocol);
-    _hal._smartServoCmdRawInstr.write(RAW_WR8B);
-    _hal._smartServoCmdRawAddr.write(addr);
-    _hal._smartServoCmdRawData.write(data);
+    _hal->_smartServoCmdRawOnHold.write(0);
+    _hal->_smartServoCmdRawProtocol.write(_protocol);
+    _hal->_smartServoCmdRawInstr.write(RAW_WR8B);
+    _hal->_smartServoCmdRawAddr.write(addr);
+    _hal->_smartServoCmdRawData.write(data);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 void SmartServo::setRawWrite16(uint8_t addr, uint16_t data)
@@ -214,31 +215,31 @@ void SmartServo::setRawWrite16(uint8_t addr, uint16_t data)
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_RAW);
-    _hal._smartServoCmdDevId.write(_busId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_RAW);
+    _hal->_smartServoCmdDevId.write(_busId);
 
-    _hal._smartServoCmdRawOnHold.write(0);
-    _hal._smartServoCmdRawProtocol.write(_protocol);
-    _hal._smartServoCmdRawInstr.write(RAW_WR16B);
-    _hal._smartServoCmdRawAddr.write(addr);
-    _hal._smartServoCmdRawData.write(data);
+    _hal->_smartServoCmdRawOnHold.write(0);
+    _hal->_smartServoCmdRawProtocol.write(_protocol);
+    _hal->_smartServoCmdRawInstr.write(RAW_WR16B);
+    _hal->_smartServoCmdRawAddr.write(addr);
+    _hal->_smartServoCmdRawData.write(data);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 uint8_t SmartServo::getRawRead8(uint8_t addr)
@@ -251,33 +252,33 @@ uint8_t SmartServo::getRawRead8(uint8_t addr)
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_RAW);
-    _hal._smartServoCmdDevId.write(_busId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_RAW);
+    _hal->_smartServoCmdDevId.write(_busId);
 
-    _hal._smartServoCmdRawOnHold.write(0);
-    _hal._smartServoCmdRawProtocol.write(_protocol);
-    _hal._smartServoCmdRawInstr.write(RAW_RD8B);
-    _hal._smartServoCmdRawAddr.write(addr);
+    _hal->_smartServoCmdRawOnHold.write(0);
+    _hal->_smartServoCmdRawProtocol.write(_protocol);
+    _hal->_smartServoCmdRawInstr.write(RAW_RD8B);
+    _hal->_smartServoCmdRawAddr.write(addr);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 
-    return   _hal._smartServoCmdRawData.read<uint8_t>();
+    return   _hal->_smartServoCmdRawData.read<uint8_t>();
 
 }
 uint16_t SmartServo::getRawRead16(uint8_t addr)
@@ -291,33 +292,33 @@ uint16_t SmartServo::getRawRead16(uint8_t addr)
     #endif
 
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_RAW);
-    _hal._smartServoCmdDevId.write(_busId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_RAW);
+    _hal->_smartServoCmdDevId.write(_busId);
 
-    _hal._smartServoCmdRawOnHold.write(0);
-    _hal._smartServoCmdRawProtocol.write(_protocol);
-    _hal._smartServoCmdRawInstr.write(RAW_RD16B);
-    _hal._smartServoCmdRawAddr.write(addr);
+    _hal->_smartServoCmdRawOnHold.write(0);
+    _hal->_smartServoCmdRawProtocol.write(_protocol);
+    _hal->_smartServoCmdRawInstr.write(RAW_RD16B);
+    _hal->_smartServoCmdRawAddr.write(addr);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 
-    return  _hal._smartServoCmdRawData.read<uint16_t>();
+    return  _hal->_smartServoCmdRawData.read<uint16_t>();
 }
 void SmartServo::setRawAction(void)
 {
@@ -330,29 +331,29 @@ void SmartServo::setRawAction(void)
     #endif
 
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_RAW);
-    _hal._smartServoCmdDevId.write(_busId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_RAW);
+    _hal->_smartServoCmdDevId.write(_busId);
 
-    _hal._smartServoCmdRawOnHold.write(0);
-    _hal._smartServoCmdRawProtocol.write(_protocol);
-    _hal._smartServoCmdRawInstr.write(RAW_ACTION);
+    _hal->_smartServoCmdRawOnHold.write(0);
+    _hal->_smartServoCmdRawProtocol.write(_protocol);
+    _hal->_smartServoCmdRawInstr.write(RAW_ACTION);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 
@@ -391,28 +392,28 @@ void SmartServo::setPosition(bool onHold, bool waitPosition, uint16_t pos)
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_SET_POS);
-    _hal._smartServoCmdDevId.write(_devId);
-    _hal._smartServoCmdSetPosOnHold.write(onHold);
-    _hal._smartServoCmdSetPosWaitPosition.write(waitPosition);
-    _hal._smartServoCmdSetPosPosition.write(pos);
+    _hal->_smartServoCmdType.write(CMD_TYPE_SET_POS);
+    _hal->_smartServoCmdDevId.write(_devId);
+    _hal->_smartServoCmdSetPosOnHold.write(onHold);
+    _hal->_smartServoCmdSetPosWaitPosition.write(waitPosition);
+    _hal->_smartServoCmdSetPosPosition.write(pos);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 
@@ -426,29 +427,29 @@ void SmartServo::setPositionAndSpeed(bool onHold, bool waitPosition, uint16_t po
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_SET_POS_AND_SPEED);
-    _hal._smartServoCmdDevId.write(_devId);
-    _hal._smartServoCmdSetPosAndSpeedOnHold.write(onHold);
-    _hal._smartServoCmdSetPosAndSpeedWaitPosition.write(waitPosition);
-    _hal._smartServoCmdSetPosAndSpeedPosition.write(pos);
-    _hal._smartServoCmdSetPosAndSpeedSpeed.write(speed);
+    _hal->_smartServoCmdType.write(CMD_TYPE_SET_POS_AND_SPEED);
+    _hal->_smartServoCmdDevId.write(_devId);
+    _hal->_smartServoCmdSetPosAndSpeedOnHold.write(onHold);
+    _hal->_smartServoCmdSetPosAndSpeedWaitPosition.write(waitPosition);
+    _hal->_smartServoCmdSetPosAndSpeedPosition.write(pos);
+    _hal->_smartServoCmdSetPosAndSpeedSpeed.write(speed);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 void SmartServo::setAction(bool waitPosition)
@@ -462,27 +463,27 @@ void SmartServo::setAction(bool waitPosition)
     #endif
 
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_SET_ACTION);
-    _hal._smartServoCmdDevId.write(0); // not used
-    _hal._smartServoCmdSetActionWaitPosition.write(waitPosition);
+    _hal->_smartServoCmdType.write(CMD_TYPE_SET_ACTION);
+    _hal->_smartServoCmdDevId.write(0); // not used
+    _hal->_smartServoCmdSetActionWaitPosition.write(waitPosition);
 
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 }
 void SmartServo::checkStatus()
@@ -496,31 +497,31 @@ void SmartServo::checkStatus()
     #endif
 
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_GET_STATUS);
-    _hal._smartServoCmdDevId.write(_devId);
+    _hal->_smartServoCmdType.write(CMD_TYPE_GET_STATUS);
+    _hal->_smartServoCmdDevId.write(_devId);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
 
-    _current_pos        = _hal._smartServoCmdGetStatusPosition.read<uint16_t>();
-    _current_load       = _hal._smartServoCmdGetStatusLoad.read<uint16_t>();
-    _current_voltage    = _hal._smartServoCmdGetStatusVoltage.read<uint8_t>();
-    _current_temp       = _hal._smartServoCmdGetStatusTemp.read<uint8_t>();
+    _current_pos        = _hal->_smartServoCmdGetStatusPosition.read<uint16_t>();
+    _current_load       = _hal->_smartServoCmdGetStatusLoad.read<uint16_t>();
+    _current_voltage    = _hal->_smartServoCmdGetStatusVoltage.read<uint8_t>();
+    _current_temp       = _hal->_smartServoCmdGetStatusTemp.read<uint8_t>();
 
 }
 
@@ -568,33 +569,33 @@ void SmartServo::setEnable(bool onHold, bool enable)
     QMutexLocker locker( & _qcmdMutex );
     #endif
 
-    uint8_t cmd_id = _hal._smartServoCmdAck.read< uint8_t >();
+    uint8_t cmd_id = _hal->_smartServoCmdAck.read< uint8_t >();
 
-    _hal._smartServoCmdValid.write(0);
-    _hal._smartServoCmdId.write(cmd_id++);
+    _hal->_smartServoCmdValid.write(0);
+    _hal->_smartServoCmdId.write(cmd_id++);
 
-    _hal._smartServoCmdType.write(CMD_TYPE_SET_ENABLE);
-    _hal._smartServoCmdDevId.write(_devId); // not used
-    _hal._smartServoCmdSetEnableOnHold.write(onHold);
-    _hal._smartServoCmdSetEnableEnable.write(enable);
+    _hal->_smartServoCmdType.write(CMD_TYPE_SET_ENABLE);
+    _hal->_smartServoCmdDevId.write(_devId); // not used
+    _hal->_smartServoCmdSetEnableOnHold.write(onHold);
+    _hal->_smartServoCmdSetEnableEnable.write(enable);
 
-    _hal._smartServoCmdValid.write(1);
+    _hal->_smartServoCmdValid.write(1);
 
     uint32_t timeout = 0;
-    while (_hal._smartServoCmdAck.read<uint8_t>() != cmd_id)
+    while (_hal->_smartServoCmdAck.read<uint8_t>() != cmd_id)
     {
         QThread::msleep( CMD_ACK_SLEEP );
         timeout += CMD_ACK_SLEEP;
         if (timeout >= CMD_TIMEOUT_MS)
             throw SmartServoCmdTimeout(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));;
     }
-    if (_hal._smartServoCmdError.read<uint8_t>())
+    if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__},std::to_string(_devId)+":"+std::to_string(enable));
 }
 
 bool SmartServo::moving()
 {
-    uint8_t moving_bits = _hal._smartServoCmdValid.read<uint8_t>();
+    uint8_t moving_bits = _hal->_smartServoCmdValid.read<uint8_t>();
     uint8_t ret;
 
     ret = (moving_bits >> _devId) & 0x01;

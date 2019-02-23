@@ -1,3 +1,5 @@
+// Copyright (c) 2019 All Rights Reserved WestBot
+
 #include <QCoreApplication>
 
 #include <QThread>
@@ -27,7 +29,7 @@ namespace
 #define TEST_COUNT 200
 #define GET_POS_DELAY 20
 
-Hal hal;
+Hal::Ptr hal = std::make_shared< Hal >();
 
 void test_servo(const QString& name, uint8_t protocol, uint8_t budId){
     tInfo( LOG ) << "begin" << __FUNCTION__ << name;

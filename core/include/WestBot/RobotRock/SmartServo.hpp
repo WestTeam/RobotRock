@@ -8,7 +8,6 @@
 #include <queue>
 #include <QMutex>
 
-
 #include <QString>
 
 #include "Hal.hpp"
@@ -131,8 +130,6 @@ namespace RobotRock {
 
 #define HW_SERVO_COUNT 3
 
-
-
 class SmartServo;
 
 class SmartServoStaticData
@@ -152,17 +149,16 @@ public:
      }
 };
 
-
-
-
 class SmartServo
 {
 public:
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SmartServo" );
+
     SmartServo( const QString& name );
     ~SmartServo();
 
     bool attach(
-        Hal& hal,
+        const Hal::Ptr& hal,
         uint8_t protocol,
         uint8_t busId // id on the hw bus
     );
@@ -201,8 +197,6 @@ public:
 
     void setEnable( bool onHold, bool enable );
 
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SmartServo" );
-
 private:
     void registerDevice();
 
@@ -214,7 +208,7 @@ private:
     const QString _name;
 
     bool _attached;
-    Hal _hal;
+    Hal::Ptr _hal;
     uint8_t _protocol;
     uint8_t _busId; // id on the hw bus
     uint8_t _devId;
