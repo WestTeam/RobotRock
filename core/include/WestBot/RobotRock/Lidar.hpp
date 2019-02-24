@@ -7,7 +7,7 @@
 
 #include <WestBot/RPLidar/RPLidar.hpp>
 
-#include "Recalage.hpp"
+class QString;
 
 namespace WestBot {
 namespace RobotRock {
@@ -15,7 +15,7 @@ namespace RobotRock {
 class Lidar : public QThread
 {
 public:
-    Lidar( const Recalage::Ptr& recalage );
+    Lidar( const QString& lidarTTY = "/dev/ttyUSB0" );
 
     bool init();
 
@@ -28,7 +28,6 @@ private:
 
 private:
     RPLidar::RPLidar _lidar;
-    Recalage::Ptr _recalage;
 };
 
 }

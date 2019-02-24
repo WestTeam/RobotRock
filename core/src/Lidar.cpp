@@ -1,5 +1,7 @@
 // Copyright (c) 2018-2019 All Rights Reserved WestBot
 
+#include <QString>
+
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/Lidar.hpp>
@@ -21,9 +23,8 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
 }
 
-Lidar::Lidar( const Recalage::Ptr& recalage )
-    : _lidar( "/dev/ttyUSB0" )
-    , _recalage( recalage )
+Lidar::Lidar( const QString& lidarTTY )
+    : _lidar( lidarTTY )
 {
 }
 
@@ -108,17 +109,6 @@ bool Lidar::calibrate()
                static_cast< double >(
                    ( nodes[ pos ].angle_q6_checkbit >>
                      RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
-        }
-
-        if( ! _recalage->calibrate( count, mesR, mesTheta ) )
-        {
-            tWarning( LOG ) << "Calibration failed: No object found";
-
-#ifdef SIMU
-            return true;
-#else
-            return false;
-#endif
         }
     }
     else
