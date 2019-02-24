@@ -62,6 +62,16 @@ bool Lidar::init()
     return true;
 }
 
+QString Lidar::info()
+{
+     return _lidar.getDeviceInfo();
+}
+
+bool Lidar::health()
+{
+    return _lidar.checkHealth();
+}
+
 void Lidar::startScan()
 {
     _lidar.setMotorPwm( 660 ); // default
@@ -119,6 +129,63 @@ bool Lidar::calibrate()
     tInfo( LOG ) << "Lidar calibration succeeded";
 
     return true;
+}
+
+bool Lidar::grabScanData()
+{
+    RPLidar::measurementNode_t nodes[ 8192 ];
+    size_t count = _countof( nodes );
+
+    tDebug( LOG ) << "Waiting for data...";
+
+    // Fetch exactly one 0-360 degrees' scan
+    if( _lidar.grabScanData( nodes, count ) )
+    {
+        tDebug( LOG ) << "Grabing scan data: OK";
+        return true;
+    }
+
+    return false;
+}
+
+bool Lidar::ascendScanData()
+{
+    RPLidar::measurementNode_t nodes[ 8192 ];
+    size_t count = _countof( nodes );
+
+    double mesR[ ( int ) count ];
+    double mesTheta[ ( int ) count ];
+
+    tDebug( LOG ) << "Waiting for data...";
+
+    // Fetch exactly one 0-360 degrees' scan
+    if( _lidar.grabScanData(nodes, count) )
+    {
+        tDebug( LOG ) << "Grabing scan data: OK";
+
+        if( ! _lidar.ascendScanData( nodes, count ) )
+        {
+            return false;
+        }
+
+        for( int pos = 0; pos < ( int ) count; ++pos )
+        {
+            mesR[ pos ] =
+               static_cast< double >( nodes[ pos ].distance_q2 / 4.0f );
+            mesTheta[ pos ] =
+               static_cast< double >(
+                   ( nodes[ pos ].angle_q6_checkbit >>
+                     RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
+
+            tDebug( LOG )
+                << "Mes @ pos:" << pos << " R = " << mesR[ pos ]
+                << "Theta = " << mesTheta[ pos ];
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 void Lidar::run()

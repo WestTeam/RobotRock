@@ -19,9 +19,15 @@ public:
 
     bool init();
 
+    QString info();
+    bool health();
+
     void startScan();
     void stopScan();
     bool calibrate();
+
+    bool ascendScanData();
+    bool grabScanData();
 
 private:
     void run();

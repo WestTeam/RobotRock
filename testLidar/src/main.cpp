@@ -59,5 +59,12 @@ int main( int argc, char *argv[] )
     lidar.stopScan();
     QThread::msleep( 1000 );
 
+    lidar.startScan();
+    QThread::msleep( 1000 );
+
+    lidar.ascendScanData();
+
+    lidar.stopScan();
+
     return app.exec();
 }
