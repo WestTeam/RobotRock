@@ -26,34 +26,174 @@ namespace
 #define SIMU
 
 
-#define TEST_COUNT 20000
-#define GET_POS_DELAY 20
+#define TEST_COUNT 20
+#define GET_POS_DELAY 2
+#define DEV_ID_MAX 16
 
 Hal::Ptr hal = std::make_shared< Hal >();
 
-void test_servo(const QString& name, uint8_t protocol, uint8_t budId){
+
+
+void scan_bus(uint8_t protocol, std::list<int> & devList)
+{
+    tInfo( LOG ) << "begin" << __FUNCTION__ << protocol;
+
+    for (int i=1;i<=DEV_ID_MAX;i++)
+    {
+        SmartServo s("protocol:"+ QString::number(protocol) + " bus:" + QString::number(i));
+
+        try {
+            s.attach(hal,protocol,i);
+            s.getPosition(true);
+            devList.push_back(i);
+        } catch (...) {
+        }
+    }
+
+    tInfo( LOG ) << "end " << __FUNCTION__ << protocol;
+}
+
+
+
+void check_config(uint8_t protocol, std::list<int> & devList)
+{
+    tInfo( LOG ) << "begin" << __FUNCTION__ << protocol;
+
+    bool id1Changed = false;
+
+    for (int d : devList)
+    {
+        SmartServo s("protocol:"+ QString::number(protocol) + " bus:" + QString::number(d));
+
+        try {
+            s.attach(hal,protocol,d);
+
+            if (protocol == SMART_SERVO_DYNAMIXEL)
+            {
+                s.setRawWrite8(DYNAMIXEL_REGS_TORQUE_ENABLE,0);
+
+                if (s.getRawRead8(DYNAMIXEL_REGS_RETURN_DELAY_TIME) != 0)
+                {
+                    tInfo( LOG ) << "[DYNAMIXEL] Changing Delay Time from " << s.getRawRead8(DYNAMIXEL_REGS_RETURN_DELAY_TIME) << "to" << 0;
+                    s.setRawWrite8(DYNAMIXEL_REGS_RETURN_DELAY_TIME,0);
+
+                }
+                if (s.getRawRead8(DYNAMIXEL_REGS_ALARM_SHUTDOWN) != 2)
+                {
+                    tInfo( LOG ) << "[DYNAMIXEL] Alarm Shutdown from " << s.getRawRead8(DYNAMIXEL_REGS_RETURN_DELAY_TIME) << "to" << 2;
+                    s.setRawWrite8(DYNAMIXEL_REGS_ALARM_SHUTDOWN,2);
+
+                }
+
+                s.setRawWrite8(DYNAMIXEL_REGS_TORQUE_ENABLE,1);
+            }
+
+
+
+            if  (d == 1)
+            {
+                tInfo( LOG ) << "Changing bus Id " << d << "to" << devList.back()+1;
+
+                s.changeId(devList.back()+1);
+                id1Changed = true;
+            }
+
+
+        } catch (...) {}
+    }
+
+    if (id1Changed)
+    {
+        devList.push_back(devList.back()+1);
+        devList.pop_front();
+    }
+    tInfo( LOG ) << "end " << __FUNCTION__ << protocol;
+}
+
+
+void test_servo_increment(const QString& name, uint8_t protocol, uint8_t busId){
     tInfo( LOG ) << "begin" << __FUNCTION__ << name;
 
     SmartServo s(name);
-    s.attach(hal,protocol,budId);
+    s.attach(hal,protocol,busId);
 
-    if (protocol == SMART_SERVO_DYNAMIXEL)
-        s.setRawWrite8(DYNAMIXEL_REGS_P,64);
+//    if (protocol == SMART_SERVO_DYNAMIXEL)
+//        s.setRawWrite8(DYNAMIXEL_REGS_P,64);
 
     s.enable();
 
-    int i;
-    for (i=0;i<TEST_COUNT;i++)
+    #define INCREMENT 25
+
+    for (int i=0;i<TEST_COUNT*1000/INCREMENT;i++)
     {
-        s.setPositionAndSpeed(false,false,i*10%1000,0);
+        s.setPositionAndSpeed(false,false,i*INCREMENT%1000,0);
 
         while (s.moving()){
             QThread::msleep( GET_POS_DELAY );
+            //tDebug( LOG ) << "pos " << s.getPosition(true);
         }
     }
 
     tInfo( LOG ) << "end " << __FUNCTION__ << name;
 }
+
+
+void test_servo_full_range(const QString& name, uint8_t protocol, uint8_t busId){
+    tInfo( LOG ) << "begin" << __FUNCTION__ << name;
+
+    SmartServo s(name);
+    s.attach(hal,protocol,busId);
+/*
+    tInfo( LOG ) << name << "delay " << s.getRawRead8(DYNAMIXEL_REGS_RETURN_DELAY_TIME);
+    tInfo( LOG ) << name << "firmware " << s.getRawRead16(0);
+    tInfo( LOG ) << name << "model " << s.getRawRead8(2);
+    tInfo( LOG ) << name << "alarm shutdown " << s.getRawRead8(DYNAMIXEL_REGS_ALARM_SHUTDOWN);
+    tInfo( LOG ) << name << "hw error" << s.getRawRead8(DYNAMIXEL_REGS_HW_ERROR_STATUS);
+    tInfo( LOG ) << name << "torque limit" << s.getRawRead16(DYNAMIXEL_REGS_GOAL_TORQUE_L);
+    tInfo( LOG ) << name << "temp" << s.getRawRead8(DYNAMIXEL_REGS_PRESENT_TEMP);
+    tInfo( LOG ) << name << "voltage" << s.getRawRead8(DYNAMIXEL_REGS_PRESENT_VOLTAGE);
+    tInfo( LOG ) << name << "max temp" << s.getRawRead8(DYNAMIXEL_REGS_LIMIT_TEMP);
+*/
+
+    s.enable();
+
+    bool dir = false;
+    for (int i=0;i<TEST_COUNT;i++)
+    {
+        if (dir == false)
+            s.setPositionAndSpeed(false,false,0,2047);
+        else
+            s.setPositionAndSpeed(false,false,1023,2047);
+
+        while (s.moving());
+        dir = !dir;
+    }
+
+    tInfo( LOG ) << "end " << __FUNCTION__ << name;
+}
+
+
+void test_servo_protocol(const QString& name, uint8_t protocol, uint8_t busId){
+    tInfo( LOG ) << "begin" << __FUNCTION__ << name;
+
+    SmartServo s(name);
+    s.attach(hal,protocol,busId);
+
+    s.enable();
+
+    bool dir = false;
+    for (int i=0;i<TEST_COUNT;i++)
+    {
+        uint16_t pos = s.getPosition(true);
+        s.checkStatus();
+        s.setPosition(true,false,100);
+        s.setAction(false);
+    }
+
+    tInfo( LOG ) << "end " << __FUNCTION__ << name;
+}
+
+
 
 void log_management(int argc, char *argv[]){
     QCoreApplication app(argc,argv);
@@ -77,107 +217,53 @@ int main(int argc, char *argv[])
     SmartServo sDebug("");
     sDebug.LOG().enableDebug(false);
 
-    /*
-    SmartServo s("s feetech");
-    s.attach(hal,SMART_SERVO_FEETECH,1);
-    s.changeId(2);
-    s.setPosition(false,false,500);
-    tInfo( LOG ) << "DO WHAT YOU WANT...";
-    */
-/*
-    SmartServo s3("Test");
-    s3.attach(hal,SMART_SERVO_FEETECH,2);
-    s3.enable();
-    tInfo( LOG ) << "1";
+    std::list<int> devList[2];
 
-    s3.setPositionAndSpeed(false,false,0,150);
-    tInfo( LOG ) << "2";
-    while (s3.moving());
+    scan_bus(SMART_SERVO_DYNAMIXEL, devList[SMART_SERVO_DYNAMIXEL]);
+    for (int n : devList[SMART_SERVO_DYNAMIXEL]) {
+        tInfo( LOG ) << "[DYNAMIXEL] Device found with id " << n;
+    }
+    check_config(SMART_SERVO_DYNAMIXEL,devList[SMART_SERVO_DYNAMIXEL]);
 
-    s3.setPositionAndSpeed(false,false,500,150);
-    tInfo( LOG ) << "3";
-    while (s3.moving());
+    scan_bus(SMART_SERVO_FEETECH, devList[SMART_SERVO_FEETECH]);
+    for (int n : devList[SMART_SERVO_FEETECH]) {
+        tInfo( LOG ) << "[FEETECH] Device found with id " << n;
+    }
+    check_config(SMART_SERVO_FEETECH,devList[SMART_SERVO_FEETECH]);
 
-    s3.setPositionAndSpeed(false,false,800,150);
-    tInfo( LOG ) << "test";
-    while (s3.moving());
-
-    thread_logs.join();
-    while(1);
-*/
-/*
-    SmartServo s2("Test");
-    s2.attach(hal,SMART_SERVO_FEETECH,2);
-    s2.enable();
-    tInfo( LOG ) << "1";
-
-    s2.setPositionAndSpeed(false,false,500,150);
-    tInfo( LOG ) << "2";
-    while (s2.moving());
-
-
-    SmartServo s3("Test");
-    s3.attach(hal,SMART_SERVO_FEETECH,1);
-    s3.enable();
-    tInfo( LOG ) << "1";
-
-    s3.setPositionAndSpeed(false,false,500,150);
-    tInfo( LOG ) << "2";
-    while (s3.moving());
-*/
-    /*
-    SmartServo s1("Test");
-    s1.attach(hal,SMART_SERVO_DYNAMIXEL,1);
-    tInfo( LOG ) << s1.getRawRead8(DYNAMIXEL_REGS_HW_ERROR_STATUS);
-*/
-    SmartServo s4("Test");
-    s4.attach(hal,SMART_SERVO_FEETECH,2);
-    //s4.attach(hal,SMART_SERVO_DYNAMIXEL,1);
-    //s4.setRawWrite8(DYNAMIXEL_REGS_P,255);
-
-    s4.enable();
-    tInfo( LOG ) << "1";
-
-    bool pos = false;
-    while (1)
+    typedef void (*TestFunction) (const QString& name, uint8_t protocol, uint8_t busId);
+    TestFunction functions[] =
     {
-        if (pos == false)
-            s4.setPositionAndSpeed(false,false,0,0);
-        else
-            s4.setPositionAndSpeed(false,false,1023,0);
+        test_servo_protocol,
+        test_servo_full_range,
+        test_servo_increment
 
-        while (s4.moving());
-        pos = !pos;
+    };
+
+    for (int f=0;f<sizeof(functions)/sizeof(TestFunction);f++)
+    {
+        std::list<std::thread*> thread_list;
+
+        tInfo( LOG ) << "Launch Test " <<  f;
+        for (int p=0;p<2;p++)
+        {
+
+            for (int d : devList[p]) {
+                std::thread* test_thread= new std::thread(functions[f],QString::number(p)+":"+QString::number(d),p,d);
+                thread_list.push_back(test_thread);
+            }
+        }
+        for (std::thread *t : thread_list) {
+            t->join();
+            delete(t);
+        }
+
     }
 
-    /*
-
-    s3.setPositionAndSpeed(false,false,500,150);
-    tInfo( LOG ) << "3";
-    while (s3.moving());
-
-    s3.setPositionAndSpeed(false,false,800,150);
-    tInfo( LOG ) << "test";
-    while (s3.moving());
-*/
-    thread_logs.join();
-    while(1);
-
-
-    /*
-    std::thread thread_test_feetech1(test_servo,"feetech 1",SMART_SERVO_FEETECH,1);
-    std::thread thread_test_feetech2(test_servo,"feetech 2",SMART_SERVO_FEETECH,2);
-
-    std::thread thread_test_dyna1(test_servo,"dyna 1",SMART_SERVO_DYNAMIXEL,1);
-    std::thread thread_test_dyna2(test_servo,"dyna 2",SMART_SERVO_DYNAMIXEL,2);
-
-    thread_test_feetech1.join();
-    thread_test_feetech2.join();
-    thread_test_dyna1.join();
-    thread_test_dyna2.join();
-*/
-
-
     tInfo( LOG ) << "SUCCESS ";
+    QThread::msleep( 100 );
 
+    QCoreApplication::quit();
+
+    thread_logs.join();
 }
