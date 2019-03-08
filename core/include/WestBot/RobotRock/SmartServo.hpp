@@ -128,7 +128,7 @@ namespace RobotRock {
 #define RAW_RD16B 3
 #define RAW_ACTION 4
 
-#define HW_SERVO_COUNT 3
+#define HW_SERVO_COUNT 8
 
 class SmartServo;
 
@@ -142,7 +142,7 @@ public:
 
      SmartServoStaticData()
      {
-         for( int i = 0; i < HW_SERVO_COUNT; ++i )
+         for( int i = 0; i < HW_SERVO_COUNT; i++ )
          {
             _qId.push( i );
          }

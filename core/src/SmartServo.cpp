@@ -35,7 +35,7 @@ class SmartServoCmdTimeout: public std::exception
     {
         return m_msg.c_str();
     }
-} ;
+};
 /*
 class SmartServoCmdTimeout: public std::exception
 {
@@ -115,13 +115,15 @@ bool SmartServo::attach(
 
     if (!_staticData._qId.empty())
     {
-        //_hal = hal;
         _devId = _staticData._qId.front();
-        _staticData._qId.pop();
         _staticData._deviceList[_devId] = this;
+
         registerDevice();
         ret = true;
         _attached = true;
+        // we pop only if we succeed to register the device
+        _staticData._qId.pop();
+
         tDebug( LOG ) << "SmartServo [" << _name << "] attached to devId" << _devId << "protocol " << _protocol << "busId " << _busId;
     } else {
         tFatal( LOG ) << "SmartServo [" << _name << "] cannot be attached (out of internal id)";
@@ -368,6 +370,10 @@ void SmartServo::changeId(uint8_t newId)
     {
         addr_enable = FEETECH_REGS_TORQUE_SWITCH;
         addr_id = FEETECH_REGS_ID;
+
+        // disable EEPROM locks
+        setRawWrite8(FEETECH_REGS_LOCK_SIGN,0);
+
     } else {
         addr_enable = DYNAMIXEL_REGS_TORQUE_ENABLE;
         addr_id = DYNAMIXEL_REGS_ID;

@@ -181,6 +181,7 @@ Hal::Hal()
 
 Hal::~Hal()
 {
+    tDebug( LOG ) << "Hal Destroyed";
     _layer1.reset();
     _layer2.reset();
     _layer3.reset();
