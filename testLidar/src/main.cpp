@@ -38,7 +38,13 @@ int main( int argc, char *argv[] )
 
     hal->dump();
 
-    Lidar lidar( "/dev/ttyUSB0" );
+    // set lidar pwm to 30%
+    hal->_motor5Override.write(1);
+    hal->_motor5Value.write(10000);
+    QThread::msleep( 2000 );
+
+
+    Lidar lidar( "/dev/ttyAL6" );
 
     if( ! lidar.init() )
     {
@@ -47,23 +53,7 @@ int main( int argc, char *argv[] )
     }
 
     lidar.startScan();
-    QThread::msleep( 1000 );
-    lidar.stopScan();
-    QThread::msleep( 1000 );
-    lidar.startScan();
-    QThread::msleep( 1000 );
-    lidar.stopScan();
-    QThread::msleep( 1000 );
-    lidar.startScan();
-    QThread::msleep( 1000 );
-    lidar.stopScan();
-    QThread::msleep( 1000 );
-
-    lidar.startScan();
-    QThread::msleep( 1000 );
-
     lidar.ascendScanData();
-
     lidar.stopScan();
 
     return app.exec();

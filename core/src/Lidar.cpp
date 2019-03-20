@@ -76,7 +76,7 @@ void Lidar::startScan()
 {
     _lidar.setMotorPwm( 660 ); // default
     _lidar.startMotor();
-    _lidar.startScan();
+    _lidar.startScanNormalRobotPos(false);
 }
 
 void Lidar::stopScan()
@@ -179,7 +179,7 @@ bool Lidar::ascendScanData()
 
             tDebug( LOG )
                 << "Mes @ pos:" << pos << " R = " << mesR[ pos ]
-                << "Theta = " << mesTheta[ pos ];
+                << "Theta = " << mesTheta[ pos ] << "x" << nodes[ pos ].pos_x << "y" << nodes[ pos ].pos_y << "teta" << nodes[ pos ].pos_teta;
         }
 
         return true;
