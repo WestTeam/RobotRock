@@ -85,11 +85,24 @@ Hal::Hal()
 	, _motor5Value( _layer1, 17 * 4, 16 )
 
     // Layer 2
+    , _odometryFreqHz( _layer2, 2 * 4 + 0, 16 ) // write only
+    , _odometryFreqHzLatest( _layer2, 2 * 4 + 0, 16 )
+    , _odometryAck( _layer2, 2 * 4 + 0, 8 ) // share the same register as _odometryFreqHz
+    , _odometryCodingWheelAxeMm( _layer2, 3 * 4 + 0, 32 )
+    , _odometryCodingWheelMmPerTickLeft( _layer2, 4 * 4 + 0, 32 )
+    , _odometryCodingWheelMmPerTickRight( _layer2, 5 * 4 + 0, 32 )
+    , _odometryCodingMotorAxeMm( _layer2, 6 * 4 + 0, 32 )
+    , _odometryCodingMotorMmPerTickLeft( _layer2, 7 * 4 + 0, 32 )
+    , _odometryCodingMotorMmPerTickRight( _layer2, 8 * 4 + 0, 32 )
+    , _odometryValid( _layer2, 13 * 4 + 0, 8 )
+    , _odometryId( _layer2, 13 * 4 + 1, 8 )
     , _odometryTheta( _layer2, 13 * 4 + 2, 16 )
     , _odometryX( _layer2, 14 * 4, 16 )
     , _odometryY( _layer2, 14 * 4 + 2, 16 )
 
     // PID DISTANCE
+    , _pidDistanceFreqHz( _layer2, 15 * 4, 16 )
+    , _pidDistanceFreqHzLatest( _layer2, 15 * 4 + 2, 16 )
     , _pidDistanceEnable( _layer2, 16 * 4, 8 )
     , _pidDistanceOverride( _layer2, 16 * 4 + 1, 8 )
     , _pidDistanceInverted( _layer2, 16 * 4 + 2, 8 )
@@ -101,8 +114,12 @@ Hal::Hal()
     , _pidDistanceSaturation( _layer2, 22 * 4, 32 )
     , _pidDistancePosition( _layer2, 23 * 4, 32 )
     , _pidDistanceTarget( _layer2, 24 * 4, 32 )
+    , _pidDistanceOutput( _layer2, 25 * 4, 32 )
+
 
     // PID ANGLE
+    , _pidAngleFreqHz( _layer2, 26 * 4, 16 )
+    , _pidAngleFreqHzLatest( _layer2, 26 * 4 + 2, 16 )
     , _pidAngleEnable( _layer2, 27 * 4, 8 )
     , _pidAngleOverride( _layer2, 27 * 4 + 1, 8 )
     , _pidAngleInverted( _layer2, 27 * 4 + 2, 8 )
@@ -114,6 +131,26 @@ Hal::Hal()
     , _pidAngleSaturation( _layer2, 33 * 4, 32 )
     , _pidAnglePosition( _layer2, 34 * 4, 32 )
     , _pidAngleTarget( _layer2, 35 * 4, 32 )
+    , _pidAngleOutput( _layer2, 36 * 4, 32 )
+
+
+    // PID Custom
+    , _pidCustomFreqHz( _layer2, 37 * 4, 16 )
+    , _pidCustomFreqHzLatest( _layer2, 37 * 4 + 2, 16 )
+    , _pidCustomEnable( _layer2, 38 * 4, 8 )
+    , _pidCustomOverride(  _layer2, 38 * 4 + 1, 8 )
+    , _pidCustomInverted(  _layer2, 38 * 4 + 2, 8 )
+    , _pidCustomKp( _layer2, 39 * 4, 32 )
+    , _pidCustomKi( _layer2, 40 * 4, 32 )
+    , _pidCustomKd(  _layer2, 41 * 4, 32 )
+    , _pidCustomSpeed(  _layer2, 42 * 4, 32 )
+    , _pidCustomAcceleration(  _layer2, 43 * 4, 32 )
+    , _pidCustomSaturation(  _layer2, 44 * 4, 32 )
+    , _pidCustomPosition(  _layer2, 45 * 4, 32 )
+    , _pidCustomTarget( _layer2, 46 * 4, 32 )
+    , _pidCustomOutput( _layer2, 47 * 4, 32 )
+
+    , _pidCustomLastReference( _layer2, 48 * 4, 32 )
 
     // Layer 3
     , _trajFreqHz( _layer3, 2 * 4, 16 )
