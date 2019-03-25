@@ -1,5 +1,7 @@
 // Copyright (c) 2018-2019 All Rights Reserved WestBot
 
+#include <QString>
+
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/Lidar.hpp>
@@ -21,9 +23,8 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
 }
 
-Lidar::Lidar( const Recalage::Ptr& recalage )
-    : _lidar( "/dev/ttyUSB0" )
-    , _recalage( recalage )
+Lidar::Lidar( const QString& lidarTTY )
+    : _lidar( lidarTTY )
 {
 }
 
@@ -61,11 +62,21 @@ bool Lidar::init()
     return true;
 }
 
+QString Lidar::info()
+{
+     return _lidar.getDeviceInfo();
+}
+
+bool Lidar::health()
+{
+    return _lidar.checkHealth();
+}
+
 void Lidar::startScan()
 {
     _lidar.setMotorPwm( 660 ); // default
     _lidar.startMotor();
-    _lidar.startScan();
+    _lidar.startScanNormalRobotPos(false);
 }
 
 void Lidar::stopScan()
@@ -109,17 +120,6 @@ bool Lidar::calibrate()
                    ( nodes[ pos ].angle_q6_checkbit >>
                      RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
         }
-
-        if( ! _recalage->calibrate( count, mesR, mesTheta ) )
-        {
-            tWarning( LOG ) << "Calibration failed: No object found";
-
-#ifdef SIMU
-            return true;
-#else
-            return false;
-#endif
-        }
     }
     else
     {
@@ -129,6 +129,63 @@ bool Lidar::calibrate()
     tInfo( LOG ) << "Lidar calibration succeeded";
 
     return true;
+}
+
+bool Lidar::grabScanData()
+{
+    RPLidar::measurementNode_t nodes[ 8192 ];
+    size_t count = _countof( nodes );
+
+    tDebug( LOG ) << "Waiting for data...";
+
+    // Fetch exactly one 0-360 degrees' scan
+    if( _lidar.grabScanData( nodes, count ) )
+    {
+        tDebug( LOG ) << "Grabing scan data: OK";
+        return true;
+    }
+
+    return false;
+}
+
+bool Lidar::ascendScanData()
+{
+    RPLidar::measurementNode_t nodes[ 8192 ];
+    size_t count = _countof( nodes );
+
+    double mesR[ ( int ) count ];
+    double mesTheta[ ( int ) count ];
+
+    tDebug( LOG ) << "Waiting for data...";
+
+    // Fetch exactly one 0-360 degrees' scan
+    if( _lidar.grabScanData(nodes, count) )
+    {
+        tDebug( LOG ) << "Grabing scan data: OK";
+
+        if( ! _lidar.ascendScanData( nodes, count ) )
+        {
+            return false;
+        }
+
+        for( int pos = 0; pos < ( int ) count; ++pos )
+        {
+            mesR[ pos ] =
+               static_cast< double >( nodes[ pos ].distance_q2 / 4.0f );
+            mesTheta[ pos ] =
+               static_cast< double >(
+                   ( nodes[ pos ].angle_q6_checkbit >>
+                     RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
+
+            tDebug( LOG )
+                << "Mes @ pos:" << pos << " R = " << mesR[ pos ]
+                << "Theta = " << mesTheta[ pos ] << "x" << nodes[ pos ].pos_x << "y" << nodes[ pos ].pos_y << "teta" << nodes[ pos ].pos_teta;
+        }
+
+        return true;
+    }
+
+    return false;
 }
 
 void Lidar::run()

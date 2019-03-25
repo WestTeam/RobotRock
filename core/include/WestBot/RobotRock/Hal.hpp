@@ -142,11 +142,24 @@ public:
     ItemRegister _smartServoCmdSetEnableEnable;
 
     // Layer 2
+    ItemRegister _odometryFreqHz;
+    ItemRegister _odometryFreqHzLatest;
+    ItemRegister _odometryAck;
+    ItemRegister _odometryCodingWheelAxeMm;
+    ItemRegister _odometryCodingWheelMmPerTickLeft;
+    ItemRegister _odometryCodingWheelMmPerTickRight;
+    ItemRegister _odometryCodingMotorAxeMm;
+    ItemRegister _odometryCodingMotorMmPerTickLeft;
+    ItemRegister _odometryCodingMotorMmPerTickRight;
+    ItemRegister _odometryValid;
+    ItemRegister _odometryId;
     ItemRegister _odometryTheta;
     ItemRegister _odometryX;
     ItemRegister _odometryY;
 
     // PID DISTANCE
+    ItemRegister _pidDistanceFreqHz;
+    ItemRegister _pidDistanceFreqHzLatest;
     ItemRegister _pidDistanceEnable;
     ItemRegister _pidDistanceOverride;
     ItemRegister _pidDistanceInverted;
@@ -158,8 +171,11 @@ public:
     ItemRegister _pidDistanceSaturation;
     ItemRegister _pidDistancePosition;
     ItemRegister _pidDistanceTarget;
+    ItemRegister _pidDistanceOutput;
 
     // PID ANGLE
+    ItemRegister _pidAngleFreqHz;
+    ItemRegister _pidAngleFreqHzLatest;
     ItemRegister _pidAngleEnable;
     ItemRegister _pidAngleOverride;
     ItemRegister _pidAngleInverted;
@@ -171,6 +187,26 @@ public:
     ItemRegister _pidAngleSaturation;
     ItemRegister _pidAnglePosition;
     ItemRegister _pidAngleTarget;
+    ItemRegister _pidAngleOutput;
+
+    // PID Custom
+    ItemRegister _pidCustomFreqHz;
+    ItemRegister _pidCustomFreqHzLatest;
+    ItemRegister _pidCustomEnable;
+    ItemRegister _pidCustomOverride;
+    ItemRegister _pidCustomInverted;
+    ItemRegister _pidCustomKp;
+    ItemRegister _pidCustomKi;
+    ItemRegister _pidCustomKd;
+    ItemRegister _pidCustomSpeed;
+    ItemRegister _pidCustomAcceleration;
+    ItemRegister _pidCustomSaturation;
+    ItemRegister _pidCustomPosition;
+    ItemRegister _pidCustomTarget;
+    ItemRegister _pidCustomOutput;
+
+    ItemRegister _pidCustomLastReference;
+
 
     // Layer 3
     ItemRegister _trajFreqHz;

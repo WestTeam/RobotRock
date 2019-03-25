@@ -6,7 +6,7 @@ QT -= gui
 CONFIG += c++11
 
 TEMPLATE = subdirs
-SUBDIRS = core robot-rock test1 \
-    SmartServoTesting
+SUBDIRS = core robot-rock test1 testLidar \
+    SmartServoTesting testOdometry
 robot-rock.depedends = core
 test1.depends = core

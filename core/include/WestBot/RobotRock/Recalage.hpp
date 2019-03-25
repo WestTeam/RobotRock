@@ -9,16 +9,13 @@
 
 #include "Hal.hpp"
 #include "ItemRegister.hpp"
+#include "Odometry.hpp"
+
 
 namespace WestBot {
 namespace RobotRock {
 
-typedef struct
-{
-    double x;
-    double y;
-    double theta;
-} RobotPos;
+
 
 /*!
  * \brief The Recalage class allow to process lidar measurement
