@@ -93,5 +93,5 @@ int main( int argc, char *argv[] )
         tFatal(LOG) << "ERROR setPosition/getPosition" << curPos.theta << pos.theta;
     }*/
 
-    return app.exec();
+    //return app.exec();
 }

@@ -8,6 +8,8 @@
 
 #define RPLIDAR_RESP_MEASUREMENT_SYNCBIT        (0x1<<0)
 #define RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT 1
+#define RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT 2
+
 
 #ifndef _countof
 #define _countof(_Array) (int)(sizeof(_Array) / sizeof(_Array[0]))
@@ -23,18 +25,33 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
 }
 
-Lidar::Lidar( const QString& lidarTTY )
-    : _lidar( lidarTTY )
+LidarRPLidarA2::LidarRPLidarA2( const QString& lidarTTY, const uint32_t baudrate, ItemRegister::Ptr Pwm)
+    : _lidar( lidarTTY, baudrate )
 {
+    _pwm = Pwm;
+    _minQuality = 0;
+
+    tDebug( LOG ) << "Lidar: module initialized";
 }
 
-bool Lidar::init()
+LidarRPLidarA2::~LidarRPLidarA2()
+{
+    tDebug( LOG ) << "Lidar: module destruction";
+
+    stopScan();
+    stopMotor();
+    _lidar.disconnect();
+}
+
+
+bool LidarRPLidarA2::init()
 {
     if( ! _lidar.connect() )
     {
-       tWarning( LOG ) << "Cannot connect to RPLidar";
-       return false;
+       tWarning( LOG ) << "Lidar: Cannot connect to RPLidar";
+       throw std::exception();
     }
+    tDebug( LOG ) << "Lidar: RPLidar connected";
 
     QString lidarInfo = _lidar.getDeviceInfo();
     tDebug( LOG ).noquote() << lidarInfo;
@@ -42,83 +59,105 @@ bool Lidar::init()
     // check RPLidar health...
     if( ! _lidar.checkHealth() )
     {
-        tWarning( LOG ) << "RPLidar not healthy";
-        return false;
+        tWarning( LOG ) << "Lidar: RPLidar not healthy";
+        throw std::exception();
     }
 
-    tInfo( LOG ) << "Lidar module initialized";
-
-    startScan();
-
-    if( ! calibrate() )
-    {
-        tWarning( LOG ) << "Lidar scan and first calibration failed";
-        stopScan();
-        return false;
-    }
-
-    stopScan();
+    tDebug( LOG ) << "Lidar: module initialized";
 
     return true;
 }
 
-QString Lidar::info()
+
+void LidarRPLidarA2::setMinimumQuality(uint8_t minQuality)
+{
+    _minQuality = minQuality;
+}
+
+
+QString LidarRPLidarA2::info()
 {
      return _lidar.getDeviceInfo();
 }
 
-bool Lidar::health()
+bool LidarRPLidarA2::health()
 {
     return _lidar.checkHealth();
 }
 
-void Lidar::startScan()
+
+void LidarRPLidarA2::startMotor(float percentage)
 {
-    _lidar.setMotorPwm( 660 ); // default
-    _lidar.startMotor();
+    // if null, we send command to the underlying library
+    if (_pwm == nullptr)
+    {
+        uint16_t pwmValue = (uint16_t)((float)1024*percentage/100.0);
+        _lidar.setMotorPwm( pwmValue );
+    } else { // otherwise we set our own pwm
+        int16_t pwmValue = (int16_t)((float)32767*percentage/100.0);
+        _pwm->write(pwmValue);
+    }
+}
+
+void LidarRPLidarA2::stopMotor()
+{
+    startMotor(0.0);
+}
+
+void LidarRPLidarA2::startScan()
+{
     _lidar.startScanNormalRobotPos(false);
 }
 
-void Lidar::stopScan()
+void LidarRPLidarA2::stopScan()
 {
     _lidar.stopScan();
-    _lidar.stopMotor();
 }
 
-bool Lidar::calibrate()
+bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], uint32_t &count)
 {
-    tInfo( LOG ) << "Lidar calibration started";
+    QMutexLocker locker( & _lock );
 
-    RPLidar::measurementNode_t nodes[ 8192 ];
-    size_t count = _countof(nodes);
+    RPLidar::measurementNode_t nodes[ LIDAR_MAX_SCAN_POINTS ];
+    size_t scan_count = _countof(nodes);
 
-    double mesR[ ( int ) count ];
-    double mesTheta[ ( int ) count ];
-    int syncBit[ ( int ) count ];
+    count = 0;
 
-    tDebug( LOG ) << "Waiting for data...";
+    //double mesR[ ( int ) count ];
+    //double mesTheta[ ( int ) count ];
+    //int syncBit[ ( int ) count ];
 
     // Fetch exactly one 0-360 degrees' scan
-    if( _lidar.grabScanData(nodes, count) )
+    if( _lidar.grabScanData(nodes, scan_count) )
     {
-        tDebug( LOG ) << "Grabing scan data: OK";
+        tDebug( LOG ) << "Grabing scan data: OK" << scan_count;
 
-        if( ! _lidar.ascendScanData( nodes, count ) )
+        if( ! _lidar.ascendScanData( nodes, scan_count ) )
         {
             return false;
         }
 
-        int pos = 0;
-        int newPos = 0;
+        unsigned int pos = 0;
 
-        for( pos = 0; pos < ( int ) count; ++pos )
+        for( pos = 0; pos < scan_count; ++pos )
         {
-            mesR[ pos ] =
-               static_cast< double >( nodes[ pos ].distance_q2 / 4.0f );
-            mesTheta[ pos ] =
-               static_cast< double >(
-                   ( nodes[ pos ].angle_q6_checkbit >>
-                     RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f );
+            uint8_t quality = nodes[ pos ].sync_quality >> RPLIDAR_RESP_MEASUREMENT_QUALITY_SHIFT;
+
+            if (quality >= _minQuality)
+            {
+                data[ count ].quality = quality;
+                data[ count ].r =
+                   static_cast< double >( nodes[ pos ].distance_q2 / 4.0f );
+                data[ count ].theta = RAD(
+                   static_cast< double >(
+                       ( nodes[ pos ].angle_q6_checkbit >>
+                         RPLIDAR_RESP_MEASUREMENT_ANGLE_SHIFT ) / 64.0f ));
+                data[ count ].pos.x = (double)nodes[pos].pos_x;
+                data[ count ].pos.y = (double)nodes[pos].pos_y;
+                data[ count ].pos.theta = RAD((double)nodes[pos].pos_teta/100.0);
+
+                count++;
+            }
         }
     }
     else
@@ -126,11 +165,9 @@ bool Lidar::calibrate()
         return false;
     }
 
-    tInfo( LOG ) << "Lidar calibration succeeded";
-
     return true;
 }
-
+/*
 bool Lidar::grabScanData()
 {
     RPLidar::measurementNode_t nodes[ 8192 ];
@@ -198,4 +235,4 @@ void Lidar::run()
 
         QThread::msleep( 1000 );
     }
-}
+}*/

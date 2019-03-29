@@ -28,8 +28,9 @@ bool operator==(RobotPos& lhs, RobotPos& rhs);
 class Odometry
 {
 public:
+    using Ptr = std::shared_ptr< Odometry >;
 
-    Odometry( const Hal::Ptr& hal);
+    Odometry(const Hal::Ptr& hal);
 
     RobotPos getPosition();
     void setPosition(RobotPos pos);

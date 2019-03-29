@@ -409,7 +409,7 @@ void TrajectoryManager::turnAAbs(
     currentPos.x = 0;
     currentPos.y = 0;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
@@ -516,7 +516,7 @@ void TrajectoryManager::turnOnlyAAbs(
     currentPos.x = 0;
     currentPos.y = 0;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
@@ -570,7 +570,7 @@ void TrajectoryManager::turnToXY( float x, float y, bool doNotBlock )
     currentPos.x = x;
     currentPos.y = y;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
@@ -622,7 +622,7 @@ void TrajectoryManager::turnToXYBehind( float x, float y, bool doNotBlock )
     currentPos.x = x;
     currentPos.y = y;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
@@ -678,7 +678,7 @@ void TrajectoryManager::moveToXYAbs(
     currentPos.x = x;
     currentPos.y = y;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
@@ -736,7 +736,7 @@ void TrajectoryManager::moveForwardToXYAbs(
     currentPos.x = x;
     currentPos.y = y;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
@@ -794,7 +794,7 @@ void TrajectoryManager::moveBackwardToXYAbs(
     currentPos.x = x;
     currentPos.y = y;
 
-    RobotPos pos = _recalage->sendPos( currentPos );
+    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
