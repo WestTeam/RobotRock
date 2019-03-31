@@ -18,6 +18,7 @@ SOURCES += \
     src/Lidar.cpp \
     src/Memory.cpp \
     src/MemoryManager.cpp \
+    src/Monitoring.cpp \
     src/MoveAction.cpp \
     src/Nextion.cpp \
     src/Output.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     include/WestBot/RobotRock/Lidar.hpp \
     include/WestBot/RobotRock/Memory.hpp \
     include/WestBot/RobotRock/MemoryManager.hpp \
+    include/WestBot/RobotRock/Monitoring.hpp \
     include/WestBot/RobotRock/MoveAction.hpp \
     include/WestBot/RobotRock/Nextion.hpp \
     include/WestBot/RobotRock/Output.hpp \

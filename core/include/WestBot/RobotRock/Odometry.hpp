@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_ODOMETRY_HPP_
 #define WESTBOT_ROBOTROCK_ODOMETRY_HPP_
 
+#include <memory>
+
 #include <QDebug>
 
 #include <math.h>
@@ -45,7 +47,6 @@ private:
     // for pos writing
     uint8_t _wr_pos_id;
     uint8_t _wr_pos_valid;
-
 
     QMutex _lock;
 };

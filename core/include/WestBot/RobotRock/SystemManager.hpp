@@ -10,6 +10,7 @@
 #include "GameThread.hpp"
 #include "Input.hpp"
 #include "Lidar.hpp"
+#include "Monitoring.hpp"
 #include "Output.hpp"
 #include "Recalage.hpp"
 #include "StrategyManager.hpp"
@@ -70,6 +71,7 @@ private:
     TrajectoryManager _trajectoryManager;
     SystemMode _systemMode;
     StrategyManager _strategyManager;
+    Monitoring _monitoring;
     GameThread::Ptr _game;
 };
 

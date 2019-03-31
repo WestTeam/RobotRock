@@ -33,6 +33,12 @@ void Nextion::send( QByteArray label, QByteArray val )
     write( str );
 }
 
+void Nextion::setColor( QByteArray label, QByteArray color )
+{
+    QByteArray str = label + ".bco=" + color;
+    write( str );
+}
+
 //
 // Private methods
 //
@@ -70,5 +76,5 @@ void Nextion::write( QByteArray data )
 
     _serial.flush();
 
-    QThread::msleep( 100 );
+    QThread::msleep( 10 );
 }

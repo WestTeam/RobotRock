@@ -3,8 +3,6 @@
 #ifndef WESTBOT_ROBOTROCK_NEXTION_HPP_
 #define WESTBOT_ROBOTROCK_NEXTION_HPP_
 
-#include <memory>
-
 #include <QByteArray>
 #include <QSerialPort>
 #include <QMutex>
@@ -21,6 +19,7 @@ public:
     ~Nextion();
 
     void send( QByteArray label, QByteArray val );
+    void setColor( QByteArray label, QByteArray color );
 
 private:
     void open( const QString& tty );

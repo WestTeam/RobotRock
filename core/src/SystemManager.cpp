@@ -53,6 +53,7 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
     , _strategyManager( _trajectoryManager )
+    , _monitoring( _hal, _odometry )
     , _game( nullptr )
 {
     connect(
@@ -113,6 +114,9 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
         } );
 
     reset();
+
+    _monitoring.start();
+    _monitoring.setRefreshRate( 250 );
 }
 
 SystemManager::~SystemManager()
@@ -280,9 +284,9 @@ SystemManager::SystemMode SystemManager::mode() const
 bool SystemManager::isSafe() const
 {
     // ODOMETRY check
-    int16_t x = _hal->_odometryX.read< int16_t >();
-    int16_t y = _hal->_odometryY.read< int16_t >();
-    int16_t theta = _hal->_odometryTheta.read< int16_t >();
+    int16_t x = _odometry->getPosition().x;
+    int16_t y = _odometry->getPosition().y;
+    int16_t theta = _odometry->getPosition().theta;
 
     tDebug( LOG ) << "X:" << x << " Y:" << y << " Theta:" << theta;
 
@@ -312,7 +316,9 @@ void SystemManager::initRecalage()
         //_recalage->errorInit( 0, 0, 0 );
     }
 
-    tInfo( LOG ) << "Odometry initialized for color:" << _color;
+    tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x
+                 << _odometry->getPosition().y << _odometry->getPosition().theta;
+
 }
 
 void SystemManager::blinkColorLed()
@@ -352,4 +358,7 @@ void SystemManager::displayColor( const DigitalValue& value )
         _ledBlue->digitalWrite( DigitalValue::OFF );
         _ledYellow->digitalWrite( DigitalValue::ON );
     }
+
+    _monitoring.updateColor( _color );
 }
+

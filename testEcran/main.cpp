@@ -7,7 +7,6 @@
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
-#include <WestBot/RobotRock/Hal.hpp>
 #include <WestBot/RobotRock/Nextion.hpp>
 
 #define DEBUG

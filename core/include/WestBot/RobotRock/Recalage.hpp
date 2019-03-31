@@ -16,11 +16,8 @@
 #include "Odometry.hpp"
 #include "Lidar.hpp"
 
-
 namespace WestBot {
 namespace RobotRock {
-
-
 
 /*!
  * \brief The Recalage class allow to process lidar measurement
