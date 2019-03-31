@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_RECALAGE_HPP_
 #define WESTBOT_ROBOTROCK_RECALAGE_HPP_
 
+#include <WestBot/HumanAfterAll/Category.hpp>
+
 #include <memory>
 #include <atomic>
 
@@ -30,6 +32,8 @@ namespace RobotRock {
 class Recalage: public QThread
 {
 public:
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Recalage" );
+
     using Ptr = std::shared_ptr< Recalage >;
 
     Recalage();

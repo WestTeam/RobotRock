@@ -19,7 +19,6 @@ using namespace WestBot::RobotRock;
 
 namespace
 {
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Recalage" )
 
     const double TELEM_THETA0 = -0.118;
     const double TELEM_X = 206.08;
@@ -180,7 +179,7 @@ bool Recalage::calibrate(
     RobotPos &absPos,
     double thetaBias)
 {
-    tInfo( LOG ) << "Calibrating...";
+    //tDebug( LOG ) << "Calibrating...";
 
     double errX = 0;
     double errY = 0;
@@ -365,7 +364,7 @@ bool Recalage::calibrate(
     else
         qualityTheta = qualityY;
 
-    tDebug( LOG ) << "Calibrate quality" << qualityX << qualityY << qualityTheta;
+    //tDebug( LOG ) << "Calibrate quality" << qualityX << qualityY << qualityTheta;
 
     currentError.x = errX*qualityX;
     currentError.y = errY*qualityY;
@@ -374,8 +373,8 @@ bool Recalage::calibrate(
     //errorModify(errX*qualityX,errY*qualityY,errTheta*qualityTheta);
 
 
-    tDebug( LOG ) << "Recalage: Calibrate error no quality " << errX << errY << errTheta << DEG(errTheta);
-    tDebug( LOG ) << "Recalage: Calibrate error wt quality" << currentError.x << currentError.y << currentError.theta << DEG(currentError.theta);
+    //tDebug( LOG ) << "Recalage: Calibrate error no quality " << errX << errY << errTheta << DEG(errTheta);
+    //tDebug( LOG ) << "Recalage: Calibrate error wt quality" << currentError.x << currentError.y << currentError.theta << DEG(currentError.theta);
 
     // get latest available position
     absPos = data[dataCount-1].pos;
@@ -384,7 +383,7 @@ bool Recalage::calibrate(
     absPos.y        += currentError.y;
     absPos.theta    += currentError.theta;
 
-    tDebug( LOG ) << "Recalage: Computed position " << absPos.x << absPos.y << absPos.theta << DEG(absPos.theta);
+    //tDebug( LOG ) << "Recalage: Computed position " << absPos.x << absPos.y << absPos.theta << DEG(absPos.theta);
 
 
     //sendPos( robotPos ); // Apply new robot position based on previous computed error
@@ -513,8 +512,13 @@ void Recalage::run()
                         continue;
                     }
 
+                    bool ok;
+                    // we check if the first pos is the same as last pos
+                    ok = (data[0].pos == data[dataCount-1].pos);
+
                     // first calibration in order to correct theta first
-                    bool ok = calibrate(data,dataCount,currentError,absPos,0.0);
+                    if (ok)
+                        ok = calibrate(data,dataCount,currentError,absPos,0.0);
 
                     if (ok)
                     {
@@ -551,7 +555,7 @@ void Recalage::run()
 
                                 // we set this in order to make sure we will process next data with updated position
                                 // in case buffering with previous position occured
-                                dropScanCount = 10;
+                                dropScanCount = 2;
                             }
                         }
                     }

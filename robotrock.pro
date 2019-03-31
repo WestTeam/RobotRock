@@ -8,6 +8,7 @@ CONFIG += c++11
 TEMPLATE = subdirs
 SUBDIRS = core robot-rock test1 testLidar \
     SmartServoTesting testOdometry \
-    testRecalage
+    testRecalage \
+    testRecalageLive
 robot-rock.depedends = core
 test1.depends = core

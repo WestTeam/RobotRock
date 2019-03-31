@@ -43,6 +43,8 @@ public:
 class LidarRPLidarA2 : public LidarBase
 {
 public:
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
+
     using Ptr = std::shared_ptr< LidarRPLidarA2 >;
 
     LidarRPLidarA2( const QString& lidarTTY = "/dev/ttyUSB0", const uint32_t baudrate = 256000, ItemRegister::Ptr Pwm = nullptr);

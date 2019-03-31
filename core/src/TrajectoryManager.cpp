@@ -100,11 +100,10 @@ void TrajectoryManager::init()
 
 void TrajectoryManager::waitTrajReady()
 {
-    uint8_t inWindow;
-    TrajectoryManager::TrajectoryState state;
-
     do
     {
+        QThread::msleep( 10 );
+        /*
         QThread::msleep( 10 );
         state = static_cast< TrajectoryManager::TrajectoryState >(
             _hal->_trajOutState.read< uint8_t >() );
@@ -114,8 +113,26 @@ void TrajectoryManager::waitTrajReady()
             << "x/y/theta:" << _hal->_odometryX.read<int16_t>() << "/"
             << _hal->_odometryY.read<int16_t>() << "/"
             << _hal->_odometryTheta.read<int16_t>();
+            */
 
-    } while( state != TrajectoryState::READY );
+    } while( !isTrajReady() );
+}
+
+bool TrajectoryManager::isTrajReady()
+{
+    uint8_t inWindow;
+    TrajectoryManager::TrajectoryState state;
+
+    state = static_cast< TrajectoryManager::TrajectoryState >(
+        _hal->_trajOutState.read< uint8_t >() );
+    inWindow = _hal->_trajOutInWindow.read< uint8_t >();
+    tDebug( LOG )
+        << "Wait traj ready: State:" << state << "in windows:" << inWindow
+        << "x/y/theta:" << _hal->_odometryX.read<int16_t>() << "/"
+        << _hal->_odometryY.read<int16_t>() << "/"
+        << _hal->_odometryTheta.read<int16_t>();
+
+    return (state == TrajectoryState::READY);
 }
 
 void TrajectoryManager::disable()
