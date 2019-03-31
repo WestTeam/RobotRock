@@ -19,6 +19,7 @@ SOURCES += \
     src/Memory.cpp \
     src/MemoryManager.cpp \
     src/MoveAction.cpp \
+    src/Nextion.cpp \
     src/Output.cpp \
     src/Recalage.cpp \
     src/Servo.cpp \
@@ -41,6 +42,7 @@ HEADERS += \
     include/WestBot/RobotRock/Memory.hpp \
     include/WestBot/RobotRock/MemoryManager.hpp \
     include/WestBot/RobotRock/MoveAction.hpp \
+    include/WestBot/RobotRock/Nextion.hpp \
     include/WestBot/RobotRock/Output.hpp \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
