@@ -106,9 +106,9 @@ void Odometry::addError(RobotPos pos)
 
     uint8_t commandId = _hal->_odometryAck.read< uint8_t >();
 
-    int16_t x = (int16_t)floor(pos.x);
-    int16_t y = (int16_t)floor(pos.y);
-    int16_t theta = (int16_t)floor(DEG(pos.theta)*100.0);
+    int16_t x = (int16_t)round(pos.x);
+    int16_t y = (int16_t)round(pos.y);
+    int16_t theta = (int16_t)round(DEG(pos.theta)*100.0);
 
 
 

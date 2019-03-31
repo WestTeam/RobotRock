@@ -104,6 +104,8 @@ public:
     void init();
 
     void waitTrajReady();
+    bool isTrajReady();
+
 
     void disable();
     void enable();

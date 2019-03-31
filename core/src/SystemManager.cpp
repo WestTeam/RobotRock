@@ -18,6 +18,9 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SystemManager" )
 
     const int GAME_DURATION = 90 * 1000; // 90s
+    const QString LIDAR_TTY = "/dev/ttyAL6";
+    const uint32_t LIDAR_BAUDRATE = 256000;
+
 }
 
 SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
@@ -44,6 +47,8 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
               std::make_shared< ItemRegister >( _hal->_output2 ),
               "Blue" ) )
     , _color( Color::Unknown )
+    , _lidar( nullptr )
+    , _odometry( std::make_shared< Odometry >(_hal) )
     , _recalage( std::make_shared< Recalage >() )
     , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
@@ -154,21 +159,23 @@ bool SystemManager::init()
     _hal->_pidAngleTarget.write( _hal->_pidAnglePosition.read< float >() );
     _hal->_pidAngleEnable.write( 1 );
 
-    if( ! _recalage->init( _hal ) )
+#ifndef NO_LIDAR
+    // we need to provide sw control on this motor
+    hal->_motor5Override.write(1);
+
+    _lidar = std::make_shared< Lidar >(LIDAR_TTY,LIDAR_BAUDRATE,std::make_shared< ItemRegister >( hal->_motor5Value ));
+    if( !_lidar->init() || !_lidar->health() )
+    {
+        tWarning( LOG ) << "Failed to init/check health of lidar module";
+        return false;
+    }
+#endif
+
+    if( ! _recalage->init( _odometry, (LidarBase::Ptr)_lidar ) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
     }
-
-#ifndef NO_LIDAR
-
-    if( ! _lidar.init() )
-    {
-        tWarning( LOG ) << "Failed to init lidar module";
-        return false;
-    }
-
-#endif
 
     _trajectoryManager.init();
 
@@ -200,7 +207,7 @@ void SystemManager::start()
 
 #ifndef NO_LIDAR
     // This run the lidar thread for data acquisition.
-    _lidar.start();
+    //_lidar.start();
 #endif
 
     initRecalage();
@@ -222,11 +229,13 @@ void SystemManager::stop()
     _aliveTimer.stop();
 
 #ifdef NO_LIDAR
+    /*
     if( _lidar.isRunning() )
     {
         _lidar.terminate();
         _lidar.stopScan();
     }
+    */
 #endif
 
     if( nullptr != _game && _game->isRunning() )
@@ -294,11 +303,13 @@ void SystemManager::initRecalage()
 {
     if( _color == Color::Yellow )
     {
-        _recalage->errorInit( 0, 0, 0 );
+        _odometry->setPosition({.x=0, .y=0, .theta=0});
+        //_recalage->errorInit( 0, 0, 0 );
     }
     else
     {
-        _recalage->errorInit( 0, 0, 0 );
+        _odometry->setPosition({.x=0, .y=0, .theta=0});
+        //_recalage->errorInit( 0, 0, 0 );
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color;
