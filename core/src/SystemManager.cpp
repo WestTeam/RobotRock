@@ -8,7 +8,7 @@
 
 #include <WestBot/RobotRock/SystemManager.hpp>
 
-#define NO_LIDAR
+//#define NO_LIDAR
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -161,10 +161,10 @@ bool SystemManager::init()
 
 #ifndef NO_LIDAR
     // we need to provide sw control on this motor
-    hal->_motor5Override.write(1);
+    _hal->_motor5Override.write(1);
 
-    _lidar = std::make_shared< Lidar >(LIDAR_TTY,LIDAR_BAUDRATE,std::make_shared< ItemRegister >( hal->_motor5Value ));
-    if( !_lidar->init() || !_lidar->health() )
+    _lidar = std::make_shared< LidarRPLidarA2 >(LIDAR_TTY,LIDAR_BAUDRATE,std::make_shared< ItemRegister >( _hal->_motor5Value ));
+    if( !_lidar->init() )
     {
         tWarning( LOG ) << "Failed to init/check health of lidar module";
         return false;
