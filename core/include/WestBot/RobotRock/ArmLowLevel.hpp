@@ -1,0 +1,129 @@
+// Copyright (c) 2019 All Rights Reserved WestBot
+
+#ifndef WESTBOT_ROBOTROCK_ARM_LOW_LEVEL_HPP_
+#define WESTBOT_ROBOTROCK_ARM_LOW_LEVEL_HPP_
+
+#include <array>
+#include <mutex>          // std::mutex, std::unique_lock
+#include <queue>
+#include <QMutex>
+
+#include <QString>
+
+#include "Hal.hpp"
+
+
+#include <WestBot/RobotRock/SmartServo.hpp>
+
+
+namespace WestBot {
+namespace RobotRock {
+
+
+enum ArmLowLevelLeg { ARM_LL_SERVO_UPPER_ARM, ARM_LL_SERVO_LOWER_ARM, ARM_LL_SERVO_WRIST };
+
+
+class ArmLowLevelBase
+{
+public:
+    using Ptr = std::shared_ptr< ArmLowLevelBase >;
+
+    // general
+    virtual void disable() = 0;
+
+    // Motor Z
+    virtual void enableZ(bool enable) = 0;
+    virtual void setZ(double mmAbs) = 0;
+    virtual double getZ() = 0;
+    virtual bool waitZTargetOk(double timeoutMs = 0) = 0;
+    virtual void setZSpeed(double speed) = 0;
+    virtual void setZSAcc(double acc) = 0;
+
+    // Servos
+    virtual void enableServo(enum ArmLowLevelLeg id, bool enable) = 0;
+    virtual void setServoPos(enum ArmLowLevelLeg id, double angleDegs) = 0;
+    virtual void setServosPos(double angleDegs1, double angleDegs2, double angleDegs3) = 0;
+    virtual double getServoPos(enum ArmLowLevelLeg id) = 0;
+    virtual bool waitServoTargetOk(enum ArmLowLevelLeg id, double timeoutMs) = 0;
+    virtual bool waitServosTargetOk(double timeoutMs) = 0;
+
+    // Vacuum
+    virtual void setVacuumPower(float percentage) = 0;
+    virtual void setVacuumValve(bool enable) = 0;
+
+    // Distance
+    virtual double getDistance() = 0;
+};
+
+
+class ArmLowLevel: public ArmLowLevelBase
+{
+public:
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.ArmLowLevel" );
+
+    ArmLowLevel();
+    ~ArmLowLevel();
+
+    bool init(
+        const Hal::Ptr& hal,
+        ItemRegister::Ptr vacuumPwm,
+        ItemRegister::Ptr vacuumValve,
+        uint32_t* distanceMmPtr,
+        uint8_t upperArmProtocol,
+        uint8_t upperArmbusId,
+        uint8_t lowerArmProtocol,
+        uint8_t lowerArmbusId,
+        uint8_t wristProtocol,
+        uint8_t wristbusId
+    );
+
+    bool isAttached() const;
+
+    // general
+    void disable();
+
+    // Motor Z
+    void enableZ(bool enable);
+    void setZ(double mmAbs);
+    double getZ();
+    bool waitZTargetOk(double timeoutMs = 0);
+    void setZSpeed(double speed);
+    void setZSAcc(double acc);
+
+    // Servos
+    void enableServo(enum ArmLowLevelLeg id, bool enable);
+    void setServoPos(enum ArmLowLevelLeg id, double angleDegs);
+    void setServosPos(double angleDegs1, double angleDegs2, double angleDegs3) ;
+    double getServoPos(enum ArmLowLevelLeg id);
+    bool waitServoTargetOk(enum ArmLowLevelLeg id, double timeoutMs);
+    bool waitServosTargetOk(double timeoutMs);
+
+    // Vacuum
+    void setVacuumPower(float percentage) ;
+    void setVacuumValve(bool enable);
+
+    // Distance
+    double getDistance();
+
+
+
+private:
+
+    bool _attached;
+    bool _initOk;
+
+    Hal::Ptr _hal;
+    ItemRegister::Ptr _vacuumPwm;
+    ItemRegister::Ptr _vacuumValve;
+    uint32_t* _distanceMmPtr;
+    SmartServo* _smartServo[3];
+
+    int32_t _refZ;
+    double _targetZMmAbs;
+
+};
+
+}
+}
+
+#endif // WESTBOT_ROBOTROCK_ARM_LOW_LEVEL_HPP_
