@@ -69,4 +69,9 @@ void Vl6180x::readData()
         // Valid trame found
         _distance = data[ 1 ];
     }
+    else
+    {
+        tDebug( LOG ) << "Unknown frame: dropping data";
+        _serial.flush();
+    }
 }
