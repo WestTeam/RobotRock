@@ -23,8 +23,9 @@ public:
     ~Vl6180x();
 
     /*!
-     * Return the last distance from the VL6180X sensor.
-     * Distance is mm.
+     * \brief Return the last distance from the VL6180X sensor.
+     *
+     * \return Distance in mm.
      */
     uint32_t distance() const;
 
