@@ -19,13 +19,13 @@ Vl6180x::Vl6180x( const QString& tty, QObject* parent )
     : QObject( parent )
     , _distance( 0 )
 {
-    open( tty );
-
     connect(
         & _serial,
         & QSerialPort::readyRead,
         this,
         & Vl6180x::readData );
+
+    open( tty );
 }
 
 Vl6180x::~Vl6180x()
