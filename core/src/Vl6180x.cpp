@@ -15,8 +15,9 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.VL6180X" )
 }
 
-Vl6180x::Vl6180x( const QString& tty )
-    : _distance( 0 )
+Vl6180x::Vl6180x( const QString& tty, QObject* parent )
+    : QObject( parent )
+    , _distance( 0 )
 {
     open( tty );
 

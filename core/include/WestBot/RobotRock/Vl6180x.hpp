@@ -19,7 +19,7 @@ class Vl6180x : public QObject
     Q_OBJECT
 
 public:
-    Vl6180x( const QString& tty = "/dev/ttyAL1" );
+    Vl6180x( const QString& tty = "/dev/ttyAL1", QObject* parent = nullptr );
     ~Vl6180x();
 
     /*!
