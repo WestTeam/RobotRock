@@ -37,15 +37,12 @@ void Experiment::setColorYellow()
 {
     const QByteArray str( "1" );
     write( str );
-    tDebug( LOG ) << "Write 0";
-
 }
 
 void Experiment::setColorPurple()
 {
     const QByteArray str( "0" );
     write( str );
-    tDebug( LOG ) << "Write 1";
 }
 
 //
@@ -72,6 +69,4 @@ void Experiment::init()
 void Experiment::write( QByteArray data )
 {
     _serial->write( data );
-    _serial->flush();
-    QThread::msleep( 10 );
 }
