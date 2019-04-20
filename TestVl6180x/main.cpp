@@ -1,6 +1,7 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
 #include <QCoreApplication>
+#include <QThread>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
@@ -32,6 +33,12 @@ int main(int argc, char *argv[])
     tInfo( LOG ) << "==== Test ready ! ==== ";
 
     Vl6180x vl6180x;
+
+    while( 1 )
+    {
+        tDebug( LOG ) << "Read distance:" << vl6180x.distance();
+        a.processEvents();
+    }
 
     return a.exec();
 }

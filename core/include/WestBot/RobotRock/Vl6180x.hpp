@@ -26,7 +26,7 @@ public:
      *
      * \return Distance in mm.
      */
-    uint32_t distance() const;
+    uint8_t distance() const;
 
 private slots:
     void readData();
