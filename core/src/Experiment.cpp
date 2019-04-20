@@ -1,60 +1,63 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
-#include <QByteArray>
 #include <QString>
+#include <QThread>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
-#include <WestBot/RobotRock/Vl6180x.hpp>
+#include <WestBot/RobotRock/Experiment.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
 namespace
 {
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.VL6180X" )
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Experiment" )
 }
 
-Vl6180x::Vl6180x( const QString& tty, QObject* parent )
+Experiment::Experiment( const QString& tty, QObject* parent )
     : QObject( parent )
     , _serial( new QSerialPort( tty, this ) )
-    , _distance( 0 )
 {
-   init();
+    init();
 }
 
-Vl6180x::~Vl6180x()
+Experiment::~Experiment()
 {
     _serial->close();
 }
 
-uint32_t Vl6180x::distance() const
+void Experiment::start()
 {
-    return _distance;
+    const QByteArray str( "s" );
+    write( str );
+}
+
+void Experiment::setColorYellow()
+{
+    const QByteArray str( "1" );
+    write( str );
+    tDebug( LOG ) << "Write 0";
+
+}
+
+void Experiment::setColorPurple()
+{
+    const QByteArray str( "0" );
+    write( str );
+    tDebug( LOG ) << "Write 1";
 }
 
 //
 // Private methods
 //
-void Vl6180x::readData()
-{
-    const QByteArray data = _serial->readAll();
-    qDebug() << "data:" << data;
-}
-
-void Vl6180x::init()
+void Experiment::init()
 {
     _serial->setBaudRate( QSerialPort::Baud9600 );
     _serial->setStopBits( QSerialPort::OneStop );
     _serial->setDataBits( QSerialPort::Data8 );
     _serial->setParity( QSerialPort::NoParity );
     _serial->setFlowControl( QSerialPort::NoFlowControl );
-
-    connect(
-        _serial,
-        & QSerialPort::readyRead,
-        this,
-        & Vl6180x::readData );
 
     if( _serial->open( QIODevice::ReadWrite ) )
     {
@@ -64,4 +67,11 @@ void Vl6180x::init()
     {
         tCritical( LOG ) << "Failed to open serial port";
     }
+}
+
+void Experiment::write( QByteArray data )
+{
+    _serial->write( data );
+    _serial->flush();
+    QThread::msleep( 10 );
 }

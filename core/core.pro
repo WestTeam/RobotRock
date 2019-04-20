@@ -11,6 +11,7 @@ INCLUDEPATH += include \
 
 SOURCES += \
     src/Action.cpp \
+    src/Experiment.cpp \
     src/GameThread.cpp \
     src/Hal.cpp \
     src/Input.cpp \
@@ -36,6 +37,7 @@ HEADERS += \
     include/Macros.hpp \
     include/WestBot/RobotRock/Action.hpp \
     include/WestBot/RobotRock/Common.hpp \
+    include/WestBot/RobotRock/Experiment.hpp \
     include/WestBot/RobotRock/GameThread.hpp \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \

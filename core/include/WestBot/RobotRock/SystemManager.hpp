@@ -7,6 +7,7 @@
 #include <QTimer>
 
 #include "Common.hpp"
+#include "Experiment.hpp"
 #include "GameThread.hpp"
 #include "Input.hpp"
 #include "Lidar.hpp"
@@ -75,6 +76,7 @@ private:
     Monitoring _monitoring;
     GameThread::Ptr _game;
     Vl6180x _distanceSensor;
+    Experiment _experiment;
 };
 
 }
