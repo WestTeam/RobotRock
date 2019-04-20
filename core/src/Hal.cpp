@@ -75,14 +75,33 @@ Hal::Hal()
     , _esc0Override( _layer1, 46 * 4 + 3, 8 )
     , _esc0Value( _layer1, 46 * 4, 16 )
 
-    // Motor color orientation
-    , _motor3Override( _layer1, 15 * 4 + 3, 8 )
-    , _motor3Inverted( _layer1, 15 * 4 + 2, 8 )
-    , _motor3Value( _layer1, 15 * 4, 16 )
 
-	// Motor color orientation
-	, _motor5Override( _layer1, 17 * 4 + 3, 8 )
-	, _motor5Value( _layer1, 17 * 4, 16 )
+    // MOTOR LEFT
+    , _motor0Override( _layer1, (12+0) * 4 + 3, 8 )
+    , _motor0Inverted( _layer1, (12+0) * 4 + 2, 8 )
+    , _motor0Value( _layer1, (12+0) * 4, 16 )
+
+    // MOTOR RIGHT
+    , _motor1Override( _layer1, (12+1) * 4 + 3, 8 )
+    , _motor1Inverted( _layer1, (12+1) * 4 + 2, 8 )
+    , _motor1Value( _layer1, (12+1) * 4, 16 )
+
+    // Motor Custom
+    , _motor2Override( _layer1, (12+2) * 4 + 3, 8 )
+    , _motor2Inverted( _layer1, (12+2) * 4 + 2, 8 )
+    , _motor2Value( _layer1, (12+2) * 4, 16 )
+
+    , _motor3Override( _layer1, (12+3) * 4 + 3, 8 )
+    , _motor3Inverted( _layer1, (12+3) * 4 + 2, 8 )
+    , _motor3Value( _layer1, (12+3) * 4, 16 )
+
+    , _motor4Override( _layer1, (12+4) * 4 + 3, 8 )
+    , _motor4Inverted( _layer1, (12+4) * 4 + 2, 8 )
+    , _motor4Value( _layer1, (12+4) * 4, 16 )
+
+    , _motor5Override( _layer1, (12+5) * 4 + 3, 8 )
+    , _motor5Inverted( _layer1, (12+5) * 4 + 2, 8 )
+    , _motor5Value( _layer1, (12+5) * 4, 16 )
 
     // Smart Servo commands
     , _smartServoCmdValid( _layer1, 61 * 4 + 0, 8)

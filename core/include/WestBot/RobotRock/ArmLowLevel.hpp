@@ -37,7 +37,7 @@ public:
     virtual double getZ() = 0;
     virtual bool waitZTargetOk(double timeoutMs = 0) = 0;
     virtual void setZSpeed(double speed) = 0;
-    virtual void setZSAcc(double acc) = 0;
+    virtual void setZAcc(double acc) = 0;
 
     // Servos
     virtual void enableServo(enum ArmLowLevelLeg id, bool enable) = 0;
@@ -88,7 +88,7 @@ public:
     double getZ();
     bool waitZTargetOk(double timeoutMs = 0);
     void setZSpeed(double speed);
-    void setZSAcc(double acc);
+    void setZAcc(double acc);
 
     // Servos
     void enableServo(enum ArmLowLevelLeg id, bool enable);

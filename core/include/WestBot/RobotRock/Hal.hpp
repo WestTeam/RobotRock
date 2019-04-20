@@ -90,11 +90,28 @@ public:
     ItemRegister _esc0Override;
     ItemRegister _esc0Value;
 
+    ItemRegister _motor0Override;
+    ItemRegister _motor0Inverted;
+    ItemRegister _motor0Value;
+
+    ItemRegister _motor1Override;
+    ItemRegister _motor1Inverted;
+    ItemRegister _motor1Value;
+
+    ItemRegister _motor2Override;
+    ItemRegister _motor2Inverted;
+    ItemRegister _motor2Value;
+
     ItemRegister _motor3Override;
     ItemRegister _motor3Inverted;
     ItemRegister _motor3Value;
 
+    ItemRegister _motor4Override;
+    ItemRegister _motor4Inverted;
+    ItemRegister _motor4Value;
+
 	ItemRegister _motor5Override;
+    ItemRegister _motor5Inverted;
 	ItemRegister _motor5Value;
 
     // General Smart Servo Command

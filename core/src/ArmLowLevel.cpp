@@ -386,7 +386,7 @@ void ArmLowLevel::setZSpeed(double speed)
     double pidSpeed = speed * Z_ENCODER_TICK_PER_MM / PID_FREQ_HZ;
     _hal->_pidCustomSpeed.write( (float)pidSpeed );
 }
-void ArmLowLevel::setZSAcc(double acc)
+void ArmLowLevel::setZAcc(double acc)
 {
 // acc in mm per second ^2
     double pidAcc = acc * Z_ENCODER_TICK_PER_MM / PID_FREQ_HZ;
