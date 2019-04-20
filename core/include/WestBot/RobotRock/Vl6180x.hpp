@@ -16,10 +16,9 @@ namespace RobotRock {
  */
 class Vl6180x : public QObject
 {
-    Q_OBJECT
-
 public:
-    Vl6180x( const QString& tty = "/dev/ttyAL1", QObject* parent = nullptr );
+    Vl6180x( const QString& tty = "/dev/ttyAL8", QObject* parent = nullptr );
+
     ~Vl6180x();
 
     /*!
@@ -29,12 +28,14 @@ public:
      */
     uint32_t distance() const;
 
-private:
-    void open( const QString& tty );
+private slots:
     void readData();
 
 private:
-    QSerialPort _serial;
+    void init();
+
+private:
+    QSerialPort* _serial;
     uint32_t _distance;
 };
 

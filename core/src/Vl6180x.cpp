@@ -17,20 +17,15 @@ namespace
 
 Vl6180x::Vl6180x( const QString& tty, QObject* parent )
     : QObject( parent )
+    , _serial( new QSerialPort( tty, this ) )
     , _distance( 0 )
 {
-    connect(
-        & _serial,
-        & QSerialPort::readyRead,
-        this,
-        & Vl6180x::readData );
-
-    open( tty );
+   init();
 }
 
 Vl6180x::~Vl6180x()
 {
-    _serial.close();
+    _serial->close();
 }
 
 uint32_t Vl6180x::distance() const
@@ -41,37 +36,32 @@ uint32_t Vl6180x::distance() const
 //
 // Private methods
 //
-void Vl6180x::open( const QString& tty )
-{
-    _serial.setPortName( tty );
-    _serial.setBaudRate( QSerialPort::Baud115200 );
-    _serial.setDataBits( QSerialPort::Data8 );
-    _serial.setParity( QSerialPort::NoParity );
-    _serial.setStopBits( QSerialPort::OneStop );
-    _serial.setFlowControl( QSerialPort::NoFlowControl );
-
-    if( _serial.open( QIODevice::ReadOnly ) )
-    {
-        tDebug( LOG ) << "Vl6180x TTY opened";
-    }
-    else
-    {
-        tFatal( LOG ) << "Vl6180x TTY failed to open";
-    }
-}
-
 void Vl6180x::readData()
 {
-    const QByteArray data = _serial.readAll();
+    const QByteArray data = _serial->readAll();
+    qDebug() << "data:" << data;
+}
 
-    if( data[ 0 ] = 0x01 && data[ Ã2 ] == 0xA5 )
+void Vl6180x::init()
+{
+    _serial->setBaudRate( QSerialPort::Baud115200 );
+    _serial->setStopBits( QSerialPort::OneStop );
+    _serial->setDataBits( QSerialPort::Data8 );
+    _serial->setParity( QSerialPort::NoParity );
+    _serial->setFlowControl( QSerialPort::NoFlowControl );
+
+    connect(
+        _serial,
+        & QSerialPort::readyRead,
+        this,
+        & Vl6180x::readData );
+
+    if( _serial->open( QIODevice::ReadWrite ) )
     {
-        // Valid trame found
-        _distance = data[ 1 ];
+        tDebug( LOG ) << "Serial port opened";
     }
     else
     {
-        tDebug( LOG ) << "Unknown frame: dropping data";
-        _serial.flush();
+        tCritical( LOG ) << "Failed to open serial port";
     }
 }

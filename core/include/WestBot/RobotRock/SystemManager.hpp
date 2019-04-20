@@ -15,6 +15,7 @@
 #include "Recalage.hpp"
 #include "StrategyManager.hpp"
 #include "TrajectoryManager.hpp"
+#include "Vl6180x.hpp"
 
 class QState;
 class QString;
@@ -73,6 +74,7 @@ private:
     StrategyManager _strategyManager;
     Monitoring _monitoring;
     GameThread::Ptr _game;
+    Vl6180x _distanceSensor;
 };
 
 }
