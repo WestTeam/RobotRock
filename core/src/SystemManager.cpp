@@ -225,6 +225,8 @@ void SystemManager::start()
 
     _game.reset( new GameThread( _strategyManager, _color ) );
     _game->start();
+
+    _experiment.start();
 }
 
 void SystemManager::stop()
@@ -351,12 +353,14 @@ void SystemManager::displayColor( const DigitalValue& value )
         _color = Color::Blue;
         _ledBlue->digitalWrite( DigitalValue::ON );
         _ledYellow->digitalWrite( DigitalValue::OFF );
+        _experiment.setColorPurple();
     }
     else
     {
         _color = Color::Yellow;
         _ledBlue->digitalWrite( DigitalValue::OFF );
         _ledYellow->digitalWrite( DigitalValue::ON );
+        _experiment.setColorYellow();
     }
 
     _monitoring.updateColor( _color );

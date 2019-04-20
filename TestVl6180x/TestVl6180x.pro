@@ -2,7 +2,7 @@
 
 QT += core network serialport
 
-TARGET = homologation
+TARGET = testVl6180x
 SOURCES = main.cpp
 
 INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/

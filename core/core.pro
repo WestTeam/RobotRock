@@ -11,6 +11,7 @@ INCLUDEPATH += include \
 
 SOURCES += \
     src/Action.cpp \
+    src/Experiment.cpp \
     src/GameThread.cpp \
     src/Hal.cpp \
     src/Input.cpp \
@@ -28,6 +29,7 @@ SOURCES += \
     src/StrategyManager.cpp \
     src/SystemManager.cpp \
     src/TrajectoryManager.cpp \
+    src/Vl6180x.cpp \
     src/WaitAction.cpp \
     src/SmartServo.cpp
 
@@ -35,6 +37,7 @@ HEADERS += \
     include/Macros.hpp \
     include/WestBot/RobotRock/Action.hpp \
     include/WestBot/RobotRock/Common.hpp \
+    include/WestBot/RobotRock/Experiment.hpp \
     include/WestBot/RobotRock/GameThread.hpp \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \
@@ -52,6 +55,7 @@ HEADERS += \
     include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
+    include/WestBot/RobotRock/Vl6180x.hpp \
     include/WestBot/RobotRock/WaitAction.hpp \
     include/WestBot/RobotRock/SmartServo.hpp
 
