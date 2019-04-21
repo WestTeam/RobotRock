@@ -113,8 +113,6 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
             }
         } );
 
-    reset();
-
     _monitoring.start();
     _monitoring.setRefreshRate( 250 );
 }
@@ -320,7 +318,6 @@ void SystemManager::initRecalage()
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x
                  << _odometry->getPosition().y << _odometry->getPosition().theta;
-
 }
 
 void SystemManager::blinkColorLed()

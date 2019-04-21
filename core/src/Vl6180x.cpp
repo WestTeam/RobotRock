@@ -112,10 +112,10 @@ void Vl6180x::init()
 
     if( _serial->open( QIODevice::ReadWrite ) )
     {
-        tDebug( LOG ) << "Serial port opened";
+        tDebug( LOG ) << "VL6180X TTY opened";
     }
     else
     {
-        tCritical( LOG ) << "Failed to open serial port";
+        tCritical( LOG ) << "Failed to open VL6180X TTY";
     }
 }

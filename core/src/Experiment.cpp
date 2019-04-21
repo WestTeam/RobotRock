@@ -58,11 +58,11 @@ void Experiment::init()
 
     if( _serial->open( QIODevice::ReadWrite ) )
     {
-        tDebug( LOG ) << "Serial port opened";
+        tDebug( LOG ) << "Experiment TTY opened";
     }
     else
     {
-        tCritical( LOG ) << "Failed to open serial port";
+        tCritical( LOG ) << "Failed to open Experiment TTY";
     }
 }
 
