@@ -21,13 +21,13 @@ public:
     using Ptr = std::unique_ptr< GameThread >;
 
     GameThread(
-        const StrategyManager& strategyManager,
+        const StrategyManager::Ptr& strategyManager,
         const Color& color );
 
     const Color& color() const;
 
 private:
-    StrategyManager _strategyManager;
+    StrategyManager::Ptr _strategyManager;
     Color _color;
 };
 

@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_MONITORING_HPP_
 #define WESTBOT_ROBOTROCK_MONITORING_HPP_
 
+#include <memory>
+
 #include <QThread>
 
 #include "Common.hpp"
@@ -16,6 +18,8 @@ namespace RobotRock {
 class Monitoring : public QThread
 {
 public:
+    using Ptr = std::shared_ptr< Monitoring >;
+
     Monitoring( const Hal::Ptr& hal, const Odometry::Ptr& odometry );
 
     void setRefreshRate( int delayMs );

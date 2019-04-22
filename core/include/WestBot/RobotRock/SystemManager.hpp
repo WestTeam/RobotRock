@@ -67,13 +67,15 @@ private:
     Output::Ptr _ledYellow;
     Output::Ptr _ledBlue;
     Color _color;
+    SystemMode _systemMode;
+
+    // Base system
     Odometry::Ptr _odometry;
     Recalage::Ptr _recalage;
     LidarRPLidarA2::Ptr _lidar;
-    TrajectoryManager _trajectoryManager;
-    SystemMode _systemMode;
-    StrategyManager _strategyManager;
-    Monitoring _monitoring;
+    TrajectoryManager::Ptr _trajectoryManager;
+    StrategyManager::Ptr _strategyManager;
+    Monitoring::Ptr _monitoring;
     GameThread::Ptr _game;
     //Vl6180x _distanceSensor;
     Experiment _experiment;

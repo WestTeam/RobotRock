@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_TRAJECTORYMANAGER_HPP_
 #define WESTBOT_ROBOTROCK_TRAJECTORYMANAGER_HPP_
 
+#include <memory>
+
 #include <QDebug>
 
 #include "Hal.hpp"
@@ -38,6 +40,7 @@ namespace RobotRock {
 class TrajectoryManager
 {
 public:
+    using Ptr = std::shared_ptr< TrajectoryManager >;
 
     enum class TrajectoryType
     {

@@ -32,8 +32,8 @@ namespace
 }
 
 Recalage::Recalage()
-    : _odometry(nullptr)
-    , _lidar(nullptr)
+    : _odometry( nullptr )
+    , _lidar( nullptr )
 {
     _initDone = false;
     _continuousMode = false;
@@ -47,7 +47,7 @@ Recalage::Recalage()
 
 Recalage::~Recalage()
 {
-    if (_attached)
+    if( _attached )
     {
         _finishing = true;
 

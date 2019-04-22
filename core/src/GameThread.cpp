@@ -6,7 +6,7 @@ using namespace WestBot;
 using namespace WestBot::RobotRock;
 
 GameThread::GameThread(
-    const StrategyManager& strategyManager,
+    const StrategyManager::Ptr& strategyManager,
     const Color& color )
     : _strategyManager( strategyManager )
     , _color( color )
@@ -20,5 +20,5 @@ const Color& GameThread::color() const
 
 void GameThread::run()
 {
-    _strategyManager.doStrat( _color );
+    _strategyManager->doStrat( _color );
 }

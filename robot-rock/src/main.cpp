@@ -37,6 +37,8 @@ int main( int argc, char *argv[] )
     Hal::Ptr hal = std::make_shared< Hal >();
     SystemManager system( hal );
 
+    tInfo( LOG ) << "==== System started ! ==== ";
+
     if( ! system.init() )
     {
         tFatal( LOG ) << "Failed to init system manager";

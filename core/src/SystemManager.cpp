@@ -20,7 +20,6 @@ namespace
     const int GAME_DURATION = 90 * 1000; // 90s
     const QString LIDAR_TTY = "/dev/ttyAL6";
     const uint32_t LIDAR_BAUDRATE = 256000;
-
 }
 
 SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
@@ -47,13 +46,13 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
               std::make_shared< ItemRegister >( _hal->_output2 ),
               "Blue" ) )
     , _color( Color::Unknown )
-    , _lidar( nullptr )
-    , _odometry( std::make_shared< Odometry >(_hal) )
-    , _recalage( std::make_shared< Recalage >() )
-    , _trajectoryManager( _hal, _recalage )
     , _systemMode( SystemManager::SystemMode::Full )
-    , _strategyManager( _trajectoryManager )
-    , _monitoring( _hal, _odometry )
+    , _odometry( nullptr )
+    , _recalage( nullptr )
+    , _lidar( nullptr )
+    , _trajectoryManager( nullptr )
+    , _strategyManager( nullptr )
+    , _monitoring( nullptr )
     , _game( nullptr )
 {
     connect(
@@ -113,8 +112,30 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
             }
         } );
 
-    _monitoring.start();
-    _monitoring.setRefreshRate( 250 );
+#ifndef NO_LIDAR
+    // we need to provide sw control on this motor
+    _hal->_motor5Override.write( 1 );
+
+    _lidar.reset( new LidarRPLidarA2(
+        LIDAR_TTY,
+        LIDAR_BAUDRATE,
+        std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
+    if( ! _lidar->init() )
+    {
+        tCritical( LOG ) << "Failed to init/check health of lidar module";
+        return;
+    }
+#endif
+
+    _hal->_colorEnable.write( 0 );
+
+    _hal->_resetAll.write( 1 );
+
+    _hal->clearRegisters();
+
+    _hal->_resetAll.write( 0 );
+
+    _hal->_colorEnable.write( 1 );
 }
 
 SystemManager::~SystemManager()
@@ -161,25 +182,29 @@ bool SystemManager::init()
     _hal->_pidAngleTarget.write( _hal->_pidAnglePosition.read< float >() );
     _hal->_pidAngleEnable.write( 1 );
 
-#ifndef NO_LIDAR
-    // we need to provide sw control on this motor
-    _hal->_motor5Override.write(1);
+    // On set nos pointeurs avant toute chose
 
-    _lidar = std::make_shared< LidarRPLidarA2 >(LIDAR_TTY,LIDAR_BAUDRATE,std::make_shared< ItemRegister >( _hal->_motor5Value ));
-    if( !_lidar->init() )
-    {
-        tWarning( LOG ) << "Failed to init/check health of lidar module";
-        return false;
-    }
-#endif
+    _odometry.reset( new Odometry( _hal ) );
 
-    if( ! _recalage->init( _odometry, (LidarBase::Ptr)_lidar ) )
+    _recalage.reset( new Recalage() );
+
+    if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidar ) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
     }
 
-    _trajectoryManager.init();
+    _trajectoryManager.reset(
+        new TrajectoryManager( _hal, _recalage ) );
+
+    _trajectoryManager->init();
+
+    _strategyManager.reset( new StrategyManager( _trajectoryManager ) );
+
+    _monitoring.reset( new Monitoring( _hal, _odometry ) );
+
+    _monitoring->start();
+    _monitoring->setRefreshRate( 250 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );
@@ -247,7 +272,7 @@ void SystemManager::stop()
         _game->terminate();
     }
 
-    _strategyManager.stop();
+    _strategyManager->stop();
 
     tInfo( LOG ) << "System stopped";
 
@@ -265,6 +290,14 @@ void SystemManager::reset()
     _hal->_resetAll.write( 0 );
 
     _hal->_colorEnable.write( 1 );
+
+    _odometry = nullptr;
+    _trajectoryManager = nullptr;
+    _strategyManager = nullptr;
+    _recalage = nullptr;
+
+    _monitoring->terminate();
+    _monitoring = nullptr;
 
     tInfo( LOG ) << "System was reset";
 
@@ -308,12 +341,10 @@ void SystemManager::initRecalage()
     if( _color == Color::Yellow )
     {
         _odometry->setPosition({.x=0, .y=0, .theta=0});
-        //_recalage->errorInit( 0, 0, 0 );
     }
     else
     {
         _odometry->setPosition({.x=0, .y=0, .theta=0});
-        //_recalage->errorInit( 0, 0, 0 );
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x
@@ -360,6 +391,6 @@ void SystemManager::displayColor( const DigitalValue& value )
         _experiment.setColorYellow();
     }
 
-    _monitoring.updateColor( _color );
+    _monitoring->updateColor( _color );
 }
 

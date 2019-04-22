@@ -19,7 +19,7 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.StrategyManager" )
 }
 
-StrategyManager::StrategyManager( TrajectoryManager& trajectoryManager )
+StrategyManager::StrategyManager( const TrajectoryManager::Ptr& trajectoryManager )
     : _trajectoryManager( trajectoryManager )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
@@ -31,8 +31,8 @@ void StrategyManager::stop()
     hardStop();
 
     // Stop traj
-    _trajectoryManager.hardStop();
-    _trajectoryManager.disable();
+    _trajectoryManager->hardStop();
+    _trajectoryManager->disable();
 }
 
 // Private methods

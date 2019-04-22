@@ -17,7 +17,7 @@ public:
     using Ptr = std::shared_ptr< MoveAction >;
 
     MoveAction(
-        TrajectoryManager& trajectoryManager,
+        const TrajectoryManager::Ptr& trajectoryManager,
         TrajectoryManager::TrajectoryType type,
         float theta,
         float distance,
@@ -29,7 +29,7 @@ public:
     void execute() override;
 
 private:
-    TrajectoryManager& _trajectoryManager; // Here we use a ref not a copy very important
+    TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
     TrajectoryManager::TrajectoryType _type;
     float _theta;
     float _distance;
