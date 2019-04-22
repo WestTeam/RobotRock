@@ -46,7 +46,6 @@ Trame trame;
 
 Vl6180x::Vl6180x( const QString& tty )
     : _serial( new QSerialPort( tty, this ) )
-    , _distance( 0 )
 {
    init();
 }
@@ -56,9 +55,9 @@ Vl6180x::~Vl6180x()
     _serial->close();
 }
 
-uint8_t Vl6180x::distance() const
+uint8_t Vl6180x::distance( int sensorId ) const
 {
-    return _distance;
+    return _distance[ sensorId ];
 }
 
 //
@@ -85,7 +84,7 @@ void Vl6180x::readData()
 
             if( trame.status == 0 )
             {
-                _distance = trame.dist;
+                _distance[ trame.header.id ] = trame.dist;
             }
             else
             {
@@ -118,7 +117,6 @@ void Vl6180x::init()
         tCritical( LOG ) << "Failed to open VL6180X TTY";
     }
 }
-
 
 void Vl6180x::run()
 {

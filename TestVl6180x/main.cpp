@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 
     while( 1 )
     {
-        tDebug( LOG ) << "Read distance:" << vl6180x.distance();
+        tDebug( LOG ) << "Read distance:" << vl6180x.distance( 0 );
         a.processEvents();
     }
 

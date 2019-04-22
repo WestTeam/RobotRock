@@ -26,7 +26,7 @@ public:
      *
      * \return Distance in mm.
      */
-    uint8_t distance() const;
+    uint8_t distance( int sensorId ) const;
 
 private:
     void run() override;
@@ -36,7 +36,7 @@ private:
 
 private:
     QSerialPort* _serial;
-    uint32_t _distance;
+    uint32_t _distance[ 3 ];
 };
 
 }
