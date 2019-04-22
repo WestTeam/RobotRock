@@ -44,9 +44,8 @@ typedef struct
 
 Trame trame;
 
-Vl6180x::Vl6180x( const QString& tty, QObject* parent )
-    : QObject( parent )
-    , _serial( new QSerialPort( tty, this ) )
+Vl6180x::Vl6180x( const QString& tty )
+    : _serial( new QSerialPort( tty, this ) )
     , _distance( 0 )
 {
    init();
@@ -118,4 +117,10 @@ void Vl6180x::init()
     {
         tCritical( LOG ) << "Failed to open VL6180X TTY";
     }
+}
+
+
+void Vl6180x::run()
+{
+    while( 1 );
 }

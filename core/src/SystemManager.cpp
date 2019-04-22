@@ -206,6 +206,8 @@ bool SystemManager::init()
     _monitoring->start();
     _monitoring->setRefreshRate( 250 );
 
+    _distanceSensor.start();
+
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );
 

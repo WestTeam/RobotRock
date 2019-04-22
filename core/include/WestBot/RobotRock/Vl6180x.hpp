@@ -3,8 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_VL6180X_HPP_
 #define WESTBOT_ROBOTROCK_VL6180X_HPP_
 
-#include <QObject>
 #include <QSerialPort>
+#include <QThread>
 
 class QString;
 
@@ -14,10 +14,10 @@ namespace RobotRock {
 /*!
  * \brief The Vl6180x class process incoming data from a serial link.
  */
-class Vl6180x : public QObject
+class Vl6180x : public QThread
 {
 public:
-    Vl6180x( const QString& tty = "/dev/ttyAL8", QObject* parent = nullptr );
+    Vl6180x( const QString& tty = "/dev/ttyAL8" );
 
     ~Vl6180x();
 
@@ -28,11 +28,11 @@ public:
      */
     uint8_t distance() const;
 
-private slots:
-    void readData();
-
 private:
+    void run() override;
+
     void init();
+    void readData();
 
 private:
     QSerialPort* _serial;

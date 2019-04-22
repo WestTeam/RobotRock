@@ -77,7 +77,7 @@ private:
     StrategyManager::Ptr _strategyManager;
     Monitoring::Ptr _monitoring;
     GameThread::Ptr _game;
-    //Vl6180x _distanceSensor;
+    Vl6180x _distanceSensor;
     Experiment _experiment;
 };
 
