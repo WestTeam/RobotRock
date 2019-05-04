@@ -20,7 +20,10 @@ namespace WestBot {
 namespace RobotRock {
 
 enum ArmHighLevelStorage { ARM_HL_STORAGE_LEFT, ARM_HL_STORAGE_RIGHT };
-enum ArmHighLevelMode { ARM_HL_MODE_HORIZONTAL, ARM_HL_MODE_VERTICAL };
+enum ArmHighLevelMode {
+        ARM_HL_MODE_HORIZONTAL, // head is pointing the ground
+        ARM_HL_MODE_VERTICAL  // head is in the same alignment as the lower arm
+};
 
 
 typedef struct
@@ -76,10 +79,11 @@ public:
     bool actionSafePosition();
     bool actionGroundPuckCollection(double xMm, double yMm);
     bool actionDistributorPuckCollection(double xMm, double yMm);
-    bool actionCheckGoldDoorOpen(double xMm, double yMm, double);
+    bool actionCheckGoldDoorOpen(double xMm, double yMm);
     bool actionGoldPuckCollection(double xMm, double yMm);
     bool actionPuckStore(enum ArmHighLevelStorage id);
     bool actionPuckUnstore(enum ArmHighLevelStorage id);
+    bool actionPuckRelease(double xMm, double yMm, double zMm);
 
 private:
 

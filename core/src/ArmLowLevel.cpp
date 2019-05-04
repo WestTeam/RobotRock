@@ -10,6 +10,8 @@
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
+#define Z_DISABLED
+
 
 ArmLowLevel::ArmLowLevel()
     : _attached( false )
@@ -28,7 +30,7 @@ ArmLowLevel::~ArmLowLevel()
 
     if (_attached)
     {
-        for (int i=ARM_LL_SERVO_UPPER_ARM;i<ARM_LL_SERVO_WRIST;i++)
+        for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
             try {
                 delete _smartServo[i];
@@ -76,11 +78,18 @@ bool ArmLowLevel::init(
         _smartServo[ARM_LL_SERVO_WRIST]     = new SmartServo("Wrist protocol:"+ QString::number(wristProtocol) + " bus:" + QString::number(wristbusId));
         _smartServo[ARM_LL_SERVO_WRIST]->attach(hal,wristProtocol,wristbusId);
 
+
+        for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
+        {
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,128);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,16);
+        }
+
         _attached = true;
     } catch (...)
     {
 
-        for (int i=ARM_LL_SERVO_UPPER_ARM;i<ARM_LL_SERVO_WRIST;i++)
+        for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
             try {
                 if (_smartServo[i] != nullptr)
@@ -96,11 +105,11 @@ bool ArmLowLevel::init(
     }
 
     // we set the servo position in "safe state"
-    for (int i=ARM_LL_SERVO_UPPER_ARM;i<ARM_LL_SERVO_WRIST;i++)
+    for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
     {
         try {
             _smartServo[i]->setEnable(false,true);
-            _smartServo[i]->setPosition(false,true,1024/2);
+            _smartServo[i]->setPosition(false,false,1024/2);
 
         } catch (...)
         {
@@ -110,6 +119,7 @@ bool ArmLowLevel::init(
         }
     }
 
+#ifndef Z_DISABLED
     // we now have to init the Z axe
     // first step: INIT the PID module
 
@@ -241,6 +251,8 @@ bool ArmLowLevel::init(
 
         _initOk = true;
     }
+#endif
+
 endfunction:
 
     return ret;
@@ -303,7 +315,7 @@ void ArmLowLevel::disable()
 
         enableZ(false);
 
-        for (int i=ARM_LL_SERVO_UPPER_ARM;i<ARM_LL_SERVO_WRIST;i++)
+        for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
             enableServo((enum ArmLowLevelLeg)i,false);
         }
@@ -319,13 +331,18 @@ bool ArmLowLevel::isAttached() const
 
 void ArmLowLevel::enableZ(bool enable)
 {
+#ifndef Z_DISABLED
     _hal->_pidCustomEnable.write( (uint8_t)enable );
+#endif
 }
 void ArmLowLevel::setZ(double mmAbs)
 {
+
 #define Z_ENCODER_TICK_PER_MM (128.0/4.0)
 #define Z_REF_POS_ABS_MM (320.0)
 #define Z_MIN_POS_MM (40.0)
+
+#ifndef Z_DISABLED
 
     if (mmAbs < Z_MIN_POS_MM)
         mmAbs = Z_MIN_POS_MM;
@@ -337,11 +354,14 @@ void ArmLowLevel::setZ(double mmAbs)
     int32_t target = _refZ-(int32_t)((Z_REF_POS_ABS_MM-mmAbs)*Z_ENCODER_TICK_PER_MM);
 
     _hal->_pidCustomTarget.write( target );
+#endif
 
 }
 double ArmLowLevel::getZ()
 {
-    double ret;
+    double ret = 0.0;
+
+#ifndef Z_DISABLED
     int32_t currentPos = _hal->_pidCustomPosition.read< int32_t >();
 
     ret = Z_REF_POS_ABS_MM - ((double)(_refZ-currentPos))*1.0/Z_ENCODER_TICK_PER_MM;
@@ -351,6 +371,7 @@ double ArmLowLevel::getZ()
 
     if (ret < Z_MIN_POS_MM)
         ret = Z_MIN_POS_MM;
+#endif
 
     return ret;
 }
@@ -362,6 +383,7 @@ bool ArmLowLevel::waitZTargetOk(double timeoutMs)
 #define WAIT_MARGIN_MM (5.0)
 #define WAIT_MAX_MS (10000.0)
 
+#ifndef Z_DISABLED
     double timeoutMsLocal = timeoutMs;
     if (timeoutMsLocal == 0)
         timeoutMsLocal = WAIT_MAX_MS;
@@ -375,7 +397,9 @@ bool ArmLowLevel::waitZTargetOk(double timeoutMs)
             ret = true;
 
     } while (!ret && timeoutMsLocal > 0);
-
+#else
+    ret = true;
+#endif
     return ret;
 }
 void ArmLowLevel::setZSpeed(double speed)
@@ -412,12 +436,14 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 #define SERVO_OFFSET (1024.0/2.0)
 
     double pos = (SERVO_OFFSET+angleDegs*SERVO_TICK_PER_DEG);
-    if (pos > SERVO_RANGE_DEG/2-1.0)
-        pos = SERVO_RANGE_DEG/2-1.0;
+    if (pos > 1023)
+        pos = 1023;
     if (pos < 0)
         pos = 0;
 
     try {
+        //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
+
         _smartServo[id]->setPosition(false,false,(uint16_t)pos);
     } catch (...) {
 
@@ -450,7 +476,7 @@ bool ArmLowLevel::waitServoTargetOk(enum ArmLowLevelLeg id, double timeoutMs)
 
     } while (moving && timeoutMsLocal > 0);
 
-    return moving;
+    return !moving;
 }
 bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
 {
@@ -467,9 +493,11 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         moving |= _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
         moving |= _smartServo[ARM_LL_SERVO_WRIST]->moving();
 
+        tInfo( LOG ) << moving << timeoutMsLocal;
+
     } while (moving && timeoutMsLocal > 0);
 
-    return moving;
+    return !moving;
 }
 
 // Vacuum

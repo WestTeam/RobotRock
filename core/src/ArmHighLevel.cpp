@@ -258,6 +258,9 @@ int circle_circle_intersection(double x0, double y0, double r0,
                                double *xi_prime, double *yi_prime)
 */
 
+    tInfo( LOG ) <<  "ArmHighLevel: moveArmRel" << xMm << yMm;
+
+
     double x0,y0,r0;
     double x1,y1,r1;
     double xi,yi;
@@ -275,19 +278,28 @@ int circle_circle_intersection(double x0, double y0, double r0,
     if (_mode == ARM_HL_MODE_VERTICAL)
         r1 += WRIST_AND_SUCTION_LENGTH;
 
-    int error = circle_circle_intersection(x0,y0,r0,
+    int ok = circle_circle_intersection(x0,y0,r0,
                                x1,y1,r1,
                                &xi,&yi,
                                &xi_prime,&yi_prime);
 
+    tDebug(LOG) << "ArmHighLevel: circle_circle_intersection: pos " << xi << yi;
+    tDebug(LOG) << "ArmHighLevel: circle_circle_intersection: pos prime " << xi_prime << yi_prime;
 
-    if (error == 0)
+
+    if (ok == 1)
     {
-        double theta1 = atan2(yi - y0,xi - y0);
-        double theta2 = atan2(y1 - yi,x1 - yi);
+        double theta1 = atan2(yi - y0,xi - x0);
+        double theta2 = atan2(y1 - yi,x1 - xi)-theta1;
 
-        double theta1_prime = atan2(yi_prime - y0,xi_prime - y0);
-        double theta2_prime = atan2(y1 - yi_prime,x1 - yi_prime);
+        tDebug(LOG) << "ArmHighLevel: moveArmRel atan2: " << y1 - yi << x1 - xi << theta2 << DEG(theta2);
+
+
+        double theta1_prime = atan2(yi_prime - y0,xi_prime - x0);
+        double theta2_prime = atan2(y1 - yi_prime,x1 - xi_prime)-theta1_prime;
+
+        tDebug(LOG) << "ArmHighLevel: moveArmRel atan2 prime : " << y1 - yi_prime << x1 - xi_prime << theta2_prime << DEG(theta2_prime);
+
 
         tDebug(LOG) << "ArmHighLevel: moveArmRel angles: " << DEG(theta1) << DEG(theta2);
         tDebug(LOG) << "ArmHighLevel: moveArmRel angles primes: " << DEG(theta1_prime) << DEG(theta2_prime);
@@ -298,7 +310,7 @@ int circle_circle_intersection(double x0, double y0, double r0,
         // we select the smallest theta
         // should we need to also keep the closest solution compared to the current one ? to
         // avoid doing too much movements
-        if (abs(theta2_prime) < abs(theta2))
+        if (0 && abs(theta2_prime) < abs(theta2))
         {
             selected_theta1 = theta1_prime;
             selected_theta2 = theta2_prime;
@@ -309,7 +321,7 @@ int circle_circle_intersection(double x0, double y0, double r0,
 
         return _armLL->waitServosTargetOk(2000);
     } else {
-        tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: no solutions " << error;
+        tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: no solutions " << ok;
         return false;
     }
 
@@ -361,23 +373,23 @@ void ArmHighLevel::getObjectPos(double &xMm, double &yMm, double &zMm)
 
     double armX1,armY1;
 
-    armX1 = armX0 + 70.0*cos(RAD(rpos.theta+angle1));
-    armY1 = armY0 + 70.0*sin(RAD(rpos.theta+angle1));
+    armX1 = armX0 + 70.0*cos(rpos.theta+RAD(angle1));
+    armY1 = armY0 + 70.0*sin(rpos.theta+RAD(angle1));
 
     double armX2,armY2;
 
-    armX2 = armX1 + 70.0*cos(RAD(rpos.theta+angle1+angle2));
-    armY2 = armY1 + 70.0*sin(RAD(rpos.theta+angle1+angle2));
+    armX2 = armX1 + 70.0*cos(rpos.theta+RAD(angle1+angle2));
+    armY2 = armY1 + 70.0*sin(rpos.theta+RAD(angle1+angle2));
     double curZ = _armLL->getZ();
 
     double armX3,armY3;
 #define WRIST_LENGTH 24.6
-    double len3 = 24.6 + _armLL->getDistance();
+    double len3 = WRIST_LENGTH + _armLL->getDistance();
 
     if (_mode == ARM_HL_MODE_VERTICAL)
     {
-        armX3 = armX2 + len3*cos(RAD(rpos.theta+angle1+angle2+angle3));
-        armY3 = armY2 + len3*sin(RAD(rpos.theta+angle1+angle2+angle3));
+        armX3 = armX2 + len3*cos(rpos.theta+RAD(angle1+angle2));
+        armY3 = armY2 + len3*sin(rpos.theta+RAD(angle1+angle2));
     }
     else
     {
@@ -397,11 +409,13 @@ double ArmHighLevel::getObjectDistance()
 #define SUCTION_CUP_LENGTH 14.0
 
     double dist = _armLL->getDistance();
-    dist -= SUCTION_CUP_LENGTH;
-    if (dist < 0)
-        dist = 0.0;
+    double distObj = dist;
+    distObj -= SUCTION_CUP_LENGTH;
+    if (distObj < 0)
+        distObj = 0.0;
 
-    return dist;
+    tDebug(LOG) << "ArmHighLevel::getObjectDistance" << dist << distObj;
+    return distObj;
 }
 
 uint8_t ArmHighLevel::getPuckCount(enum ArmHighLevelStorage id)
@@ -418,10 +432,10 @@ bool ArmHighLevel::actionSafePosition()
 
     // TO BE DEFINED
 #define SAFE_OUT_ANGLE_1 0.0
-#define SAFE_OUT_ANGLE_2 90.0
+#define SAFE_OUT_ANGLE_2 0.0
 
-#define SAFE_IN_ANGLE_1 -90.0
-#define SAFE_IN_ANGLE_2 70.0
+#define SAFE_IN_ANGLE_1 0.0
+#define SAFE_IN_ANGLE_2 0.0
 
 #define SAFE_Z 200.0
 
@@ -519,7 +533,7 @@ bool ArmHighLevel::actionDistributorPuckCollection(double xMm, double yMm)
     return true;
 }
 
-bool ArmHighLevel::actionCheckGoldDoorOpen(double xMm, double yMm, double)
+bool ArmHighLevel::actionCheckGoldDoorOpen(double xMm, double yMm)
 {
     setMode(ARM_HL_MODE_VERTICAL);
 
@@ -590,9 +604,11 @@ bool ArmHighLevel::actionPuckStore(enum ArmHighLevelStorage id)
 
     targetZ = _storagePos[id].z + count*PUCK_WIDTH + PUCK_WIDTH + PUCK_WIDTH;
 
+    moveZ(targetZ);
+
     double dist = getObjectDistance();
 
-    if (dist > (PUCK_WIDTH+10.0) || dist < 20.0 )
+    if (dist > (PUCK_WIDTH+10.0) || dist < 15.0 )
     {
         tWarning(LOG) << "ArmHighLevel: actionPuckStore: Puck store action issue " << dist;
         return false;
@@ -656,4 +672,55 @@ bool ArmHighLevel::actionPuckUnstore(enum ArmHighLevelStorage id)
     return true;
 }
 
+
+bool ArmHighLevel::actionPuckRelease(double xMm, double yMm, double zMm)
+{
+    bool ret = true;
+
+    double initDist = getObjectDistance();
+    double dist1, dist2, dist3;
+
+#define DISTANCE_ERROR (10.0)
+
+    if (initDist > DISTANCE_ERROR)
+    {
+        ret = false;
+        tWarning(LOG) << " ArmHighLevel::actionPuckRelease Init getObjectDistance too big (puck not locked?)" << initDist;
+    }
+
+    moveZ(zMm);
+
+    dist1 = getObjectDistance();
+
+    if (dist1 > DISTANCE_ERROR && initDist <= DISTANCE_ERROR)
+    {
+        ret = false;
+        tWarning(LOG) << " ArmHighLevel::actionPuckRelease After Z Move getObjectDistance too big (puck lost?)" << dist1 << initDist;
+    }
+
+    moveArmAbs(xMm,yMm);
+
+    dist2 = getObjectDistance();
+
+    if (dist2 > DISTANCE_ERROR && dist1 <= DISTANCE_ERROR && initDist <= DISTANCE_ERROR)
+    {
+        ret = false;
+        tWarning(LOG) << " ArmHighLevel::actionPuckRelease After Arm Move getObjectDistance too big (puck lost?)" << dist2 << dist1 << initDist;
+    }
+
+    setVacuum(false);
+
+    // if we are in HORIZONTAL mode, we need to move to a higher level to check distance
+    if (_mode == ARM_HL_MODE_HORIZONTAL)
+        moveZ(zMm+PUCK_WIDTH);
+
+    dist3 = getObjectDistance();
+
+    if (dist3 <= DISTANCE_ERROR)
+    {
+        tWarning(LOG) << " ArmHighLevel::actionPuckRelease After vaccum off Move getObjectDistance too close (puck still locked?)" << dist3;
+    }
+
+    return ret;
+}
 

@@ -53,19 +53,27 @@ int main( int argc, char *argv[] )
     ArmLowLevel armLL;
     uint32_t dist = 0;
 
-    hal->_motor3Override.write(1);
-    hal->_motor3Value.write(0);
+    hal->_outputOverride.write( 0x01010101 );
+
+    hal->_motor4Override.write(1);
+    hal->_motor4Value.write(0);
+
+
+    hal->_output1.write(0);
+
+    QThread::msleep( 2000000 );
+    while(1);
 
     bool initOk = armLL.init(hal,
-               std::make_shared< ItemRegister >( hal->_motor3Value ),
-               std::make_shared< ItemRegister >( hal->_output3 ),
+               std::make_shared< ItemRegister >( hal->_motor4Value ),
+               std::make_shared< ItemRegister >( hal->_output1 ),
                &dist,
                SMART_SERVO_DYNAMIXEL,
-               2,
+               6,
                SMART_SERVO_DYNAMIXEL,
                3,
                SMART_SERVO_DYNAMIXEL,
-               4
+               2
                );
 
 
@@ -132,7 +140,7 @@ int main( int argc, char *argv[] )
     } // END TEST 1
 
 
-
+/*
     // TEST 2: Test Angles Only
     {
         tId = 2;
@@ -145,13 +153,15 @@ int main( int argc, char *argv[] )
 
         armLL.setServoPos(ARM_LL_SERVO_UPPER_ARM,20.0);
         armLL.setServoPos(ARM_LL_SERVO_LOWER_ARM,-20.0);
-        armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+        armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
 
         bool waitOk = armLL.waitServosTargetOk(1000);
+        QThread::msleep( 2000 );
+
 
         if (waitOk == false)
         {
-            tFatal(LOG) << "testRecalage: Test " << tId << ": waitServosTargetOk timeout, (target/pos)"
+            tWarning(LOG) << "testRecalage: Test " << tId << ": waitServosTargetOk timeout, (target/pos)"
                         << armLL.getServoPos(ARM_LL_SERVO_UPPER_ARM) << armLL.getServoPos(ARM_LL_SERVO_LOWER_ARM)
                         << armLL.getServoPos(ARM_LL_SERVO_WRIST);
         }
@@ -165,24 +175,30 @@ int main( int argc, char *argv[] )
             {
                 armLL.setServosPos(-20.0,20.0,0.0);
             } else {
-                armLL.setServosPos(20.0,-20.0,90.0);
+                armLL.setServosPos(20.0,-20.0,-90.0);
             }
+            //QThread::msleep( 2000 );
+
 
             waitOk = armLL.waitServosTargetOk(1000);
 
             if (waitOk == false)
             {
-                tFatal(LOG) << "testRecalage: Test " << tId << ": waitServosTargetOk timeout, pos: "
+                tWarning(LOG) << "testRecalage: Test " << tId << ": waitServosTargetOk timeout, pos: "
                             << armLL.getServoPos(ARM_LL_SERVO_UPPER_ARM) << armLL.getServoPos(ARM_LL_SERVO_LOWER_ARM)
                             << armLL.getServoPos(ARM_LL_SERVO_WRIST);
             }
 
             i++;
 
-        } while (i < 10);
+        } while (i < 4);
 
 
     } // END TEST 2
+    */
+
+
+    QThread::msleep( 1000 );
 
     // TEST 3: Test Aspiration
     {
@@ -203,7 +219,7 @@ int main( int argc, char *argv[] )
 
         armLL.setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
         armLL.setServoPos(ARM_LL_SERVO_LOWER_ARM,0.0);
-        armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+        armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
 
 
 
@@ -228,25 +244,35 @@ int main( int argc, char *argv[] )
 
             armLL.setZ(75.0);
             waitOk &= armLL.waitZTargetOk(1000);
-            armLL.setVacuumPower(100.0);
-            armLL.setVacuumValve(false);
+
             armLL.setZ(50.0);
             waitOk &= armLL.waitZTargetOk(0);
-            QThread::msleep( 500 );
+            //QThread::msleep( 2000 );
             armLL.setZ(75.0);
             armLL.setServoPos(ARM_LL_SERVO_WRIST,0.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
-            armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+            QThread::msleep( 1000 );
+
+            armLL.setVacuumPower(100.0);
+            armLL.setVacuumValve(false);
+
+            armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
+            QThread::msleep( 3000 );
+
             armLL.setServoPos(ARM_LL_SERVO_WRIST,0.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
-            armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+            QThread::msleep( 100 );
+
+            armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
+            QThread::msleep( 500 );
+
             armLL.setZ(63.0);
             waitOk &= armLL.waitZTargetOk(1000);
-            armLL.setVacuumPower(0.0);
+            //armLL.setVacuumPower(0.0);
             armLL.setVacuumValve(true);
-            QThread::msleep( 200 );
+            QThread::msleep( 1000 );
 
 
             if (waitOk == false)
@@ -261,6 +287,7 @@ int main( int argc, char *argv[] )
 
     } // END TEST 3
 
+#ifdef hh
 
     // TEST 4: Test Aspiration
     {
@@ -281,7 +308,7 @@ int main( int argc, char *argv[] )
 
         armLL.setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
         armLL.setServoPos(ARM_LL_SERVO_LOWER_ARM,0.0);
-        armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+        armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
 
 
 
@@ -329,11 +356,11 @@ int main( int argc, char *argv[] )
             armLL.setZ(75.0);
             armLL.setServoPos(ARM_LL_SERVO_WRIST,0.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
-            armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+            armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
             armLL.setServoPos(ARM_LL_SERVO_WRIST,0.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
-            armLL.setServoPos(ARM_LL_SERVO_WRIST,90.0);
+            armLL.setServoPos(ARM_LL_SERVO_WRIST,-90.0);
             waitOk &= armLL.waitServoTargetOk(ARM_LL_SERVO_WRIST,0);
             armLL.setZ(63.0);
             waitOk &= armLL.waitZTargetOk(1000);
@@ -358,7 +385,7 @@ int main( int argc, char *argv[] )
 
 
     } // END TEST 4
-
+#endif
 
 
 
