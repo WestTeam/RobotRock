@@ -85,6 +85,7 @@ void Vl6180x::readData()
             if( trame.status == 0 )
             {
                 _distance[ trame.header.id ] = trame.dist;
+                //tDebug( LOG ) << "Sensor ID:" << trame.header.id << "dist:" << trame.dist;
             }
             else
             {
@@ -96,7 +97,7 @@ void Vl6180x::readData()
 
 void Vl6180x::init()
 {
-    _serial->setBaudRate( QSerialPort::Baud9600 );
+    _serial->setBaudRate( QSerialPort::Baud115200 );
     _serial->setStopBits( QSerialPort::OneStop );
     _serial->setDataBits( QSerialPort::Data8 );
     _serial->setParity( QSerialPort::NoParity );
