@@ -713,6 +713,9 @@ bool ArmHighLevel::actionPuckRelease(double xMm, double yMm, double zMm)
     // if we are in HORIZONTAL mode, we need to move to a higher level to check distance
     if (_mode == ARM_HL_MODE_HORIZONTAL)
         moveZ(zMm+PUCK_WIDTH);
+    else
+        moveZ(zMm+PUCK_DIAMETER);
+
 
     dist3 = getObjectDistance();
 

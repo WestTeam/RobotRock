@@ -114,6 +114,30 @@ public:
     ItemRegister _motor5Inverted;
 	ItemRegister _motor5Value;
 
+    ItemRegister _qei0Override;
+    ItemRegister _qei0RefValue;
+    ItemRegister _qei0CntValue;
+
+    ItemRegister _qei1Override;
+    ItemRegister _qei1RefValue;
+    ItemRegister _qei1CntValue;
+
+    ItemRegister _qei2Override;
+    ItemRegister _qei2RefValue;
+    ItemRegister _qei2CntValue;
+
+    ItemRegister _qei3Override;
+    ItemRegister _qei3RefValue;
+    ItemRegister _qei3CntValue;
+
+    ItemRegister _qei4Override;
+    ItemRegister _qei4RefValue;
+    ItemRegister _qei4CntValue;
+
+    ItemRegister _qei5Override;
+    ItemRegister _qei5RefValue;
+    ItemRegister _qei5CntValue;
+
     // General Smart Servo Command
     ItemRegister _smartServoCmdValid;
     ItemRegister _smartServoCmdId;

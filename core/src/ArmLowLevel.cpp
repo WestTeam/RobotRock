@@ -10,7 +10,7 @@
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
-#define Z_DISABLED
+//#define Z_DISABLED
 
 
 ArmLowLevel::ArmLowLevel()
@@ -18,7 +18,7 @@ ArmLowLevel::ArmLowLevel()
     , _initOk( false )
     , _smartServo {nullptr,nullptr,nullptr}
 {
-
+    _refInverted = -1;
 }
 
 ArmLowLevel::~ArmLowLevel()
@@ -123,6 +123,8 @@ bool ArmLowLevel::init(
     // we now have to init the Z axe
     // first step: INIT the PID module
 
+    _hal->_pidCustomTarget.write( _hal->_pidCustomPosition.read< int32_t >() );
+
     // we disable PID during config
     _hal->_pidCustomEnable.write( 0 );
 
@@ -133,14 +135,14 @@ bool ArmLowLevel::init(
     _hal->_pidCustomInverted.write( 0 );
 
     // we set coefs
-    _hal->_pidCustomKp.write( (float)100.0 );
+    _hal->_pidCustomKp.write( (float)300.0 );
     _hal->_pidCustomKi.write( (float)0.0 );
     _hal->_pidCustomKd.write( (float)0.0 );
 
     // we set speed, acc and output saturation
-    _hal->_pidCustomSpeed.write( (float)10.0 );
-    _hal->_pidCustomAcceleration.write( (float)0.001 );
-    _hal->_pidCustomSaturation.write( 15000 );
+    _hal->_pidCustomSpeed.write( (float)50.0 );
+    _hal->_pidCustomAcceleration.write( (float)0.012 );
+    _hal->_pidCustomSaturation.write( 12000 );
 
 
 
@@ -159,18 +161,18 @@ bool ArmLowLevel::init(
         uint8_t refAwayRetryCount = 3;
 
         do {
-
             _hal->_pidCustomLastReference.write(CALIBRATION_Z_FAKE_REF);
             QThread::msleep( 10 );
             initialRef = _hal->_pidCustomLastReference.read< int32_t >();
             currentPos = _hal->_pidCustomPosition.read< int32_t >();
+            tDebug(LOG) << "Loop" << initialRef << currentPos;
 
             int32_t initPos = currentPos;
 
             if (initialRef != CALIBRATION_Z_FAKE_REF)
             {
                 // it means we are on the ref point, so we need to move away
-                initPos -= CALIBRATION_Z_STEP*20;
+                initPos -= CALIBRATION_Z_STEP*20*_refInverted;
             } else {
                 // OK!
                 refAway = true;
@@ -181,6 +183,9 @@ bool ArmLowLevel::init(
             QThread::msleep( CALIBRATION_Z_TIMEOUT );
 
         } while (refAway == false && refAwayRetryCount--);
+
+        tDebug(LOG) << "Next";
+
 
         if (!refAway)
         {
@@ -196,16 +201,22 @@ bool ArmLowLevel::init(
         do {
 
             currentPos = _hal->_pidCustomPosition.read< int32_t >();
-            int32_t targetPos = currentPos + CALIBRATION_Z_STEP;
+            int32_t targetPos = currentPos + CALIBRATION_Z_STEP*_refInverted;
             _hal->_pidCustomTarget.write( targetPos );
+
+            tDebug(LOG) << "Loop 2" << currentPos << targetPos;
+
 
             int32_t timeoutMs = CALIBRATION_Z_TIMEOUT;
             do {
                 QThread::msleep( CALIBRATION_Z_TIMEOUT_STEP );
                 timeoutMs -= CALIBRATION_Z_TIMEOUT_STEP;
 
+                tDebug(LOG) << "Loop 3" << _hal->_pidCustomPosition.read< int32_t >() << targetPos;
+
+
                 // if we have moved more than half of the target
-                if ((targetPos-_hal->_pidCustomPosition.read< int32_t >()) < CALIBRATION_Z_STEP / 2)
+                if (abs(targetPos-_hal->_pidCustomPosition.read< int32_t >()) < CALIBRATION_Z_STEP / 2)
                     break;
             } while (timeoutMs > 0);
 
@@ -218,7 +229,7 @@ bool ArmLowLevel::init(
                 // new ref found
                 tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: New Ref Found" << currentRef;
 
-                if (timeoutMs < 0)
+                if (timeoutMs <= 0)
                 {
                     // good, we have our reference point :)
 
@@ -233,14 +244,25 @@ bool ArmLowLevel::init(
                 }
 
             } else {
-                if (timeoutMs < 0)
+                if (timeoutMs <= 0)
                 {
                     // if we are here, it means possiblity 2 things:
                     // 1: reference sensor is not working
                     // 2: there is an issue in the system
 
                     // either case, we cannot continue
-                    tWarning( LOG ) << "ArmLowLevel: Init -> Z Calibration: Motor Blocked without reaching reference point (initRef/CurRef/CurPos)" << initialRef << currentRef << currentPos;
+                    tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: Motor Blocked without reaching reference point (initRef/CurRef/CurPos)" << initialRef << currentRef << currentPos;
+
+                    _refZ = currentPos;
+
+                    tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: Current Z" << getZ();
+
+                    _hal->_pidCustomSaturation.write( 30000 );
+
+                    setZ(getZ()-20.0);
+
+
+                    //_hal->_pidCustomTarget.write( currentPos-CALIBRATION_Z_STEP*10 );
 
                     ret = false;
                     goto endfunction;
@@ -250,10 +272,13 @@ bool ArmLowLevel::init(
         } while (refFound == false);
 
         _initOk = true;
+
+
     }
 #endif
 
 endfunction:
+    tDebug( LOG ) << "ArmLowLevel: Init Done" << ret;
 
     return ret;
 }
@@ -338,7 +363,7 @@ void ArmLowLevel::enableZ(bool enable)
 void ArmLowLevel::setZ(double mmAbs)
 {
 
-#define Z_ENCODER_TICK_PER_MM (128.0/4.0)
+#define Z_ENCODER_TICK_PER_MM (1024.0/2.0)
 #define Z_REF_POS_ABS_MM (320.0)
 #define Z_MIN_POS_MM (40.0)
 
@@ -350,10 +375,13 @@ void ArmLowLevel::setZ(double mmAbs)
     if (mmAbs > Z_REF_POS_ABS_MM)
         mmAbs = Z_REF_POS_ABS_MM;
 
+    _targetZMmAbs = mmAbs;
+
     // convert mmAbs into ticks
-    int32_t target = _refZ-(int32_t)((Z_REF_POS_ABS_MM-mmAbs)*Z_ENCODER_TICK_PER_MM);
+    int32_t target = _refZ-((int32_t)((Z_REF_POS_ABS_MM-mmAbs)*Z_ENCODER_TICK_PER_MM))*_refInverted;
 
     _hal->_pidCustomTarget.write( target );
+    tDebug(LOG) << target << _refZ << Z_REF_POS_ABS_MM-mmAbs << ((int32_t)((Z_REF_POS_ABS_MM-mmAbs)*Z_ENCODER_TICK_PER_MM));
 #endif
 
 }
@@ -364,7 +392,7 @@ double ArmLowLevel::getZ()
 #ifndef Z_DISABLED
     int32_t currentPos = _hal->_pidCustomPosition.read< int32_t >();
 
-    ret = Z_REF_POS_ABS_MM - ((double)(_refZ-currentPos))*1.0/Z_ENCODER_TICK_PER_MM;
+    ret = Z_REF_POS_ABS_MM - ((double)((_refZ-currentPos)*_refInverted))*1.0/Z_ENCODER_TICK_PER_MM;
 
     if (ret > Z_REF_POS_ABS_MM)
         ret = Z_REF_POS_ABS_MM;
@@ -392,6 +420,10 @@ bool ArmLowLevel::waitZTargetOk(double timeoutMs)
         timeoutMsLocal -= WAIT_STEP_MS;
 
         double diff = _targetZMmAbs-getZ();
+
+        //tInfo( LOG ) << "wait target z" << _targetZMmAbs << getZ() << diff << timeoutMsLocal;
+
+
         // if we have moved more than half of the target
         if (abs(diff) <= WAIT_MARGIN_MM)
             ret = true;

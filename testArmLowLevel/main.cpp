@@ -48,7 +48,10 @@ int main( int argc, char *argv[] )
 
 
     Hal::Ptr hal = std::make_shared< Hal >();
-
+/*
+    hal->_resetAll.write(1);
+    hal->_resetAll.write(0);
+*/
 
     ArmLowLevel armLL;
     uint32_t dist = 0;
@@ -58,12 +61,16 @@ int main( int argc, char *argv[] )
     hal->_motor4Override.write(1);
     hal->_motor4Value.write(0);
 
+    hal->_motor2Override.write(0);
+    hal->_motor2Value.write(10000);
 
-    hal->_output1.write(0);
 
-    QThread::msleep( 2000000 );
-    while(1);
-
+/*
+    while(1){
+        QThread::msleep(1000.0);
+        tInfo(LOG) << hal->_qei4CntValue.read<uint16_t>();
+    }
+*/
     bool initOk = armLL.init(hal,
                std::make_shared< ItemRegister >( hal->_motor4Value ),
                std::make_shared< ItemRegister >( hal->_output1 ),
@@ -79,9 +86,19 @@ int main( int argc, char *argv[] )
 
     if (!initOk)
     {
-        tFatal(LOG) << "testArmLowLevel: Init KO";
+        tWarning(LOG) << "testArmLowLevel: Init KO";
     }
 
+    armLL.setZ(200.0);
+    armLL.waitZTargetOk(0);
+    armLL.setZ(150.0);
+    armLL.waitZTargetOk(0);
+    armLL.setZ(300.0);
+    armLL.waitZTargetOk(0);
+
+
+
+    while(1);
 
     ///// GENERAL CONFIG /////
 

@@ -111,10 +111,14 @@ public:
     double getDistance(Pos3D wristPos, enum ArmHighLevelMode mode)
     {
         double dist = 255.0;
-        if (mode == ARM_HL_MODE_VERTICAL)
+        if (mode == ARM_HL_MODE_VERTICAL && _mode == mode)
         {
-            dist = hypot(_pos.x-wristPos.x,_pos.y-wristPos.y);
-        } else {
+            if (abs(wristPos.z - _pos.z) <= 5)
+                dist = hypot(_pos.x-wristPos.x,_pos.y-wristPos.y);
+        }
+
+        if (mode == ARM_HL_MODE_HORIZONTAL && _mode == mode)
+        {
             if (abs(wristPos.x - _pos.x) < 5 && abs(wristPos.y - _pos.y) < 5)
                 dist = wristPos.z - _pos.z;
         }
@@ -123,8 +127,11 @@ public:
 
     void catchObject()
     {
-        _isCatched = true;
-        tInfo(LOG) << "TableObject: catched!" << _pos.x << _pos.y << _pos.z;
+        if (_isCatchable)
+        {
+            _isCatched = true;
+            tInfo(LOG) << "TableObject: catched!" << _pos.x << _pos.y << _pos.z;
+        }
     }
     void releaseObject(Pos3D wristPos, enum ArmHighLevelMode mode)
     {
@@ -263,7 +270,7 @@ public:
                 if (dist < _curDistance && dist >= 0)
                     _curDistance = dist;
 
-                if (dist < 5 && dist >= 0)
+                if (dist < 5 && dist >= 0 && it->isCatchable())
                 {
                     tInfo(LOG) << "ArmHighLevelTest: item can be catched !!" << dist;
 
@@ -451,6 +458,7 @@ int main( int argc, char *argv[] )
 
     Hal::Ptr hal = std::make_shared< Hal >();
 
+
     RobotPos armPos;
 
     armPos.x = 0.0;
@@ -466,11 +474,19 @@ int main( int argc, char *argv[] )
     TableObject puck2({.x=50.0,.y=50.0,.z=25.0},true,ARM_HL_MODE_HORIZONTAL);
     TableObject puck3({.x=25.0,.y=25.0,.z=25.0},true,ARM_HL_MODE_HORIZONTAL);
 
+    TableObject goldenDoor({.x=-50.0,.y=-20.0,.z=165.0+76.0/2},false,ARM_HL_MODE_VERTICAL);
+    TableObject goldenPuck({.x=-50.0,.y=-50.0,.z=165.0+76.0/2},true,ARM_HL_MODE_VERTICAL);
+
+    TableObject distriPuck({.x=60.0,.y=60.0,.z=100.0+76.0/2},true,ARM_HL_MODE_VERTICAL);
 
 
     armLLPtr->addObject(puck1);
     armLLPtr->addObject(puck2);
     armLLPtr->addObject(puck3);
+    armLLPtr->addObject(goldenDoor);
+    armLLPtr->addObject(goldenPuck);
+    armLLPtr->addObject(distriPuck);
+
 
     ///// GENERAL CONFIG /////
 
@@ -554,7 +570,7 @@ int main( int argc, char *argv[] )
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionGroundPuckCollection 1 failed";
+            tFatal(LOG) << "Test" << tId << "actionGroundPuckCollection 1 failed";
         }
 
         ret = armHL.actionPuckStore(ARM_HL_STORAGE_LEFT);
@@ -562,7 +578,7 @@ int main( int argc, char *argv[] )
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionPuckStore 1 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckStore 1 ARM_HL_STORAGE_LEFT failed";
         }
 
 
@@ -570,7 +586,7 @@ int main( int argc, char *argv[] )
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionGroundPuckCollection 2 failed";
+            tFatal(LOG) << "Test" << tId << "actionGroundPuckCollection 2 failed";
         }
 
         ret = armHL.actionPuckStore(ARM_HL_STORAGE_LEFT);
@@ -578,26 +594,26 @@ int main( int argc, char *argv[] )
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionPuckStore 2 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckStore 2 ARM_HL_STORAGE_LEFT failed";
         }
 
         if (armHL.getPuckCount(ARM_HL_STORAGE_LEFT) != 2)
         {
-            tWarning(LOG) << "Test" << tId << "getPuckCount puck count issue" << armHL.getPuckCount(ARM_HL_STORAGE_LEFT);
+            tFatal(LOG) << "Test" << tId << "getPuckCount puck count issue" << armHL.getPuckCount(ARM_HL_STORAGE_LEFT);
         }
 
         ret = armHL.actionPuckUnstore(ARM_HL_STORAGE_LEFT);
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionPuckUnstore 1 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckUnstore 1 ARM_HL_STORAGE_LEFT failed";
         }
 
         ret = armHL.actionPuckRelease(50.0,50.0,25.0);
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionPuckRelease 1 failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckRelease 1 failed";
         }
 
 
@@ -606,20 +622,50 @@ int main( int argc, char *argv[] )
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionPuckUnstore 2 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckUnstore 2 ARM_HL_STORAGE_LEFT failed";
         }
 
         ret = armHL.actionPuckRelease(25.0,25.0,25.0);
 
         if (!ret)
         {
-            tWarning(LOG) << "Test" << tId << "actionPuckRelease 2 failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckRelease 2 failed";
         }
 
         if (armHL.getPuckCount(ARM_HL_STORAGE_LEFT) != 0)
         {
-            tWarning(LOG) << "Test" << tId << "getPuckCount released puck count issue" << armHL.getPuckCount(ARM_HL_STORAGE_LEFT);
+            tFatal(LOG) << "Test" << tId << "getPuckCount released puck count issue" << armHL.getPuckCount(ARM_HL_STORAGE_LEFT);
         }
+
+        ret = armHL.actionCheckGoldDoorOpen(-50.0,-20.0);
+
+        if (!ret)
+        {
+            tFatal(LOG) << "Test" << tId << "actionCheckGoldDoorOpen  check fail";
+        }
+
+        ret = armHL.actionGoldPuckCollection(-50.0,-50.0);
+
+        if (!ret)
+        {
+            tFatal(LOG) << "Test" << tId << "actionGoldPuckCollection  check fail";
+        }
+
+        ret = armHL.actionPuckRelease(-50,20.0,76.0/2);
+
+        if (!ret)
+        {
+            tFatal(LOG) << "Test" << tId << "actionPuckRelease Golden fail";
+        }
+
+        ret = armHL.actionDistributorPuckCollection(60,60.0);
+
+        if (!ret)
+        {
+            tFatal(LOG) << "Test" << tId << "actionDistributorPuckCollection fail";
+        }
+
+
 
     } // END TEST 2
 

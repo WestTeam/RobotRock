@@ -103,6 +103,32 @@ Hal::Hal()
     , _motor5Inverted( _layer1, (12+5) * 4 + 2, 8 )
     , _motor5Value( _layer1, (12+5) * 4, 16 )
 
+
+    , _qei0Override( _layer1, (24+0) * 4 + 3, 8 )
+    , _qei0RefValue( _layer1, (24+0) * 4 + 2, 8 )
+    , _qei0CntValue( _layer1, (24+0) * 4 + 0, 16 )
+
+    , _qei1Override( _layer1, (24+1) * 4 + 3, 8 )
+    , _qei1RefValue( _layer1, (24+1) * 4 + 2, 8 )
+    , _qei1CntValue( _layer1, (24+1) * 4 + 0, 16 )
+
+    , _qei2Override( _layer1, (24+2) * 4 + 3, 8 )
+    , _qei2RefValue( _layer1, (24+2) * 4 + 2, 8 )
+    , _qei2CntValue( _layer1, (24+2) * 4 + 0, 16 )
+
+    , _qei3Override( _layer1, (24+3) * 4 + 3, 8 )
+    , _qei3RefValue( _layer1, (24+3) * 4 + 2, 8 )
+    , _qei3CntValue( _layer1, (24+3) * 4 + 0, 16 )
+
+    , _qei4Override( _layer1, (24+4) * 4 + 3, 8 )
+    , _qei4RefValue( _layer1, (24+4) * 4 + 2, 8 )
+    , _qei4CntValue( _layer1, (24+4) * 4 + 0, 16 )
+
+    , _qei5Override( _layer1, (24+5) * 4 + 3, 8 )
+    , _qei5RefValue( _layer1, (24+5) * 4 + 2, 8 )
+    , _qei5CntValue( _layer1, (24+5) * 4 + 0, 16 )
+
+
     // Smart Servo commands
     , _smartServoCmdValid( _layer1, 61 * 4 + 0, 8)
     , _smartServoCmdId( _layer1, 61 * 4 + 1, 8)

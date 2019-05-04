@@ -119,6 +119,7 @@ private:
     SmartServo* _smartServo[3];
 
     int32_t _refZ;
+    int32_t _refInverted;
     double _targetZMmAbs;
 
 };
