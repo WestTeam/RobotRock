@@ -127,7 +127,7 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
     // Fetch exactly one 0-360 degrees' scan
     if( _lidar.grabScanData(nodes, scan_count) )
     {
-        tDebug( LOG ) << "Grabing scan data: OK" << scan_count;
+        //tDebug( LOG ) << "Grabing scan data: OK" << scan_count;
 
         if( ! _lidar.ascendScanData( nodes, scan_count ) )
         {

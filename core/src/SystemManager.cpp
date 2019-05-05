@@ -8,8 +8,6 @@
 
 #include <WestBot/RobotRock/SystemManager.hpp>
 
-//#define NO_LIDAR
-
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
@@ -17,7 +15,7 @@ namespace
 {
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SystemManager" )
 
-    const int GAME_DURATION = 90 * 1000; // 90s
+    const int GAME_DURATION = 100 * 1000; // 100s
     const QString LIDAR_TTY = "/dev/ttyAL6";
     const uint32_t LIDAR_BAUDRATE = 256000;
 }
@@ -63,6 +61,20 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
         {
             tInfo( LOG ) << "Game ended";
             stop();
+        } );
+
+    static bool toggleAvoid = false;
+
+    // TODO: remove this.
+    // Test the avoidance
+    connect(
+        & _opponentTimer,
+        & QTimer::timeout,
+        this,
+        [ this ]()
+        {
+            toggleAvoid = ! toggleAvoid;
+            _strategyManager->obstacleToClose( toggleAvoid );
         } );
 
     // Task to notify that the robot is alive
@@ -112,7 +124,6 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
             }
         } );
 
-#ifndef NO_LIDAR
     // we need to provide sw control on this motor
     _hal->_motor5Override.write( 1 );
 
@@ -125,7 +136,9 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
         tCritical( LOG ) << "Failed to init/check health of lidar module";
         return;
     }
-#endif
+
+    _opponentTimer.setSingleShot( false );
+    _opponentTimer.setInterval( 4000 );
 
     _hal->_colorEnable.write( 0 );
 
@@ -234,11 +247,6 @@ void SystemManager::start()
             << "System not safe to start: Odometry check failed";
     }
 
-#ifndef NO_LIDAR
-    // This run the lidar thread for data acquisition.
-    //_lidar.start();
-#endif
-
     initRecalage();
 
     displayColor( _colorButton->digitalRead() );
@@ -251,6 +259,8 @@ void SystemManager::start()
     _game.reset( new GameThread( _strategyManager, _color ) );
     _game->start();
 
+    _opponentTimer.start();
+
     _experiment.start();
 }
 
@@ -258,16 +268,6 @@ void SystemManager::stop()
 {
     _gameTimer.stop();
     _aliveTimer.stop();
-
-#ifdef NO_LIDAR
-    /*
-    if( _lidar.isRunning() )
-    {
-        _lidar.terminate();
-        _lidar.stopScan();
-    }
-    */
-#endif
 
     if( nullptr != _game && _game->isRunning() )
     {

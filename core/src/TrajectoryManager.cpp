@@ -18,6 +18,7 @@ TrajectoryManager::TrajectoryManager(
     const Hal::Ptr& hal,
     const Recalage::Ptr& recalage )
     : _hal( hal )
+    , _abort (false)
     , _recalage( recalage )
 {
 }
@@ -115,7 +116,9 @@ void TrajectoryManager::waitTrajReady()
             << _hal->_odometryTheta.read<int16_t>();
             */
 
-    } while( !isTrajReady() );
+    } while( !isTrajReady() && !_abort );
+
+    _abort = false;
 }
 
 bool TrajectoryManager::isTrajReady()
@@ -202,6 +205,12 @@ void TrajectoryManager::hardStop()
        tDebug( LOG ) << "wait hardstop ack";
     }
 }
+
+void TrajectoryManager::setAbort( bool abort )
+{
+    _abort = abort;
+}
+
 
 void TrajectoryManager::setDistanceConfig( float speed, float acc )
 {
@@ -312,7 +321,9 @@ void TrajectoryManager::moveDRel(
                 << inWindow << "x/y:" << _hal->_odometryX.read<int16_t>() << "/"
                 << _hal->_odometryY.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::moveOnlyDRel(
@@ -363,7 +374,9 @@ void TrajectoryManager::moveOnlyDRel(
                 << inWindow << "x/y:" << _hal->_odometryX.read<int16_t>() << "/"
                 << _hal->_odometryY.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::turnARel(
@@ -413,7 +426,9 @@ void TrajectoryManager::turnARel(
                 << "Wait traj ready: State:" << state << "in windows:"
                 << inWindow << "theta:" << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::turnAAbs(
@@ -470,7 +485,9 @@ void TrajectoryManager::turnAAbs(
                 << "Wait traj ready: State:" << state << "in windows:"
                 << inWindow << "theta:" << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::turnOnlyARel(
@@ -520,7 +537,9 @@ void TrajectoryManager::turnOnlyARel(
                 << "Wait traj ready: State:" << state << "in windows:"
                 << inWindow << "theta:" << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::turnOnlyAAbs(
@@ -577,7 +596,9 @@ void TrajectoryManager::turnOnlyAAbs(
                 << "Wait traj ready: State:" << state << "in windows:"
                 << inWindow << "theta:" << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::turnToXY( float x, float y, bool doNotBlock )
@@ -629,7 +650,9 @@ void TrajectoryManager::turnToXY( float x, float y, bool doNotBlock )
                 << inWindow << "x/y:" << _hal->_odometryX.read<int16_t>() << "/"
                 << _hal->_odometryY.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::turnToXYBehind( float x, float y, bool doNotBlock )
@@ -681,7 +704,9 @@ void TrajectoryManager::turnToXYBehind( float x, float y, bool doNotBlock )
                 << inWindow << "x/y:" << _hal->_odometryX.read<int16_t>() << "/"
                 << _hal->_odometryY.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::moveToXYAbs(
@@ -739,7 +764,9 @@ void TrajectoryManager::moveToXYAbs(
                 << "/" << _hal->_odometryY.read<int16_t>() << "/"
                 << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::moveForwardToXYAbs(
@@ -797,7 +824,9 @@ void TrajectoryManager::moveForwardToXYAbs(
                 << "/" << _hal->_odometryY.read<int16_t>() << "/"
                 << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::moveBackwardToXYAbs(
@@ -855,7 +884,9 @@ void TrajectoryManager::moveBackwardToXYAbs(
                 << "/" << _hal->_odometryY.read<int16_t>() << "/"
                 << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::moveToDARel(
@@ -909,7 +940,9 @@ void TrajectoryManager::moveToDARel(
                 << "/" << _hal->_odometryY.read<int16_t>() << "/"
                 << _hal->_odometryTheta.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }
 
 void TrajectoryManager::moveToXYRel( float x, float y, bool doNotBlock )
@@ -954,5 +987,7 @@ void TrajectoryManager::moveToXYRel( float x, float y, bool doNotBlock )
                 << inWindow << "x/y:" << _hal->_odometryX.read<int16_t>() << "/"
                 << _hal->_odometryY.read<int16_t>();
         }
-	} while( state != TrajectoryState::READY );
+    } while( state != TrajectoryState::READY && !_abort);
+
+    _abort = false;
 }

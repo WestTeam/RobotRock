@@ -34,12 +34,15 @@ public:
 
     void hardStop();
 
+    void obstacleToClose( bool avoid );
+
 private:
     TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
 
     QList< Action::Ptr > _actions;
     Action::Ptr _currentAction;
     bool _stratIsRunning;
+    bool _obstacleToClose;
 };
 
 }

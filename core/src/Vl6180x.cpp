@@ -89,7 +89,7 @@ void Vl6180x::readData()
             }
             else
             {
-                tWarning( LOG ) << "Sensor status out of range: dropping data";
+                //tWarning( LOG ) << "Sensor status out of range: dropping data";
             }
         }
     }

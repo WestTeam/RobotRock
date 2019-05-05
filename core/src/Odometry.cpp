@@ -80,7 +80,7 @@ RobotPos Odometry::getPosition()
             }
         }
     } else {
-        tDebug( LOG ) << "getPosition() => no valid position" << _hal->_odometryValid.read<uint8_t>() << _rd_pos_valid << pos_id << _rd_pos_id;
+        //tDebug( LOG ) << "getPosition() => no valid position" << _hal->_odometryValid.read<uint8_t>() << _rd_pos_valid << pos_id << _rd_pos_id;
     }
 
     return ret;

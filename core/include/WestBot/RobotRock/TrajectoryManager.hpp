@@ -116,6 +116,9 @@ public:
     void stop();
     void hardStop();
 
+    void setAbort( bool abort );
+
+
     void setDistanceConfig( float speed, float acc );
     void setAngleConfig( float speed, float acc );
 
@@ -153,6 +156,7 @@ public:
 private:
     Hal::Ptr _hal;
     Recalage::Ptr _recalage;
+    bool _abort;
 };
 
     /*!

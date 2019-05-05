@@ -23,6 +23,7 @@ StrategyManager::StrategyManager( const TrajectoryManager::Ptr& trajectoryManage
     : _trajectoryManager( trajectoryManager )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
+    , _obstacleToClose( false )
 {
 }
 
@@ -54,46 +55,45 @@ void StrategyManager::buildStrat( const Color& color )
         offset = 90.0;
     }
 
-    WaitAction::Ptr wait5s =
-        std::make_shared< WaitAction >( 5 * 1000 );
-
     MoveAction::Ptr move1 =
         std::make_shared< MoveAction >(
             _trajectoryManager,
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
             0.0,
-            100.0,
+            100000.0,
             0.0,
             0.0 * inv,
             true );
 
     // Our strat begins here
-    //_actions.push_back( wait5s );
     _actions.push_back( move1 );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
-    _actions.push_back( wait5s );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+    _actions.push_back( move1 );
+
+    _stratIsRunning = true;
+    _trajectoryManager->setAbort( false );
 }
 
 void StrategyManager::doStrat( const Color& color )
@@ -103,26 +103,37 @@ void StrategyManager::doStrat( const Color& color )
 
     tDebug( LOG ) << "Do strat for color:" << color;
 
-	// Strat loop
-	int i = 0;
-	for( const auto& action: _actions )
-	{
-		_currentAction = action;
-		action->execute();
+    WaitAction::Ptr wait500ms =
+        std::make_shared< WaitAction >( 100 );
 
-		_actions.removeOne( action );
-        tDebug( LOG ) << "Action" << i << "/" << _actions.size() << "executed";
-		i++;
-	}
+    while( _stratIsRunning )
+    {
+        if( _obstacleToClose )
+        {
+            _trajectoryManager->hardStop();
+            _trajectoryManager->setAbort(false);
 
-    tDebug( LOG ) << "Strat is over. Make sure we have clear the action list";
+            _actions.push_front( wait500ms );
+        }
 
-	_stratIsRunning = false;
-	_actions.clear();
+        _currentAction = _actions.takeFirst();
+        _currentAction->execute();
+    }
 }
 
 void StrategyManager::hardStop()
 {
+    _trajectoryManager->setAbort( true );
     _stratIsRunning = false;
     _actions.clear();
+}
+
+void StrategyManager::obstacleToClose( bool avoid )
+{
+    _obstacleToClose = avoid;
+
+    if( _obstacleToClose )
+    {
+        _trajectoryManager->setAbort( true );
+    }
 }

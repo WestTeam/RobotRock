@@ -61,6 +61,8 @@ private:
     Hal::Ptr _hal;
     QTimer _gameTimer;
     QTimer _aliveTimer;
+    QTimer _opponentTimer;
+
     Input::Ptr _startButton;
     Input::Ptr _colorButton;
     Input::Ptr _hardstopButton;
