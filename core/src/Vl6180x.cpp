@@ -55,9 +55,9 @@ Vl6180x::~Vl6180x()
     _serial->close();
 }
 
-uint8_t Vl6180x::distance( int sensorId ) const
+double Vl6180x::distance( int sensorId ) const
 {
-    return _distance[ sensorId ];
+    return static_cast< double >( _distance[ sensorId ] );
 }
 
 //

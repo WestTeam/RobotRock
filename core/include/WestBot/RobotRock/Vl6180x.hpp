@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_VL6180X_HPP_
 #define WESTBOT_ROBOTROCK_VL6180X_HPP_
 
+#include <memory>
+
 #include <QSerialPort>
 #include <QThread>
 
@@ -17,6 +19,8 @@ namespace RobotRock {
 class Vl6180x : public QThread
 {
 public:
+    using Ptr = std::shared_ptr< Vl6180x >;
+
     Vl6180x( const QString& tty = "/dev/ttyAL8" );
 
     ~Vl6180x();
@@ -26,7 +30,7 @@ public:
      *
      * \return Distance in mm.
      */
-    uint8_t distance( int sensorId ) const;
+    double distance( int sensorId ) const;
 
 private:
     void run() override;
