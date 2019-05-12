@@ -22,7 +22,7 @@ typedef struct
     double x; // mm
     double y; // mm
     double theta; // rad
-} RobotPos;
+} __attribute__( ( packed ) ) RobotPos;
 
 bool operator==( RobotPos& lhs, RobotPos& rhs );
 
