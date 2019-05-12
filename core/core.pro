@@ -26,6 +26,7 @@ SOURCES += \
     src/Recalage.cpp \
     src/Servo.cpp \
     src/Odometry.cpp \
+    src/SimTcpServer.cpp \
     src/StrategyManager.cpp \
     src/SystemManager.cpp \
     src/TrajectoryManager.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
     include/WestBot/RobotRock/Odometry.hpp \
+    include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \

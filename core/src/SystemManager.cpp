@@ -1,5 +1,6 @@
 // Copyright (c) 2018-2019 All Rights Reserved WestBot
 
+#include <QHostAddress>
 #include <QThread>
 
 #include <Macros.hpp>
@@ -18,6 +19,7 @@ namespace
     const int GAME_DURATION = 100 * 1000; // 100s
     const QString LIDAR_TTY = "/dev/ttyAL6";
     const uint32_t LIDAR_BAUDRATE = 256000;
+    const int DEFAULT_SIM_PORT = 4242;
 }
 
 SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
@@ -149,6 +151,13 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
     _hal->_resetAll.write( 0 );
 
     _hal->_colorEnable.write( 1 );
+
+    if( ! _simServer.listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
+    {
+       tWarning( LOG )
+           << "Unable to start the server:"
+           << _simServer.errorString();
+    }
 }
 
 SystemManager::~SystemManager()

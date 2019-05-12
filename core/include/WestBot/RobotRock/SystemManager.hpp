@@ -14,6 +14,7 @@
 #include "Monitoring.hpp"
 #include "Output.hpp"
 #include "Recalage.hpp"
+#include "SimTcpServer.hpp"
 #include "StrategyManager.hpp"
 #include "TrajectoryManager.hpp"
 #include "Vl6180x.hpp"
@@ -81,6 +82,7 @@ private:
     GameThread::Ptr _game;
     Vl6180x _distanceSensor;
     Experiment _experiment;
+    SimTcpServer _simServer;
 };
 
 }
