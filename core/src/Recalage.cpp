@@ -420,9 +420,8 @@ void Recalage::run()
 
     while (!_finishing)
     {
-        switch (_initDone)
+        if( ! _initDone )
         {
-            case false:
                 ok = _lidar->get360ScanData(data,dataCount);
                 if (ok && dataCount != 0)
                 {
@@ -487,9 +486,9 @@ void Recalage::run()
                         last_scan_ok = 0;
                     }
                 }
-                break;
-            case true:
-
+            }
+        else
+        {
                 ok = _lidar->get360ScanData(data,dataCount);
 
                 if (ok && dataCount != 0)
@@ -560,8 +559,7 @@ void Recalage::run()
                         }
                     }
                 }
-
-                break;
+            }
         }
 
 /*
@@ -573,7 +571,6 @@ void Recalage::run()
         this->QThread::msleep(2000);
 */
     }
-}
 
 
 
