@@ -1,13 +1,11 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
-
-#include <memory>
+// Copyright (c) 2019 All Rights Reserved WestBot
 
 #include <QThread>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/MoveAction.hpp>
-#include <WestBot/RobotRock/StrategyManager.hpp>
+#include <WestBot/RobotRock/StrategyManagerFoo.hpp>
 #include <WestBot/RobotRock/SystemManager.hpp>
 #include <WestBot/RobotRock/WaitAction.hpp>
 
@@ -16,18 +14,26 @@ using namespace WestBot::RobotRock;
 
 namespace
 {
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.StrategyManager" )
+    HUMANAFTERALL_LOGGING_CATEGORY(
+        LOG,
+        "WestBot.RobotRock.StrategyManagerFoo" )
 }
 
-StrategyManager::StrategyManager( const TrajectoryManager::Ptr& trajectoryManager )
-    : _trajectoryManager( trajectoryManager )
+StrategyManagerFoo::StrategyManagerFoo()
+    : _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
 {
 }
 
-void StrategyManager::stop()
+bool StrategyManagerFoo::init( const TrajectoryManager::Ptr& trajectoryManager )
+{
+    _trajectoryManager = trajectoryManager;
+    return true;
+}
+
+void StrategyManagerFoo::stop()
 {
     hardStop();
 
@@ -37,7 +43,7 @@ void StrategyManager::stop()
 }
 
 // Private methods
-void StrategyManager::buildStrat( const Color& color )
+void StrategyManagerFoo::buildStrat( const Color& color )
 {
     float inv = 1.0;
     float shift = 0.0;
@@ -96,7 +102,7 @@ void StrategyManager::buildStrat( const Color& color )
     _trajectoryManager->setAbort( false );
 }
 
-void StrategyManager::doStrat( const Color& color )
+void StrategyManagerFoo::doStrat( const Color& color )
 {
 	// Build the strat for selected color
 	buildStrat( color );
@@ -121,14 +127,14 @@ void StrategyManager::doStrat( const Color& color )
     }
 }
 
-void StrategyManager::hardStop()
+void StrategyManagerFoo::hardStop()
 {
     _trajectoryManager->setAbort( true );
     _stratIsRunning = false;
     _actions.clear();
 }
 
-void StrategyManager::obstacleToClose( bool avoid )
+void StrategyManagerFoo::obstacleToClose( bool avoid )
 {
     _obstacleToClose = avoid;
 

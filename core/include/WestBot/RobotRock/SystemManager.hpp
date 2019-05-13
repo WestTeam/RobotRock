@@ -7,20 +7,8 @@
 #include <QTimer>
 
 #include "Common.hpp"
-#include "Experiment.hpp"
-#include "GameThread.hpp"
 #include "Input.hpp"
-#include "Lidar.hpp"
-#include "Monitoring.hpp"
 #include "Output.hpp"
-#include "Recalage.hpp"
-#include "SimTcpServer.hpp"
-#include "StrategyManager.hpp"
-#include "TrajectoryManager.hpp"
-#include "Vl6180x.hpp"
-
-class QState;
-class QString;
 
 namespace WestBot {
 namespace RobotRock {
@@ -28,41 +16,28 @@ namespace RobotRock {
 class SystemManager : public QObject
 {
 public:
-    enum class SystemMode
-    {
-        Free, // No PID -> register = 0x00
-        DistanceOnly, // PIDD -> register = 0x01
-        AngleOnly, // PIDA -> register = 0x02
-        Full, // All PID -> register = 0x03
-        Unused // 0xFF : Unused for now
-    };
-
-    SystemManager( const Hal::Ptr& hal, QObject* parent = nullptr );
+    SystemManager( QObject* parent = nullptr );
 
     ~SystemManager() override;
 
-    bool init();
+    virtual bool init() = 0;
 
-    void start();
-    void stop();
-    void reset();
+    virtual void start() = 0;
+    virtual void stop() = 0;
+    virtual void reset() = 0;
 
-    void setMode( SystemMode mode );
-    SystemMode mode() const;
-
-    bool isSafe() const;
+    virtual bool isSafe() const = 0;
 
 private:
-    void initRecalage();
-    void blinkColorLed();
-    void robotAlive();
-    void displayColor( const DigitalValue& value );
+    virtual void robotAlive();
 
-private:
-    Hal::Ptr _hal;
+protected:
+    virtual void blinkColorLed();
+    virtual void displayColor( const DigitalValue& value ) = 0;
+
+protected:
     QTimer _gameTimer;
     QTimer _aliveTimer;
-    QTimer _opponentTimer;
 
     Input::Ptr _startButton;
     Input::Ptr _colorButton;
@@ -70,19 +45,6 @@ private:
     Output::Ptr _ledYellow;
     Output::Ptr _ledBlue;
     Color _color;
-    SystemMode _systemMode;
-
-    // Base system
-    Odometry::Ptr _odometry;
-    Recalage::Ptr _recalage;
-    LidarRPLidarA2::Ptr _lidar;
-    TrajectoryManager::Ptr _trajectoryManager;
-    StrategyManager::Ptr _strategyManager;
-    Monitoring::Ptr _monitoring;
-    GameThread::Ptr _game;
-    Vl6180x _distanceSensor;
-    Experiment _experiment;
-    SimTcpServer _simServer;
 };
 
 }

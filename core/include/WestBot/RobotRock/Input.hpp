@@ -1,4 +1,4 @@
-// Copyright (c) 2018 All Rights Reserved WestBot
+// Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 #ifndef WESTBOT_ROBOTROCK_INPUT_HPP_
 #define WESTBOT_ROBOTROCK_INPUT_HPP_
@@ -9,16 +9,13 @@
 #include <QString>
 
 #include "Common.hpp"
-#include "ItemRegister.hpp"
-
-class QTimer;
 
 namespace WestBot {
 namespace RobotRock {
 
 /*!
- * \brief The Input class allow to create a proxy of a FPGA
- *        input. It use the layer registers mapping.
+ * \brief The Input class is an abstract class and defines what is a standard
+ *        input.
  */
 class Input : public QObject
 {
@@ -27,12 +24,7 @@ class Input : public QObject
 public:
     using Ptr = std::shared_ptr< Input >;
 
-    /*!
-     * \brief Constructor of Input.
-     * \param inputRegister A reference to the input register.
-     * \param name Name of the input object.
-     */
-    Input( const ItemRegister::Ptr& inputRegister, const QString& name );
+    Input( const QString& name );
 
     /*!
      * \brief Destructor.
@@ -43,19 +35,14 @@ public:
      * \brief Return the name of the input object.
      * \return Return QString.
      */
-    const QString& name() const;
+    virtual const QString& name() const;
 
     /*!
      * \brief Allow to check if the input is toogled on or off.
      * \return Return a value from the enum state.
      *
      */
-    DigitalValue digitalRead();
-
-    /*!
-     * \brief Check the input state and update it's internal state.
-     */
-    void check();
+    virtual DigitalValue digitalRead();
 
 signals:
     /*!
@@ -64,10 +51,14 @@ signals:
     void stateChanged( const DigitalValue& value );
 
 private:
-    ItemRegister::Ptr _inputRegister;
+    /*!
+     * \brief Check the input state and update it's internal state.
+     */
+    virtual void check() = 0;
+
+protected:
     QString _name;
     DigitalValue _digitalValue;
-    QTimer* _eventTimer;
 };
 
 }

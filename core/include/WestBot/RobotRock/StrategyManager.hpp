@@ -5,10 +5,6 @@
 
 #include <memory>
 
-#include <QList>
-#include <QString>
-
-#include "Action.hpp"
 #include "Common.hpp"
 #include "TrajectoryManager.hpp"
 
@@ -16,33 +12,25 @@ namespace WestBot {
 namespace RobotRock {
 
 /*!
- * \brief This class manage the robot strategy by handling data from FPGA
- *        and push action in the action queue.
+ * \brief This class is an abstract class and defines what is a strategy manager
  */
 class StrategyManager
 {
 public:
     using Ptr = std::shared_ptr< StrategyManager >;
 
-    StrategyManager( const TrajectoryManager::Ptr& trajectoryManager );
+    virtual ~StrategyManager();
 
-    void stop();
+    virtual bool init( const TrajectoryManager::Ptr& trajectoryManager ) = 0;
+    virtual void stop() = 0;
 
-    void doStrat( const Color& color );
+    virtual void doStrat( const Color& color ) = 0;
 
-    void buildStrat( const Color& color );
+    virtual void buildStrat( const Color& color ) = 0;
 
-    void hardStop();
+    virtual void hardStop() = 0;
 
-    void obstacleToClose( bool avoid );
-
-private:
-    TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
-
-    QList< Action::Ptr > _actions;
-    Action::Ptr _currentAction;
-    bool _stratIsRunning;
-    bool _obstacleToClose;
+    virtual void obstacleToClose( bool avoid ) = 0;
 };
 
 }

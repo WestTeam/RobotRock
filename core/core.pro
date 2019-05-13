@@ -15,6 +15,7 @@ SOURCES += \
     src/GameThread.cpp \
     src/Hal.cpp \
     src/Input.cpp \
+    src/InputHw.cpp \
     src/ItemRegister.cpp \
     src/Lidar.cpp \
     src/Memory.cpp \
@@ -23,12 +24,14 @@ SOURCES += \
     src/MoveAction.cpp \
     src/Nextion.cpp \
     src/Output.cpp \
+    src/OutputHw.cpp \
     src/Recalage.cpp \
     src/Servo.cpp \
     src/Odometry.cpp \
     src/SimTcpServer.cpp \
-    src/StrategyManager.cpp \
+    src/StrategyManagerFoo.cpp \
     src/SystemManager.cpp \
+    src/SystemManagerHw.cpp \
     src/TrajectoryManager.cpp \
     src/Vl6180x.cpp \
     src/WaitAction.cpp \
@@ -44,6 +47,7 @@ HEADERS += \
     include/WestBot/RobotRock/GameThread.hpp \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \
+    include/WestBot/RobotRock/InputHw.hpp \
     include/WestBot/RobotRock/ItemRegister.hpp \
     include/WestBot/RobotRock/Lidar.hpp \
     include/WestBot/RobotRock/Memory.hpp \
@@ -52,12 +56,15 @@ HEADERS += \
     include/WestBot/RobotRock/MoveAction.hpp \
     include/WestBot/RobotRock/Nextion.hpp \
     include/WestBot/RobotRock/Output.hpp \
+    include/WestBot/RobotRock/OutputHw.hpp \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
     include/WestBot/RobotRock/Odometry.hpp \
     include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
+    include/WestBot/RobotRock/StrategyManagerFoo.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
+    include/WestBot/RobotRock/SystemManagerHw.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
     include/WestBot/RobotRock/Vl6180x.hpp \
     include/WestBot/RobotRock/WaitAction.hpp \
