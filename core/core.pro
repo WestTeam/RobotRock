@@ -31,6 +31,7 @@ SOURCES += \
     src/SimTcpServer.cpp \
     src/StrategyManager.cpp \
     src/SystemManager.cpp \
+    src/SystemManagerHw.cpp \
     src/TrajectoryManager.cpp \
     src/Vl6180x.cpp \
     src/WaitAction.cpp \
@@ -62,6 +63,7 @@ HEADERS += \
     include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
+    include/WestBot/RobotRock/SystemManagerHw.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
     include/WestBot/RobotRock/Vl6180x.hpp \
     include/WestBot/RobotRock/WaitAction.hpp \
