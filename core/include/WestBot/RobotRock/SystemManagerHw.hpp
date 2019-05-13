@@ -29,7 +29,9 @@ public:
         Unused // 0xFF : Unused for now
     };
 
-    SystemManagerHw( const Hal::Ptr& hal, QObject* parent = nullptr );
+    SystemManagerHw(
+        const Hal::Ptr& hal,
+        const StrategyManager::Ptr& strategyManager );
 
     ~SystemManagerHw() override = default;
 

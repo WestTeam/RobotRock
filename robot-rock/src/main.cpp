@@ -7,6 +7,7 @@
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
+#include <WestBot/RobotRock/StrategyManagerFoo.hpp>
 #include <WestBot/RobotRock/SystemManagerHw.hpp>
 
 //#define DEBUG
@@ -35,7 +36,8 @@ int main( int argc, char *argv[] )
 #endif
 
     Hal::Ptr hal = std::make_shared< Hal >();
-    SystemManagerHw system( hal );
+    StrategyManagerFoo::Ptr strategyFoo;
+    SystemManagerHw system( hal, strategyFoo );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 

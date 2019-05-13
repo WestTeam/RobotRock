@@ -29,7 +29,7 @@ SOURCES += \
     src/Servo.cpp \
     src/Odometry.cpp \
     src/SimTcpServer.cpp \
-    src/StrategyManager.cpp \
+    src/StrategyManagerFoo.cpp \
     src/SystemManager.cpp \
     src/SystemManagerHw.cpp \
     src/TrajectoryManager.cpp \
@@ -62,6 +62,7 @@ HEADERS += \
     include/WestBot/RobotRock/Odometry.hpp \
     include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
+    include/WestBot/RobotRock/StrategyManagerFoo.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/SystemManagerHw.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \

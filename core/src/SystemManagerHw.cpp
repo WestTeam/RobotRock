@@ -24,15 +24,17 @@ namespace
     const int DEFAULT_SIM_PORT = 4242;
 }
 
-SystemManagerHw::SystemManagerHw( const Hal::Ptr& hal, QObject* parent )
-    : SystemManager( parent )
+SystemManagerHw::SystemManagerHw(
+    const Hal::Ptr& hal,
+    const StrategyManager::Ptr& strategyManager )
+    : SystemManager( this )
     , _hal( hal )
     , _systemMode( SystemManagerHw::SystemMode::Full )
     , _odometry( nullptr )
     , _recalage( nullptr )
     , _lidar( nullptr )
     , _trajectoryManager( nullptr )
-    , _strategyManager( nullptr )
+    , _strategyManager( strategyManager )
     , _monitoring( nullptr )
     , _game( nullptr )
 {
@@ -165,7 +167,10 @@ bool SystemManagerHw::init()
 
     _trajectoryManager->init();
 
-    _strategyManager.reset( new StrategyManager( _trajectoryManager ) );
+    if( ! _strategyManager->init( _trajectoryManager ) )
+    {
+        tFatal( LOG ) << "Unable to init strategy manager. Abort";
+    }
 
     _monitoring.reset( new Monitoring( _hal, _odometry ) );
 
