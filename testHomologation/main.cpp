@@ -7,7 +7,7 @@
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
-#include <WestBot/RobotRock/SystemManager.hpp>
+#include <WestBot/RobotRock/SystemManagerHw.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -32,7 +32,7 @@ int main( int argc, char *argv[] )
 #endif
 
     Hal::Ptr hal = std::make_shared< Hal >();
-    SystemManager system( hal );
+    SystemManagerHw system( hal );
 
     if( ! system.init() )
     {

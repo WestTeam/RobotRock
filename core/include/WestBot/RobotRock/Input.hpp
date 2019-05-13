@@ -54,7 +54,7 @@ private:
     /*!
      * \brief Check the input state and update it's internal state.
      */
-    virtual void check();
+    virtual void check() = 0;
 
 protected:
     QString _name;
