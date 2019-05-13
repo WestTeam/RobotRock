@@ -15,6 +15,7 @@ SOURCES += \
     src/GameThread.cpp \
     src/Hal.cpp \
     src/Input.cpp \
+    src/InputHw.cpp \
     src/ItemRegister.cpp \
     src/Lidar.cpp \
     src/Memory.cpp \
@@ -44,6 +45,7 @@ HEADERS += \
     include/WestBot/RobotRock/GameThread.hpp \
     include/WestBot/RobotRock/Hal.hpp \
     include/WestBot/RobotRock/Input.hpp \
+    include/WestBot/RobotRock/InputHw.hpp \
     include/WestBot/RobotRock/ItemRegister.hpp \
     include/WestBot/RobotRock/Lidar.hpp \
     include/WestBot/RobotRock/Memory.hpp \

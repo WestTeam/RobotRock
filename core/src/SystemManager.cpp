@@ -7,6 +7,7 @@
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
+#include <WestBot/RobotRock/InputHw.hpp>
 #include <WestBot/RobotRock/SystemManager.hpp>
 
 using namespace WestBot;
@@ -26,15 +27,15 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
     : QObject( parent )
     , _hal( hal )
     , _startButton(
-          new Input(
+          new InputHw(
               std::make_shared< ItemRegister >( _hal->_input0 ),
              "Tirette" ) )
     , _colorButton(
-          new Input(
+          new InputHw(
               std::make_shared< ItemRegister >( _hal->_input1 ),
               "Color" ) )
     , _hardstopButton(
-          new Input(
+          new InputHw(
               std::make_shared< ItemRegister >( _hal->_input2 ),
               "AU" ) )
     , _ledYellow(
