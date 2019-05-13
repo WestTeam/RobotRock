@@ -8,6 +8,7 @@
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/InputHw.hpp>
+#include <WestBot/RobotRock/OutputHw.hpp>
 #include <WestBot/RobotRock/SystemManager.hpp>
 
 using namespace WestBot;
@@ -39,11 +40,11 @@ SystemManager::SystemManager( const Hal::Ptr& hal, QObject* parent )
               std::make_shared< ItemRegister >( _hal->_input2 ),
               "AU" ) )
     , _ledYellow(
-          new Output(
+          new OutputHw(
               std::make_shared< ItemRegister >( _hal->_output0 ),
               "Yellow" ) )
     , _ledBlue(
-          new Output(
+          new OutputHw(
               std::make_shared< ItemRegister >( _hal->_output2 ),
               "Blue" ) )
     , _color( Color::Unknown )

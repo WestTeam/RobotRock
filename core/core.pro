@@ -24,6 +24,7 @@ SOURCES += \
     src/MoveAction.cpp \
     src/Nextion.cpp \
     src/Output.cpp \
+    src/OutputHw.cpp \
     src/Recalage.cpp \
     src/Servo.cpp \
     src/Odometry.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     include/WestBot/RobotRock/MoveAction.hpp \
     include/WestBot/RobotRock/Nextion.hpp \
     include/WestBot/RobotRock/Output.hpp \
+    include/WestBot/RobotRock/OutputHw.hpp \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
     include/WestBot/RobotRock/Odometry.hpp \
