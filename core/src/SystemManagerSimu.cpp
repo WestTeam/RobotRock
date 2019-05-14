@@ -20,9 +20,7 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SystemManagerSimu" )
 
     const int GAME_DURATION = 100 * 1000; // 100s
-    //const QString LIDAR_TTY = "/dev/ttyAL6";
-    //const uint32_t LIDAR_BAUDRATE = 256000;
-    //const int DEFAULT_SIM_PORT = 4242;
+    const int DEFAULT_SIM_PORT = 4242;
 }
 
 SystemManagerSimu::SystemManagerSimu(
@@ -97,8 +95,22 @@ SystemManagerSimu::SystemManagerSimu(
         this,
         [ this ]()
         {
-            toggleAvoid = ! toggleAvoid;
-            _strategyManager->obstacleToClose( toggleAvoid );
+            //toggleAvoid = ! toggleAvoid;
+            //_strategyManager->obstacleToClose( toggleAvoid );
+
+            // On test le serveur tcp
+            SimData _data;
+
+            _data.objectId = 0;
+            _data.objectPos.x = rand() % 600 + 1;
+            _data.objectPos.y = rand() % 400 + 1;
+            _data.objectPos.theta = rand() % 360 + 1;
+            _data.objectType = 0;
+            _data.objectColor = 0;
+            _data.objectSize = 100.0;
+            _data.objectMode = 0;
+
+            _simServer.updateClients( _data );
         } );
 
     //_lidar.reset( new LidarRPLidarA2(
@@ -112,14 +124,14 @@ SystemManagerSimu::SystemManagerSimu(
     //}
 
     _opponentTimer.setSingleShot( false );
-    _opponentTimer.setInterval( 4000 );
+    _opponentTimer.setInterval( 1000 );
 
-    //if( ! _simServer.listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
-    //{
-    //   tWarning( LOG )
-    //       << "Unable to start the server:"
-    //       << _simServer.errorString();
-    //}
+    if( ! _simServer.listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
+    {
+       tWarning( LOG )
+           << "Unable to start the server:"
+           << _simServer.errorString();
+    }
 }
 
 SystemManagerSimu::~SystemManagerSimu()
@@ -216,6 +228,10 @@ void SystemManagerSimu::stop()
 
     _strategyManager->stop();
 
+    _trajectoryManager->stop();
+
+    _strategyManager->deinit();
+
     tInfo( LOG ) << "System stopped";
 
     reset();
@@ -225,7 +241,6 @@ void SystemManagerSimu::reset()
 {
     _odometry = nullptr;
     _trajectoryManager = nullptr;
-    _strategyManager = nullptr;
     //_recalage = nullptr;
 
     //_monitoring->terminate();

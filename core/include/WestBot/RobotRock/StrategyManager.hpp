@@ -22,6 +22,7 @@ public:
     virtual ~StrategyManager() = default;
 
     virtual bool init( const TrajectoryManager::Ptr& trajectoryManager ) = 0;
+    virtual void deinit() = 0;
     virtual void stop() = 0;
 
     virtual void doStrat( const Color& color ) = 0;

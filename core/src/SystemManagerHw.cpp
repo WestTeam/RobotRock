@@ -302,7 +302,6 @@ void SystemManagerHw::reset()
 
     _odometry = nullptr;
     _trajectoryManager = nullptr;
-    _strategyManager = nullptr;
     _recalage = nullptr;
 
     _monitoring->terminate();

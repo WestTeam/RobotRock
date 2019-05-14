@@ -129,34 +129,15 @@ void SimTcpServer::updateClients(SimData &data)
     // Push data to all clients
     for( auto& client : _clients )
     {
-        this->sendSimData( client, data);
+        this->sendSimData( client, data );
     }
 }
 
 void SimTcpServer::sendSimData( const SocketPtr& socket, SimData &data )
 {
-    Q_UNUSED( data );
-    /*
-    uint8_t objectId;
-    uint8_t objectType;
-    uint8_t objectColor;
-    RobotPos objectPos; // robotpos = x,y,teta en double
-    double objectSize; // utile uniquement pour definir la taille du bras
-    uint8_t objectMode; // utile seulement pour les palets
-    */
-
-    // For test purpose;
-    _data.objectId = 0; // premier truc
-    _data.objectType = 0; // un palet
-    _data.objectColor = 0; // yellow side
-    _data.objectPos.x = 450;
-    _data.objectPos.y = 500;
-    _data.objectPos.theta = 0;
-    _data.objectSize = 0; // dont care
-    _data.objectMode = 1; // horizontale
-
-    socket->write( ( char *) & _data, sizeof( SimData ) );
+    socket->write( ( char *) & data, sizeof( SimData ) );
     socket->flush();
+    socket->waitForBytesWritten( 500 );
 }
 
 

@@ -87,9 +87,8 @@ void TrajectoryManagerSimu::enable()
 
 void TrajectoryManagerSimu::stop()
 {
-
     _trajType = TrajectoryType::TYPE_TRAJ_STOP;
-
+    terminate();
 }
 
 void TrajectoryManagerSimu::hardStop()
@@ -673,5 +672,5 @@ void TrajectoryManagerSimu::run()
             case TrajectoryManager::TrajectoryState::RUNNING_XY_ANGLE_OK:
                 break;*/
         }
-    } while (true);
+    } while ( true );
 }

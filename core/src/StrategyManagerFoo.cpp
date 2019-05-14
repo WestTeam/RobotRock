@@ -24,13 +24,31 @@ StrategyManagerFoo::StrategyManagerFoo()
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
+    , _init( false )
 {
 }
 
 bool StrategyManagerFoo::init( const TrajectoryManager::Ptr& trajectoryManager )
 {
-    _trajectoryManager = trajectoryManager;
+    tDebug( LOG ) << "HERE 3";
+
+    if ( ! _init )
+    {
+        _trajectoryManager = trajectoryManager;
+        _init = true;
+    }
+    else
+    {
+        tDebug( LOG ) << "StrategyManagerFoo already initialized";
+    }
+
     return true;
+}
+
+void StrategyManagerFoo::deinit()
+{
+    _trajectoryManager = nullptr;
+    _init = false;
 }
 
 void StrategyManagerFoo::stop()
@@ -110,7 +128,7 @@ void StrategyManagerFoo::doStrat( const Color& color )
     tDebug( LOG ) << "Do strat for color:" << color;
 
     WaitAction::Ptr wait500ms =
-        std::make_shared< WaitAction >( 100 );
+        std::make_shared< WaitAction >( 500 );
 
     while( _stratIsRunning )
     {
@@ -122,8 +140,15 @@ void StrategyManagerFoo::doStrat( const Color& color )
             _actions.push_front( wait500ms );
         }
 
-        _currentAction = _actions.takeFirst();
-        _currentAction->execute();
+        if( _actions.size() != 0 )
+        {
+            _currentAction = _actions.takeFirst();
+            _currentAction->execute();
+        }
+        else {
+            tDebug( LOG ) << "NO MORE ACTIONS: Wait until the end";
+            _actions.push_front( wait500ms );
+        }
     }
 }
 

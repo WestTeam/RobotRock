@@ -23,6 +23,9 @@ public:
     ~StrategyManagerFoo() override = default;
 
     bool init( const TrajectoryManager::Ptr& trajectoryManager ) override;
+
+    void deinit();
+
     void stop() override;
 
     void doStrat( const Color& color ) override;
@@ -40,6 +43,7 @@ private:
     Action::Ptr _currentAction;
     bool _stratIsRunning;
     bool _obstacleToClose;
+    bool _init;
 };
 
 }
