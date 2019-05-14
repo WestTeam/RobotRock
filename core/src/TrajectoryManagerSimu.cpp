@@ -21,6 +21,8 @@ TrajectoryManagerSimu::TrajectoryManagerSimu( const Odometry::Ptr& odometry )
     : _odometry( odometry )
     , _abort (false)
 {
+    _trajState = TrajectoryState::READY;
+    _commandId = 0;
 }
 
 // We set some default values for speed and acceleration
@@ -558,6 +560,40 @@ void TrajectoryManagerSimu::run()
             case TrajectoryManager::TrajectoryState::READY:
                 if (localCommandId != _commandId)
                 {
+                    switch (_trajType)
+                    {
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_STOP:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_HARDSTOP:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS:
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS:
+
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL:
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_D_REL:
+
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL:
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL:
+
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY_BEHIND:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_REL:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS:
+                            break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS:
+                            break;
+                        break;
+                    }
+
+
                     if (_trajType == TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS)
                     {
                         RobotPos newPos;

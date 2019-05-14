@@ -9,7 +9,7 @@
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
-#include <WestBot/RobotRock/Odometry.hpp>
+#include <WestBot/RobotRock/OdometrySimu.hpp>
 #include <WestBot/RobotRock/Lidar.hpp>
 #include <WestBot/RobotRock/Recalage.hpp>
 
@@ -334,7 +334,7 @@ int main( int argc, char *argv[] )
     RobotPos rpos_with_error; // position currently in odo (with error)
     RobotPos lidarPos = {.x = 200, .y = 100, .theta = -0.418};// lidar position from robot center
 
-    Odometry::Ptr odometryPtr = std::make_shared< Odometry >( hal );
+    Odometry::Ptr odometryPtr = std::make_shared< OdometrySimu >();
     LidarTest::Ptr lidarTestPtr = std::make_shared< LidarTest >(odometryPtr);
 
     lidarTestPtr->borderListAdd(0,0   ,-1500,0   ,1500);

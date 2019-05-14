@@ -75,7 +75,7 @@ public:
         RUNNING_CLITOID_CURVE,   // Running a clitoid in the curve part
     };
 
-    virtual ~TrajectoryManager() = default;
+//    virtual ~TrajectoryManager() = default;
 
     virtual void init() = 0;
 
@@ -90,8 +90,8 @@ public:
 
     virtual void setAbort( bool abort ) = 0;
 
-    virtual void setDistanceConfig( float speed, float acc );
-    virtual void setAngleConfig( float speed, float acc );
+    virtual void setDistanceConfig( float speed, float acc ) = 0;
+    virtual void setAngleConfig( float speed, float acc ) = 0;
 
     virtual void setWindow(
         float distance,

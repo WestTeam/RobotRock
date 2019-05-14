@@ -7,7 +7,7 @@
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
-#include <WestBot/RobotRock/Odometry.hpp>
+#include <WestBot/RobotRock/OdometryHw.hpp>
 
 #define DEBUG
 #define SIMU
@@ -38,7 +38,7 @@ int main( int argc, char *argv[] )
 
     //hal->dump();
 
-    Odometry odometry(hal);
+    OdometryHw odometry(hal);
 
     RobotPos pos;
 

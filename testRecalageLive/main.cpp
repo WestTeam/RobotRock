@@ -9,10 +9,10 @@
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
 #include <WestBot/RobotRock/Hal.hpp>
-#include <WestBot/RobotRock/Odometry.hpp>
+#include <WestBot/RobotRock/OdometryHw.hpp>
 #include <WestBot/RobotRock/Lidar.hpp>
 #include <WestBot/RobotRock/Recalage.hpp>
-#include <WestBot/RobotRock/TrajectoryManager.hpp>
+#include <WestBot/RobotRock/TrajectoryManagerHw.hpp>
 
 
 
@@ -70,7 +70,7 @@ int main( int argc, char *argv[] )
     RobotPos rpos_with_error; // position currently in odo (with error)
     RobotPos lidarPos = {.x = 206.08, .y = 101.1, .theta = -0.118+RAD(7.5)};// lidar position from robot center
 
-    Odometry::Ptr odometryPtr = std::make_shared< Odometry >( hal );
+    Odometry::Ptr odometryPtr = std::make_shared< OdometryHw >( hal );
     //LidarTest::Ptr lidarTestPtr;// = std::make_shared< LidarTest >(odometryPtr);
 
 
@@ -155,7 +155,7 @@ int main( int argc, char *argv[] )
 
         i = 0;
 
-        TrajectoryManager _trajectoryManager( hal );
+        TrajectoryManagerHw _trajectoryManager( hal );
         _trajectoryManager.init();
         _trajectoryManager.enable();
 

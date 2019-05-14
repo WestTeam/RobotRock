@@ -8,7 +8,7 @@
 
 #include <WestBot/RobotRock/Hal.hpp>
 #include <WestBot/RobotRock/Lidar.hpp>
-#include <WestBot/RobotRock/Odometry.hpp>
+#include <WestBot/RobotRock/OdometryHw.hpp>
 
 #define DEBUG
 #define SIMU
@@ -44,7 +44,7 @@ int main( int argc, char *argv[] )
     hal->_motor5Value.write(0);
     QThread::msleep( 2000 );
 
-    Odometry odometry(hal);
+    OdometryHw odometry(hal);
 
     // init position
     odometry.setPosition({.x=0.0,.y=0.0,.theta=RAD(0.0)});

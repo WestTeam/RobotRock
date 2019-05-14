@@ -42,6 +42,9 @@ public:
 
     void showConnectionInformation() const;
 
+    void updateClients(SimData &data);
+
+
 signals:
     void error( QTcpSocket::SocketError socketError );
 
@@ -49,7 +52,7 @@ protected:
     void incomingConnection( qintptr socketDescriptor ) override;
 
 private:
-    void sendSimData( const SocketPtr& socket ); // TODO: XXX
+    void sendSimData( const SocketPtr& socket, SimData &data); // TODO: XXX
 
 private:
     QHash< QObject*, SocketPtr > _clients;
