@@ -5,11 +5,9 @@
 
 #include <QThread>
 
-
 #include "Hal.hpp"
 #include "TrajectoryManager.hpp"
 #include "Odometry.hpp"
-
 
 namespace WestBot {
 namespace RobotRock {

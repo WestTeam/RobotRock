@@ -19,7 +19,7 @@ class StrategyManager
 public:
     using Ptr = std::shared_ptr< StrategyManager >;
 
-    virtual ~StrategyManager();
+    virtual ~StrategyManager() = default;
 
     virtual bool init( const TrajectoryManager::Ptr& trajectoryManager ) = 0;
     virtual void stop() = 0;

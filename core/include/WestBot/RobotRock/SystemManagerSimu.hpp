@@ -20,7 +20,9 @@ namespace RobotRock {
 class SystemManagerSimu : public SystemManager
 {
 public:
-    SystemManagerSimu( const StrategyManager::Ptr& strategyManager );
+    SystemManagerSimu(
+        const StrategyManager::Ptr& strategyManager,
+        QObject* parent = nullptr );
 
     ~SystemManagerSimu() override;
 

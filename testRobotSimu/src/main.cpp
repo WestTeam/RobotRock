@@ -31,24 +31,16 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
-    StrategyManagerFoo::Ptr strategyFoo;
+    StrategyManagerFoo::Ptr strategyFoo = std::make_shared< StrategyManagerFoo >();
     SystemManagerSimu system( strategyFoo );
 
     tInfo( LOG ) << "==== System started ! ==== ";
-
+/*
     if( ! system.init() )
     {
         tFatal( LOG ) << "Failed to init system manager";
     }
-
-#ifdef DEBUG
-    hal->dump();
-#endif
-
-#ifdef SIMU
-    hal->_modeSimu.write( 1 );
-#endif
-
+*/
     tInfo( LOG ) << "==== System ready ! ==== ";
 
     return app.exec();

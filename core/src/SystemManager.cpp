@@ -39,46 +39,6 @@ SystemManager::SystemManager( QObject* parent )
         & QTimer::timeout,
         this,
         & SystemManager::robotAlive );
-
-    connect(
-        _startButton.get(),
-        & Input::stateChanged,
-        this,
-        [ this ]( const DigitalValue& value )
-        {
-            tDebug( LOG ) << "Start button changed to:" << value;
-
-            if( value == DigitalValue::OFF &&
-                _hardstopButton->digitalRead() == DigitalValue::OFF )
-            {
-                start();
-            }
-        } );
-
-    connect(
-        _colorButton.get(),
-        & Input::stateChanged,
-        this,
-        [ this ]( const DigitalValue& value )
-        {
-            tDebug( LOG ) << "Color button changed to:" << value;
-            displayColor( value );
-        } );
-
-    connect(
-        _hardstopButton.get(),
-        & Input::stateChanged,
-        this,
-        [ this ]( const DigitalValue& value )
-        {
-            tDebug( LOG ) << "Hardstop button changed to:" << value;
-
-            if( value == DigitalValue::ON )
-            {
-                tInfo( LOG ) << "Hardstop requested";
-                stop();
-            }
-        } );
 }
 
 //

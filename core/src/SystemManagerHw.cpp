@@ -28,8 +28,9 @@ namespace
 
 SystemManagerHw::SystemManagerHw(
     const Hal::Ptr& hal,
-    const StrategyManager::Ptr& strategyManager )
-    : SystemManager( this )
+    const StrategyManager::Ptr& strategyManager,
+    QObject* parent )
+    : SystemManager( parent )
     , _hal( hal )
     , _systemMode( SystemManagerHw::SystemMode::Full )
     , _odometry( nullptr )
@@ -64,6 +65,46 @@ SystemManagerHw::SystemManagerHw(
           new OutputHw(
               std::make_shared< ItemRegister >( _hal->_output2 ),
               "Blue" ) );
+
+    connect(
+        _startButton.get(),
+        & Input::stateChanged,
+        this,
+        [ this ]( const DigitalValue& value )
+        {
+            tDebug( LOG ) << "Start button changed to:" << value;
+
+            if( value == DigitalValue::OFF &&
+                _hardstopButton->digitalRead() == DigitalValue::OFF )
+            {
+                start();
+            }
+        } );
+
+    connect(
+        _colorButton.get(),
+        & Input::stateChanged,
+        this,
+        [ this ]( const DigitalValue& value )
+        {
+            tDebug( LOG ) << "Color button changed to:" << value;
+            displayColor( value );
+        } );
+
+    connect(
+        _hardstopButton.get(),
+        & Input::stateChanged,
+        this,
+        [ this ]( const DigitalValue& value )
+        {
+            tDebug( LOG ) << "Hardstop button changed to:" << value;
+
+            if( value == DigitalValue::ON )
+            {
+                tInfo( LOG ) << "Hardstop requested";
+                stop();
+            }
+        } );
 
     static bool toggleAvoid = false;
 

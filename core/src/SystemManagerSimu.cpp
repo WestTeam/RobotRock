@@ -26,8 +26,9 @@ namespace
 }
 
 SystemManagerSimu::SystemManagerSimu(
-    const StrategyManager::Ptr& strategyManager )
-    : SystemManager( this )
+    const StrategyManager::Ptr& strategyManager,
+     QObject* parent )
+    : SystemManager( parent )
     , _odometry( nullptr )
     //, _recalage( nullptr )
     //, _lidar( nullptr )
@@ -45,6 +46,46 @@ SystemManagerSimu::SystemManagerSimu(
     _ledYellow.reset( new OutputSimu( 'Y', "Yellow" ) );
 
     _ledBlue.reset( new OutputSimu( 'B', "Blue" ) );
+
+    connect(
+        _startButton.get(),
+        & Input::stateChanged,
+        this,
+        [ this ]( const DigitalValue& value )
+        {
+            tDebug( LOG ) << "Start button changed to:" << value;
+
+            if( value == DigitalValue::OFF &&
+                _hardstopButton->digitalRead() == DigitalValue::OFF )
+            {
+                start();
+            }
+        } );
+
+    connect(
+        _colorButton.get(),
+        & Input::stateChanged,
+        this,
+        [ this ]( const DigitalValue& value )
+        {
+            tDebug( LOG ) << "Color button changed to:" << value;
+            displayColor( value );
+        } );
+
+    connect(
+        _hardstopButton.get(),
+        & Input::stateChanged,
+        this,
+        [ this ]( const DigitalValue& value )
+        {
+            tDebug( LOG ) << "Hardstop button changed to:" << value;
+
+            if( value == DigitalValue::ON )
+            {
+                tInfo( LOG ) << "Hardstop requested";
+                stop();
+            }
+        } );
 
     static bool toggleAvoid = false;
 
@@ -95,7 +136,7 @@ bool SystemManagerSimu::init()
     tInfo( LOG ) << "System manager initializing...";
 
     // On set nos pointeurs avant toute chose
-    _odometry.reset( new OdometrySimu() );
+    //_odometry.reset( new OdometrySimu() );
 
     //_recalage.reset( new Recalage() );
 

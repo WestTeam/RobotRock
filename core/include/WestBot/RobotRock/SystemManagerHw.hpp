@@ -31,7 +31,8 @@ public:
 
     SystemManagerHw(
         const Hal::Ptr& hal,
-        const StrategyManager::Ptr& strategyManager );
+        const StrategyManager::Ptr& strategyManager,
+        QObject* parent = nullptr );
 
     ~SystemManagerHw() override;
 

@@ -6,13 +6,15 @@ QT -= gui
 CONFIG += c++11
 
 TEMPLATE = subdirs
-SUBDIRS = core robot-rock test1 testLidar \
+SUBDIRS = core robot-rock test1 \
+    #testLidar \
     SmartServoTesting testOdometry testEcran \
-    testRecalage testRecalageLive \
+    #testRecalage \
+    #testRecalageLive \
     testHomologation \
     TestVl6180x \
     testArmLowLevel \
-    testArmHighLevel \
+    #testArmHighLevel \
     testSimServer \
     testRobotSimu
 
