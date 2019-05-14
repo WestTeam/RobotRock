@@ -16,7 +16,10 @@ namespace
 
 OdometrySimu::OdometrySimu()
 {
-    // TODO: XXX
+    _cumulatedError.x = 0.0;
+    _cumulatedError.y = 0.0;
+    _cumulatedError.theta = 0.0;
+
 }
 
 // Get Latest position from Odometry core
@@ -24,9 +27,7 @@ RobotPos OdometrySimu::getPosition()
 {
     QMutexLocker locker( & _lock );
 
-    RobotPos ret;
-    //TODO: XXX
-    return ret;
+    return _cumulatedError;
 }
 
 void OdometrySimu::setPosition( RobotPos pos )
@@ -46,5 +47,7 @@ void OdometrySimu::addError( RobotPos pos )
 {
     QMutexLocker locker( & _lock );
 
-    // TODO: XXX
+    _cumulatedError.x += pos.x;
+    _cumulatedError.y += pos.y;
+    _cumulatedError.theta += pos.theta;
 }

@@ -22,6 +22,8 @@ public:
 
 private:
     RobotPos _posLatest;
+    RobotPos _cumulatedError;
+
 
     QMutex _lock;
 };
