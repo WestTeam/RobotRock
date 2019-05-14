@@ -60,13 +60,17 @@ int main( int argc, char *argv[] )
         _simServer.showConnectionInformation();
     }
 
-    float x = 20.0;
+    float x = 200.0;
 
     do {
         QThread::msleep(100);
 
-        x+=0.01;
+        x-=0.01;
         _traj.moveForwardToXYAbs(0.0,x,0.0,true);
+
+        QThread::msleep(50);
+
+        _traj.turnToXY(10.0,20.0,true);
 
         RobotPos pos = _odometry->getPosition();
 

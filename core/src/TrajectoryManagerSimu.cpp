@@ -137,6 +137,9 @@ void TrajectoryManagerSimu::moveDRel(
     _commandDistance = distance;
     _commandId++;
 
+    QThread::msleep(100);
+
+
     TrajectoryManager::TrajectoryState state;
 
 
@@ -169,6 +172,8 @@ void TrajectoryManagerSimu::moveOnlyDRel(
     _commandDistance = distance;
     _commandId++;
 
+    QThread::msleep(100);
+
     TrajectoryManager::TrajectoryState state;
 
 
@@ -200,6 +205,9 @@ void TrajectoryManagerSimu::turnARel(
     _commandAngle = theta;
     _commandId++;
 
+    QThread::msleep(100);
+
+
     TrajectoryManager::TrajectoryState state;
 
 
@@ -230,6 +238,8 @@ void TrajectoryManagerSimu::turnAAbs(
     _trajType = TrajectoryType::TYPE_TRAJ_A_ABS;
     _commandAngle = theta;
     _commandId++;
+
+    QThread::msleep(100);
 
 
     TrajectoryManager::TrajectoryState state;
@@ -263,6 +273,9 @@ void TrajectoryManagerSimu::turnOnlyARel(
     _commandAngle = theta;
     _commandId++;
 
+    QThread::msleep(100);
+
+
     TrajectoryManager::TrajectoryState state;
 
 	if( doNotBlock )
@@ -294,6 +307,7 @@ void TrajectoryManagerSimu::turnOnlyAAbs(
     _commandAngle = theta;
     _commandId++;
 
+    QThread::msleep(100);
 
     TrajectoryManager::TrajectoryState state;
 
@@ -319,18 +333,13 @@ void TrajectoryManagerSimu::turnOnlyAAbs(
 
 void TrajectoryManagerSimu::turnToXY( float x, float y, bool doNotBlock )
 {
-    RobotPos currentPos;
-    currentPos.theta = 0;
-    currentPos.x = x;
-    currentPos.y = y;
-
-    RobotPos pos = currentPos; // RobotPos pos = _recalage->sendPos( currentPos );
 
     _trajType = TrajectoryType::TYPE_TRAJ_TURNTO_XY;
     _commandX = x;
     _commandY = y;
     _commandId++;
 
+    QThread::msleep(100);
 
     TrajectoryManager::TrajectoryState state;
 
@@ -361,6 +370,9 @@ void TrajectoryManagerSimu::turnToXYBehind( float x, float y, bool doNotBlock )
     _commandX = x;
     _commandY = y;
     _commandId++;
+
+
+    QThread::msleep(100);
 
     TrajectoryManager::TrajectoryState state;
 
@@ -395,6 +407,8 @@ void TrajectoryManagerSimu::moveToXYAbs(
     _commandY = y;
     _commandId++;
 
+    QThread::msleep(100);
+
     TrajectoryManager::TrajectoryState state;
 
 	if( doNotBlock )
@@ -427,6 +441,9 @@ void TrajectoryManagerSimu::moveForwardToXYAbs(
     _commandX = x;
     _commandY = y;
     _commandId++;
+
+    QThread::msleep(100);
+
 
     TrajectoryManager::TrajectoryState state;
 
@@ -462,6 +479,8 @@ void TrajectoryManagerSimu::moveBackwardToXYAbs(
     _commandY = y;
     _commandId++;
 
+    QThread::msleep(100);
+
     TrajectoryManager::TrajectoryState state;
 
 
@@ -496,6 +515,9 @@ void TrajectoryManagerSimu::moveToDARel(
     _commandDistance = distance;
     _commandId++;
 
+    QThread::msleep(100);
+
+
     TrajectoryManager::TrajectoryState state;
 
 
@@ -525,6 +547,7 @@ void TrajectoryManagerSimu::moveToXYRel( float x, float y, bool doNotBlock )
     _commandY = y;
     _commandId++;
 
+    QThread::msleep(100);
 
 
     TrajectoryManager::TrajectoryState state;
@@ -555,11 +578,18 @@ void TrajectoryManagerSimu::run()
     do {
         QThread::msleep(10);
 
-        switch (_trajState)
+        //switch (_trajState)
         {
-            case TrajectoryManager::TrajectoryState::READY:
+
+            //case TrajectoryManager::TrajectoryState::READY:
                 if (localCommandId != _commandId)
                 {
+
+                    RobotPos currentPos = _odometry->getPosition();
+
+                    float newAngle = atan2(_commandY-currentPos.y,_commandX-currentPos.x);
+
+
                     switch (_trajType)
                     {
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_STOP:
@@ -568,34 +598,58 @@ void TrajectoryManagerSimu::run()
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS:
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS:
-
+                            _odometry->setPosition({currentPos.x,currentPos.y,RAD(_commandAngle)});
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL:
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_D_REL:
+                            _commandX = currentPos.x + _commandDistance*cos(currentPos.theta);
+                            _commandY = currentPos.y + _commandDistance*sin(currentPos.theta);
+
+                            _odometry->setPosition({_commandX,_commandY,currentPos.theta});
 
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL:
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL:
-
+                        _odometry->setPosition({currentPos.x,currentPos.y,currentPos.theta+RAD(_commandAngle)});
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY:
+                            _odometry->setPosition({currentPos.x,currentPos.y,newAngle});
+
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY_BEHIND:
+                            _odometry->setPosition({currentPos.x,currentPos.y,newAngle+M_PI});
+
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS:
+                            _odometry->setPosition({_commandX,_commandY,newAngle});
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_REL:
+                            _commandX = currentPos.x + hypot(_commandX,_commandY)*cos(currentPos.theta);
+                            _commandY = currentPos.y + hypot(_commandX,_commandY)*sin(currentPos.theta);
+
+                            newAngle = atan2(_commandY-currentPos.y,_commandX-currentPos.x);
+
+                            _odometry->setPosition({_commandX,_commandY,newAngle});
+
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS:
+                            _odometry->setPosition({_commandX,_commandY,newAngle});
                             break;
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS:
+                            _odometry->setPosition({_commandX,_commandY,newAngle+M_PI});
                             break;
-                        break;
                     }
 
 
+                    tDebug( LOG ) << "Traj Command Executed:" << _trajType << _commandX << _commandY;
+                    tDebug( LOG ) << "Traj Old Pos" << currentPos.x << currentPos.y << DEG(currentPos.theta);
+                    currentPos = _odometry->getPosition();
+                    tDebug( LOG ) << "Traj New Pos" << currentPos.x << currentPos.y << DEG(currentPos.theta);
+
+
+                    /*
                     if (_trajType == TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS)
-                    {
+
                         RobotPos newPos;
 
                         newPos.x = _commandX;
@@ -604,11 +658,11 @@ void TrajectoryManagerSimu::run()
                         _odometry->setPosition(newPos);
 
                         tDebug( LOG ) << "Traj Command Executed:" << _trajType << _commandX << _commandY;
-                    }
+                    }*/
 
                     localCommandId = _commandId;
                 }
-                break;
+/*                break;
 
             case TrajectoryManager::TrajectoryState::RUNNING_XY_START:
                 break;
@@ -616,7 +670,7 @@ void TrajectoryManagerSimu::run()
                 break;
 
             case TrajectoryManager::TrajectoryState::RUNNING_XY_ANGLE_OK:
-                break;
+                break;*/
         }
     } while (true);
 }
