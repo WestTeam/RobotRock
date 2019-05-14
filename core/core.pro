@@ -39,7 +39,8 @@ SOURCES += \
     src/WaitAction.cpp \
     src/SmartServo.cpp \
     src/ArmLowLevel.cpp \
-    src/ArmHighLevel.cpp
+    src/ArmHighLevel.cpp \
+    src/TrajectoryManagerSimu.cpp
 
 HEADERS += \
     include/Macros.hpp \
@@ -65,6 +66,7 @@ HEADERS += \
     include/WestBot/RobotRock/Servo.hpp \
     include/WestBot/RobotRock/Odometry.hpp \
     include/WestBot/RobotRock/OdometryHw.hpp \
+    include/WestBot/RobotRock/OdometrySimu.hpp \
     include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/StrategyManagerFoo.hpp \
@@ -76,7 +78,8 @@ HEADERS += \
     include/WestBot/RobotRock/WaitAction.hpp \
     include/WestBot/RobotRock/SmartServo.hpp \
     include/WestBot/RobotRock/ArmLowLevel.hpp \
-    include/WestBot/RobotRock/ArmHighLevel.hpp
+    include/WestBot/RobotRock/ArmHighLevel.hpp \
+    include/WestBot/RobotRock/TrajectoryManagerSimu.hpp
 
 INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
