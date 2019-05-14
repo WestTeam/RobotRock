@@ -1,16 +1,9 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
-#include <WestBot/HumanAfterAll/Category.hpp>
-
 #include <WestBot/RobotRock/Monitoring.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
-
-namespace
-{
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Monitoring" )
-}
 
 Monitoring::Monitoring( const Hal::Ptr& hal, const Odometry::Ptr& odo )
     : _hal( hal )

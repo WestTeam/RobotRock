@@ -167,6 +167,7 @@ void TrajectoryManagerSimu::moveOnlyDRel(
     bool correction,
     bool doNotBlock )
 {
+    Q_UNUSED( correction );
 
     _trajType = TrajectoryType::TYPE_TRAJ_ONLY_D_REL;
     _commandDistance = distance;

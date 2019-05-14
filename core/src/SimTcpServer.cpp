@@ -135,6 +135,7 @@ void SimTcpServer::updateClients(SimData &data)
 
 void SimTcpServer::sendSimData( const SocketPtr& socket, SimData &data )
 {
+    Q_UNUSED( data );
     /*
     uint8_t objectId;
     uint8_t objectType;

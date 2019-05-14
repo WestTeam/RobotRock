@@ -2,17 +2,10 @@
 
 #include <QMutexLocker>
 
-#include <WestBot/HumanAfterAll/Category.hpp>
-
 #include <WestBot/RobotRock/OdometrySimu.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
-
-namespace
-{
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.OdometrySimu" )
-}
 
 OdometrySimu::OdometrySimu()
 {

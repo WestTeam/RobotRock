@@ -3,6 +3,7 @@
 #ifndef WESTBOT_ROBOTROCK_LIDAR_HPP_
 #define WESTBOT_ROBOTROCK_LIDAR_HPP_
 
+#include <QMutex>
 #include <QThread>
 
 #include <WestBot/RobotRock/ItemRegister.hpp>
