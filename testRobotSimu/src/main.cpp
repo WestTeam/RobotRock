@@ -35,12 +35,12 @@ int main( int argc, char *argv[] )
     SystemManagerSimu system( strategyFoo );
 
     tInfo( LOG ) << "==== System started ! ==== ";
-/*
+
     if( ! system.init() )
     {
         tFatal( LOG ) << "Failed to init system manager";
     }
-*/
+
     tInfo( LOG ) << "==== System ready ! ==== ";
 
     return app.exec();

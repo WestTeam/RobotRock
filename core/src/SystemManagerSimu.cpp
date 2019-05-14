@@ -136,7 +136,7 @@ bool SystemManagerSimu::init()
     tInfo( LOG ) << "System manager initializing...";
 
     // On set nos pointeurs avant toute chose
-    //_odometry.reset( new OdometrySimu() );
+    _odometry.reset( new OdometrySimu() );
 
     //_recalage.reset( new Recalage() );
 
@@ -165,6 +165,8 @@ bool SystemManagerSimu::init()
     displayColor( _colorButton->digitalRead() );
 
     tInfo( LOG ) << "System manager initialized";
+
+    start();
 
     return true;
 }
