@@ -33,7 +33,7 @@ public:
         const Hal::Ptr& hal,
         const StrategyManager::Ptr& strategyManager );
 
-    ~SystemManagerHw() override = default;
+    ~SystemManagerHw() override;
 
     bool init() override;
 

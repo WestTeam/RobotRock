@@ -113,7 +113,7 @@ void SimTcpServer::incomingConnection( qintptr socketDescriptor )
         tcpSocket.get(),
         & QTcpSocket::readyRead,
         this,
-        [ this, tcpSocket ]()
+        [ tcpSocket ]()
         {
             const QByteArray data = tcpSocket->readAll();
             tDebug( LOG ) << "Client send a data:" << data;

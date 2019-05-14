@@ -7,33 +7,6 @@
 
 #include <QDebug>
 
-#include "Hal.hpp"
-#include "Recalage.hpp"
-
-#define CMD_TYPE_TRAJ 0x0
-#define CMD_TYPE_CFG_DISTANCE 0x1
-#define CMD_TYPE_CFG_ANGLE 0x2
-#define CMD_TYPE_CFG_WND 0x3
-
-#define TRAJ_DISABLE 0
-#define TRAJ_ENABLE 1
-#define TRAJ_STOP 2
-#define TRAJ_HARDSTOP 3
-#define TRAJ_D_REL 4
-#define TRAJ_ONLY_D_REL 5
-#define TRAJ_A_REL 6
-#define TRAJ_A_ABS 7
-#define TRAJ_ONLY_A_REL 8
-#define TRAJ_ONLY_A_ABS 9
-#define TRAJ_D_A_REL 10
-#define TRAJ_TURNTO_XY 11
-#define TRAJ_TURNTO_XY_BEHIND 12
-#define TRAJ_GOTO_XY_ABS 13
-#define TRAJ_GOTO_FORWARD_XY_ABS 14
-#define TRAJ_GOTO_BACKWARD_XY_ABS 15
-#define TRAJ_GOTO_D_A_REL 16
-#define TRAJ_GOTO_XY_REL 17
-
 namespace WestBot {
 namespace RobotRock {
 
@@ -102,60 +75,94 @@ public:
         RUNNING_CLITOID_CURVE,   // Running a clitoid in the curve part
     };
 
-    TrajectoryManager( const Hal::Ptr& hal );
+    virtual ~TrajectoryManager() = default;
 
-    void init();
+    virtual void init() = 0;
 
-    void waitTrajReady();
-    bool isTrajReady();
+    virtual void waitTrajReady() = 0;
+    virtual bool isTrajReady() = 0;
 
+    virtual void disable() = 0;
+    virtual void enable() = 0;
 
-    void disable();
-    void enable();
+    virtual void stop() = 0;
+    virtual void hardStop() = 0;
 
-    void stop();
-    void hardStop();
+    virtual void setAbort( bool abort ) = 0;
 
-    void setAbort( bool abort );
+    virtual void setDistanceConfig( float speed, float acc );
+    virtual void setAngleConfig( float speed, float acc );
 
+    virtual void setWindow(
+        float distance,
+        float angleDeg,
+        float startAngleDeg ) = 0;
 
-    void setDistanceConfig( float speed, float acc );
-    void setAngleConfig( float speed, float acc );
-
-    void setWindow( float distance, float angleDeg, float startAngleDeg );
-
-    void moveDRel( float distance, bool correction, bool doNotBlock = false );
-    void moveOnlyDRel(
+    virtual void moveDRel(
         float distance,
         bool correction,
-        bool doNotBlock = false );
-    void turnARel( float theta, bool correction, bool doNotBlock = false );
-    void turnAAbs( float theta, bool correction, bool doNotBlock = false );
-    void turnOnlyARel( float theta, bool correction, bool doNotBlock = false );
-    void turnOnlyAAbs( float theta, bool correction, bool doNotBlock = false );
-    void turnToXY( float x, float y, bool doNotBlock = false );
-    void turnToXYBehind( float x, float y, bool doNotBlock = false );
-    void moveToXYAbs( float theta, float x, float y, bool doNotBlock = false );
-    void moveForwardToXYAbs(
+        bool doNotBlock = false ) = 0;
+
+    virtual void moveOnlyDRel(
+        float distance,
+        bool correction,
+        bool doNotBlock = false ) = 0;
+
+    virtual void turnARel(
+        float theta,
+        bool correction,
+        bool doNotBlock = false ) = 0;
+
+    virtual void turnAAbs(
+        float theta,
+        bool correction,
+        bool doNotBlock = false ) = 0;
+
+    virtual void turnOnlyARel(
+        float theta,
+        bool correction,
+        bool doNotBlock = false ) = 0;
+
+    virtual void turnOnlyAAbs(
+        float theta,
+        bool correction,
+        bool doNotBlock = false ) = 0;
+
+    virtual void turnToXY(
+        float x,
+        float y,
+        bool doNotBlock = false ) = 0;
+
+    virtual void turnToXYBehind(
+        float x,
+        float y,
+        bool doNotBlock = false ) = 0;
+
+    virtual void moveToXYAbs(
         float theta,
         float x,
         float y,
-        bool doNotBlock = false );
-    void moveBackwardToXYAbs(
+        bool doNotBlock = false ) = 0;
+
+    virtual void moveForwardToXYAbs(
         float theta,
         float x,
         float y,
-        bool doNotBlock = false );
-    void moveToDARel(
+        bool doNotBlock = false ) = 0;
+
+    virtual void moveBackwardToXYAbs(
+        float theta,
+        float x,
+        float y,
+        bool doNotBlock = false ) = 0;
+
+    virtual void moveToDARel(
         float theta,
         float distance,
         bool correction,
-        bool doNotBlock = false );
-    void moveToXYRel( float x, float y, bool doNotBlock = false );
+        bool doNotBlock = false ) = 0;
 
-private:
-    Hal::Ptr _hal;
-    bool _abort;
+    virtual void moveToXYRel( float x, float y, bool doNotBlock = false ) = 0;
 };
 
     /*!
@@ -313,7 +320,7 @@ private:
             debug << "Trajectory: RUNNING_CLITOID_CURVE";
             break;
         }
-        
+
         return debug;
     }
 }

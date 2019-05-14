@@ -533,6 +533,8 @@ void SmartServo::checkStatus()
 
 uint16_t SmartServo::getPosition(bool Update)
 {
+    Q_UNUSED( Update );
+
     //if (Update)
     //    checkStatus();
     uint8_t addr_current_pos;

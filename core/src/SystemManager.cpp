@@ -81,11 +81,6 @@ SystemManager::SystemManager( QObject* parent )
         } );
 }
 
-SystemManager::~SystemManager()
-{
-    stop();
-}
-
 //
 // Private methods
 //

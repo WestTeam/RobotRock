@@ -1,28 +1,30 @@
-// Copyright (c) 2018-2019 All Rights Reserved WestBot
+// Copyright (c) 2019 All Rights Reserved WestBot
 
 #include <QThread>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
-#include <WestBot/RobotRock/TrajectoryManager.hpp>
+#include <WestBot/RobotRock/Odometry.hpp>
+#include <WestBot/RobotRock/TrajectoryManagerHw.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
 namespace
 {
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.TrajectoryManager" )
+    HUMANAFTERALL_LOGGING_CATEGORY(
+        LOG,
+        "WestBot.RobotRock.TrajectoryManagerHw" )
 }
 
-TrajectoryManager::TrajectoryManager(
-    const Hal::Ptr& hal )
+TrajectoryManagerHw::TrajectoryManagerHw( const Hal::Ptr& hal )
     : _hal( hal )
     , _abort (false)
 {
 }
 
 // We set some default values for speed and acceleration
-void TrajectoryManager::init()
+void TrajectoryManagerHw::init()
 {
     _hal->_trajFreqHz.write( 10 );
 
@@ -97,29 +99,17 @@ void TrajectoryManager::init()
     tInfo( LOG ) << "Trajectory manager initialized";
 }
 
-void TrajectoryManager::waitTrajReady()
+void TrajectoryManagerHw::waitTrajReady()
 {
     do
     {
         QThread::msleep( 10 );
-        /*
-        QThread::msleep( 10 );
-        state = static_cast< TrajectoryManager::TrajectoryState >(
-            _hal->_trajOutState.read< uint8_t >() );
-        inWindow = _hal->_trajOutInWindow.read< uint8_t >();
-        tDebug( LOG )
-            << "Wait traj ready: State:" << state << "in windows:" << inWindow
-            << "x/y/theta:" << _hal->_odometryX.read<int16_t>() << "/"
-            << _hal->_odometryY.read<int16_t>() << "/"
-            << _hal->_odometryTheta.read<int16_t>();
-            */
-
     } while( !isTrajReady() && !_abort );
 
     _abort = false;
 }
 
-bool TrajectoryManager::isTrajReady()
+bool TrajectoryManagerHw::isTrajReady()
 {
     uint8_t inWindow;
     TrajectoryManager::TrajectoryState state;
@@ -136,7 +126,7 @@ bool TrajectoryManager::isTrajReady()
     return (state == TrajectoryState::READY);
 }
 
-void TrajectoryManager::disable()
+void TrajectoryManagerHw::disable()
 {
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
 
@@ -153,7 +143,7 @@ void TrajectoryManager::disable()
     }
 }
 
-void TrajectoryManager::enable()
+void TrajectoryManagerHw::enable()
 {
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
 
@@ -170,7 +160,7 @@ void TrajectoryManager::enable()
     }
 }
 
-void TrajectoryManager::stop()
+void TrajectoryManagerHw::stop()
 {
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
 
@@ -187,7 +177,7 @@ void TrajectoryManager::stop()
     }
 }
 
-void TrajectoryManager::hardStop()
+void TrajectoryManagerHw::hardStop()
 {
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
 
@@ -204,13 +194,12 @@ void TrajectoryManager::hardStop()
     }
 }
 
-void TrajectoryManager::setAbort( bool abort )
+void TrajectoryManagerHw::setAbort( bool abort )
 {
     _abort = abort;
 }
 
-
-void TrajectoryManager::setDistanceConfig( float speed, float acc )
+void TrajectoryManagerHw::setDistanceConfig( float speed, float acc )
 {
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
 
@@ -229,7 +218,7 @@ void TrajectoryManager::setDistanceConfig( float speed, float acc )
     }
 }
 
-void TrajectoryManager::setAngleConfig( float speed, float acc )
+void TrajectoryManagerHw::setAngleConfig( float speed, float acc )
 {
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();
 
@@ -247,7 +236,7 @@ void TrajectoryManager::setAngleConfig( float speed, float acc )
     }
 }
 
-void TrajectoryManager::setWindow(
+void TrajectoryManagerHw::setWindow(
     float distance,
     float angleDeg,
     float startAngleDeg )
@@ -272,7 +261,7 @@ void TrajectoryManager::setWindow(
 }
 
 // Trajectories: all this method are blocking
-void TrajectoryManager::moveDRel(
+void TrajectoryManagerHw::moveDRel(
     float distance,
     bool correction,
     bool doNotBlock )
@@ -324,7 +313,7 @@ void TrajectoryManager::moveDRel(
     _abort = false;
 }
 
-void TrajectoryManager::moveOnlyDRel(
+void TrajectoryManagerHw::moveOnlyDRel(
     float distance,
     bool correction,
     bool doNotBlock )
@@ -377,7 +366,7 @@ void TrajectoryManager::moveOnlyDRel(
     _abort = false;
 }
 
-void TrajectoryManager::turnARel(
+void TrajectoryManagerHw::turnARel(
     float theta,
     bool correction,
     bool doNotBlock )
@@ -429,7 +418,7 @@ void TrajectoryManager::turnARel(
     _abort = false;
 }
 
-void TrajectoryManager::turnAAbs(
+void TrajectoryManagerHw::turnAAbs(
     float theta,
     bool correction,
     bool doNotBlock )
@@ -488,7 +477,7 @@ void TrajectoryManager::turnAAbs(
     _abort = false;
 }
 
-void TrajectoryManager::turnOnlyARel(
+void TrajectoryManagerHw::turnOnlyARel(
     float theta,
     bool correction,
     bool doNotBlock )
@@ -540,7 +529,7 @@ void TrajectoryManager::turnOnlyARel(
     _abort = false;
 }
 
-void TrajectoryManager::turnOnlyAAbs(
+void TrajectoryManagerHw::turnOnlyAAbs(
     float theta,
     bool correction,
     bool doNotBlock )
@@ -599,7 +588,7 @@ void TrajectoryManager::turnOnlyAAbs(
     _abort = false;
 }
 
-void TrajectoryManager::turnToXY( float x, float y, bool doNotBlock )
+void TrajectoryManagerHw::turnToXY( float x, float y, bool doNotBlock )
 {
     RobotPos currentPos;
     currentPos.theta = 0;
@@ -653,7 +642,7 @@ void TrajectoryManager::turnToXY( float x, float y, bool doNotBlock )
     _abort = false;
 }
 
-void TrajectoryManager::turnToXYBehind( float x, float y, bool doNotBlock )
+void TrajectoryManagerHw::turnToXYBehind( float x, float y, bool doNotBlock )
 {
     RobotPos currentPos;
     currentPos.theta = 0;
@@ -707,7 +696,7 @@ void TrajectoryManager::turnToXYBehind( float x, float y, bool doNotBlock )
     _abort = false;
 }
 
-void TrajectoryManager::moveToXYAbs(
+void TrajectoryManagerHw::moveToXYAbs(
     float theta,
     float x,
     float y,
@@ -767,7 +756,7 @@ void TrajectoryManager::moveToXYAbs(
     _abort = false;
 }
 
-void TrajectoryManager::moveForwardToXYAbs(
+void TrajectoryManagerHw::moveForwardToXYAbs(
     float theta,
     float x,
     float y,
@@ -827,7 +816,7 @@ void TrajectoryManager::moveForwardToXYAbs(
     _abort = false;
 }
 
-void TrajectoryManager::moveBackwardToXYAbs(
+void TrajectoryManagerHw::moveBackwardToXYAbs(
     float theta,
     float x,
     float y,
@@ -887,7 +876,7 @@ void TrajectoryManager::moveBackwardToXYAbs(
     _abort = false;
 }
 
-void TrajectoryManager::moveToDARel(
+void TrajectoryManagerHw::moveToDARel(
     float theta,
     float distance,
     bool correction,
@@ -943,7 +932,7 @@ void TrajectoryManager::moveToDARel(
     _abort = false;
 }
 
-void TrajectoryManager::moveToXYRel( float x, float y, bool doNotBlock )
+void TrajectoryManagerHw::moveToXYRel( float x, float y, bool doNotBlock )
 {
     uint8_t inWindow;
     uint8_t commandId = _hal->_trajOutAck.read< uint8_t >();

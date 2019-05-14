@@ -11,6 +11,7 @@
 #include <WestBot/RobotRock/OdometryHw.hpp>
 #include <WestBot/RobotRock/OutputHw.hpp>
 #include <WestBot/RobotRock/SystemManagerHw.hpp>
+#include <WestBot/RobotRock/TrajectoryManagerHw.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -112,6 +113,12 @@ SystemManagerHw::SystemManagerHw(
     }
 }
 
+
+SystemManagerHw::~SystemManagerHw()
+{
+    stop();
+}
+
 //
 // Public methods
 //
@@ -164,7 +171,7 @@ bool SystemManagerHw::init()
     }
 
     _trajectoryManager.reset(
-        new TrajectoryManager( _hal ) );
+        new TrajectoryManagerHw( _hal ) );
 
     _trajectoryManager->init();
 

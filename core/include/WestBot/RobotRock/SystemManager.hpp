@@ -18,7 +18,7 @@ class SystemManager : public QObject
 public:
     SystemManager( QObject* parent = nullptr );
 
-    ~SystemManager() override;
+    ~SystemManager() override = default;
 
     virtual bool init() = 0;
 
