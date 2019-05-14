@@ -8,6 +8,7 @@
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/InputHw.hpp>
+#include <WestBot/RobotRock/OdometryHw.hpp>
 #include <WestBot/RobotRock/OutputHw.hpp>
 #include <WestBot/RobotRock/SystemManagerHw.hpp>
 
@@ -152,7 +153,7 @@ bool SystemManagerHw::init()
 
     // On set nos pointeurs avant toute chose
 
-    _odometry.reset( new Odometry( _hal ) );
+    _odometry.reset( new OdometryHw( _hal ) );
 
     _recalage.reset( new Recalage() );
 
