@@ -102,7 +102,7 @@ public:
         RUNNING_CLITOID_CURVE,   // Running a clitoid in the curve part
     };
 
-    TrajectoryManager( const Hal::Ptr& hal, const Recalage::Ptr& recalage );
+    TrajectoryManager( const Hal::Ptr& hal );
 
     void init();
 
@@ -155,7 +155,6 @@ public:
 
 private:
     Hal::Ptr _hal;
-    Recalage::Ptr _recalage;
     bool _abort;
 };
 

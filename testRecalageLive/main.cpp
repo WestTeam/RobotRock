@@ -155,7 +155,7 @@ int main( int argc, char *argv[] )
 
         i = 0;
 
-        TrajectoryManager _trajectoryManager( hal, recalage );
+        TrajectoryManager _trajectoryManager( hal );
         _trajectoryManager.init();
         _trajectoryManager.enable();
 

@@ -164,7 +164,7 @@ bool SystemManagerHw::init()
     }
 
     _trajectoryManager.reset(
-        new TrajectoryManager( _hal, _recalage ) );
+        new TrajectoryManager( _hal ) );
 
     _trajectoryManager->init();
 

@@ -135,7 +135,7 @@ class SmartServo;
 class SmartServoStaticData
 {
 public:
-    std::array< SmartServo*, HW_SERVO_COUNT > _deviceList = { nullptr };
+    std::array< SmartServo*, HW_SERVO_COUNT > _deviceList = {{ nullptr }};
     std::queue< uint8_t > _qId;
     std::mutex _mutex;
     QMutex _qmutex;

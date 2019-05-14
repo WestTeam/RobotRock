@@ -15,11 +15,9 @@ namespace
 }
 
 TrajectoryManager::TrajectoryManager(
-    const Hal::Ptr& hal,
-    const Recalage::Ptr& recalage )
+    const Hal::Ptr& hal )
     : _hal( hal )
     , _abort (false)
-    , _recalage( recalage )
 {
 }
 
