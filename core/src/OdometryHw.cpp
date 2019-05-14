@@ -1,5 +1,6 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
+#include <QMutexLocker>
 #include <QThread>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
@@ -74,7 +75,7 @@ void OdometryHw::setPosition( RobotPos pos )
     error.y = pos.y-curPos.y;
     error.theta = pos.theta-curPos.theta;
 
-    addError(error);
+    addError( error );
 }
 
 void OdometryHw::addError( RobotPos pos )

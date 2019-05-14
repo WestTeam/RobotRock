@@ -29,6 +29,7 @@ SOURCES += \
     src/Servo.cpp \
     src/Odometry.cpp \
     src/OdometryHw.cpp \
+    src/OdometrySimu.cpp \
     src/SimTcpServer.cpp \
     src/StrategyManagerFoo.cpp \
     src/SystemManager.cpp \
@@ -59,6 +60,7 @@ HEADERS += \
     include/WestBot/RobotRock/Nextion.hpp \
     include/WestBot/RobotRock/Output.hpp \
     include/WestBot/RobotRock/OutputHw.hpp \
+    include/WestBot/RobotRock/OutputSimu.hpp \
     include/WestBot/RobotRock/Recalage.hpp \
     include/WestBot/RobotRock/Servo.hpp \
     include/WestBot/RobotRock/Odometry.hpp \
