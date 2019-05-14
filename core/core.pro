@@ -34,7 +34,7 @@ SOURCES += \
     src/StrategyManagerFoo.cpp \
     src/SystemManager.cpp \
     src/SystemManagerHw.cpp \
-    src/TrajectoryManager.cpp \
+    src/TrajectoryManagerHw.cpp \
     src/Vl6180x.cpp \
     src/WaitAction.cpp \
     src/SmartServo.cpp \
@@ -71,6 +71,7 @@ HEADERS += \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/SystemManagerHw.hpp \
     include/WestBot/RobotRock/TrajectoryManager.hpp \
+    include/WestBot/RobotRock/TrajectoryManagerHw.hpp \
     include/WestBot/RobotRock/Vl6180x.hpp \
     include/WestBot/RobotRock/WaitAction.hpp \
     include/WestBot/RobotRock/SmartServo.hpp \

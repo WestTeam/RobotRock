@@ -93,7 +93,7 @@ int circle_circle_intersection(double x0, double y0, double r0,
 
 ArmHighLevel::ArmHighLevel()
     : _attached( false )
-    , _initOk( false )
+    //, _initOk( false )
     , _odometry( nullptr )
     , _armLL( nullptr )
 {

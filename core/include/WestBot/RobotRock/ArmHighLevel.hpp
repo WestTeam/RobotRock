@@ -88,7 +88,7 @@ public:
 private:
 
     bool _attached;
-    bool _initOk;
+    //bool _initOk;
 
     ArmHighLevelMode _mode;
 
