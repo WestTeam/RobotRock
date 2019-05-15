@@ -124,7 +124,7 @@ SystemManagerSimu::SystemManagerSimu(
     //}
 
     _opponentTimer.setSingleShot( false );
-    _opponentTimer.setInterval( 100 );
+    _opponentTimer.setInterval( 10 );
 
     if( ! _simServer.listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
     {
@@ -218,8 +218,9 @@ void SystemManagerSimu::start()
 
 void SystemManagerSimu::stop()
 {
+    SystemManager::stop();
+
     _gameTimer.stop();
-    _aliveTimer.stop();
 
     if( nullptr != _game && _game->isRunning() )
     {

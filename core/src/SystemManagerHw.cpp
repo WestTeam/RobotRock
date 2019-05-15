@@ -273,8 +273,9 @@ void SystemManagerHw::start()
 
 void SystemManagerHw::stop()
 {
+    SystemManager::stop();
+
     _gameTimer.stop();
-    _aliveTimer.stop();
 
     if( nullptr != _game && _game->isRunning() )
     {

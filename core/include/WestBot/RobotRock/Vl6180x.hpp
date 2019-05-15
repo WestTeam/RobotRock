@@ -23,7 +23,7 @@ public:
 
     Vl6180x( const QString& tty = "/dev/ttyAL8" );
 
-    ~Vl6180x();
+    ~Vl6180x() override;
 
     /*!
      * \brief Return the last distance from the VL6180X sensor.

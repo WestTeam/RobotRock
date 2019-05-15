@@ -123,7 +123,7 @@ void StrategyManagerFoo::buildStrat( const Color& color )
 void StrategyManagerFoo::doStrat( const Color& color )
 {
 	// Build the strat for selected color
-	buildStrat( color );
+    buildStrat( color );
 
     tDebug( LOG ) << "Do strat for color:" << color;
 

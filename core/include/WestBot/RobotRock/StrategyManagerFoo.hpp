@@ -24,7 +24,7 @@ public:
 
     bool init( const TrajectoryManager::Ptr& trajectoryManager ) override;
 
-    void deinit();
+    void deinit() override;
 
     void stop() override;
 

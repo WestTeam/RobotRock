@@ -23,13 +23,10 @@ public:
     virtual bool init() = 0;
 
     virtual void start() = 0;
-    virtual void stop() = 0;
+    virtual void stop();
     virtual void reset() = 0;
 
     virtual bool isSafe() const = 0;
-
-private:
-    virtual void robotAlive();
 
 protected:
     virtual void blinkColorLed();
@@ -37,7 +34,6 @@ protected:
 
 protected:
     QTimer _gameTimer;
-    QTimer _aliveTimer;
 
     Input::Ptr _startButton;
     Input::Ptr _colorButton;
