@@ -34,6 +34,7 @@ SystemManagerSimu::SystemManagerSimu(
     , _strategyManager( strategyManager )
     //, _monitoring( nullptr )
     , _game( nullptr )
+    , _simServer( new ServerStuff() )
 {
     _startButton.reset( new InputSimu( 'T', "Tirette" ) );
 
@@ -110,7 +111,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data.objectSize = 100.0;
             _data.objectMode = 0;
 
-            _simServer.updateClients( _data );
+            _simServer->updateClients( _data );
         } );
 
     //_lidar.reset( new LidarRPLidarA2(
@@ -124,13 +125,19 @@ SystemManagerSimu::SystemManagerSimu(
     //}
 
     _opponentTimer.setSingleShot( false );
-    _opponentTimer.setInterval( 1000 );
+    _opponentTimer.setInterval( 100 );
 
-    if( ! _simServer.listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
+    connect(
+        _simServer->tcpServer,
+        & QTcpServer::newConnection,
+        _simServer,
+        & ServerStuff::newConnection );
+
+    if( ! _simServer->tcpServer->listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
     {
        tWarning( LOG )
-           << "Unable to start the server:"
-           << _simServer.errorString();
+           << "Unable to start the server:";
+           //<< _simServer.errorString();
     }
 }
 

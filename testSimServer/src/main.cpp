@@ -2,16 +2,19 @@
 
 #include <QCoreApplication>
 #include <QHostAddress>
+#include <QThread>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
-#include "WestBot/RobotRock/SimTcpServer.hpp"
+//#include "WestBot/RobotRock/SimTcpServer.hpp"
+#include "WestBot/RobotRock/serverStuff.h"
 
 #include "WestBot/RobotRock/TrajectoryManagerSimu.hpp"
 #include "WestBot/RobotRock/OdometrySimu.hpp"
 
+#include <QTimer>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -36,7 +39,37 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 
     tInfo( LOG ) << "DO WHAT YOU WANT...";
+    QTimer timer;
+    timer.setInterval( 10 );
 
+    ServerStuff* server = new ServerStuff;
+
+    QObject::connect(server->tcpServer, &QTcpServer::newConnection, server, &ServerStuff::newConnection);
+    QObject::connect(&timer, &QTimer::timeout, server,
+    [ server ]()
+    {
+        SimData _data;
+        _data.objectId = 0;
+        _data.objectPos.x = rand() % 600 + 1;;
+        _data.objectPos.y = 0;
+        _data.objectPos.theta = 0;
+        _data.objectType = 0;
+        _data.objectColor = 0;
+        _data.objectSize = 100.0;
+        _data.objectMode = 0;
+
+        server->updateClients( _data );
+    } );
+
+    if (!server->tcpServer->listen(QHostAddress::Any, 4242))
+    {
+        return -1;
+    }
+
+    tDebug( LOG ) << "Server started on port 4242";
+    timer.start();
+
+    /*
     SimTcpServer _simServer;
 
     SimData _data;
@@ -87,6 +120,6 @@ int main( int argc, char *argv[] )
 
         app.processEvents();
     } while (true);
-
+*/
     return app.exec();
 }
