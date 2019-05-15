@@ -17,24 +17,6 @@ namespace
 SimTcpServer::SimTcpServer( QObject* parent )
     : QTcpServer( parent )
 {
-    /*
-    _pushTimer.setInterval( 100 );
-
-    connect(
-        & _pushTimer,
-        & QTimer::timeout,
-        this,
-        [ this ]()
-        {
-            // Push data to all clients
-            for( auto& client : _clients )
-            {
-                this->sendSimData( client );
-            }
-        } );
-
-    _pushTimer.start();
-    */
 }
 
 void SimTcpServer::disconnectClient( const SocketPtr& socket )
@@ -93,16 +75,6 @@ void SimTcpServer::incomingConnection( qintptr socketDescriptor )
 
     _clients.insert( tcpSocket.get(), tcpSocket );
 
-    /*
-    connect(
-        tcpSocket.get(),
-        & QTcpSocket::connected,
-        this,
-        [ this, tcpSocket ]()
-        {
-            sendSimData( tcpSocket );
-        } );
-*/
     connect(
         tcpSocket.get(),
         & QTcpSocket::disconnected,
@@ -136,8 +108,6 @@ void SimTcpServer::updateClients(SimData &data)
 void SimTcpServer::sendSimData( const SocketPtr& socket, SimData &data )
 {
     socket->write( ( char *) & data, sizeof( SimData ) );
-    socket->flush();
-    socket->waitForBytesWritten( 500 );
 }
 
 

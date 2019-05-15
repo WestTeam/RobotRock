@@ -8,8 +8,7 @@
 //#include "Lidar.hpp"
 //#include "Monitoring.hpp"
 //#include "Recalage.hpp"
-//#include "SimTcpServer.hpp"
-#include "serverStuff.h"
+#include "SimTcpServer.hpp"
 #include "StrategyManager.hpp"
 #include "SystemManager.hpp"
 #include "TrajectoryManager.hpp"
@@ -54,8 +53,7 @@ private:
     GameThread::Ptr _game;
     //Vl6180x _distanceSensor;
     //Experiment _experiment;
-    //SimTcpServer _simServer;
-    ServerStuff* _simServer;
+    SimTcpServer _simServer;
 };
 
 }

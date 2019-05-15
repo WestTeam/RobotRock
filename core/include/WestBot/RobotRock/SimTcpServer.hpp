@@ -9,7 +9,6 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
-#include <QTimer>
 
 #include "Odometry.hpp"
 
@@ -44,7 +43,6 @@ public:
 
     void updateClients(SimData &data);
 
-
 signals:
     void error( QTcpSocket::SocketError socketError );
 
@@ -56,7 +54,6 @@ private:
 
 private:
     QHash< QObject*, SocketPtr > _clients;
-    QTimer _pushTimer;
     SimData _data;
 };
 
