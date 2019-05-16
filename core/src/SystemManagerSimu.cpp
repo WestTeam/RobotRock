@@ -1,6 +1,7 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
 #include <QThread>
+#include <QList>
 
 #include <Macros.hpp>
 
@@ -100,17 +101,136 @@ SystemManagerSimu::SystemManagerSimu(
 
             // On test le serveur tcp
             SimData _data;
-
+            RobotPos pos = _odometry->getPosition();
             _data.objectId = 0;
-            _data.objectPos.x = rand() % 600 + 1;
-            _data.objectPos.y = rand() % 400 + 1;
-            _data.objectPos.theta = rand() % 360 + 1;
+            _data.objectPos.x = pos.x;
+            _data.objectPos.y = pos.y;
+            _data.objectPos.theta = pos.theta;
             _data.objectType = 0;
             _data.objectColor = 0;
             _data.objectSize = 100.0;
             _data.objectMode = 0;
 
             _simServer.updateClients( _data );
+        } );
+
+    connect(
+        & _simServer,
+        & SimTcpServer::onClientConnected,
+        this,
+        [ this ]( const SimTcpServer::SocketPtr& socket )
+        {
+            int id = 0;
+
+            tDebug( LOG ) << "HEREEEE";
+            SimData _data;
+            _data.objectId = 0;
+            _data.objectPos.x = 500;
+            _data.objectPos.y = 450;
+            _data.objectPos.theta = 0;
+            _data.objectType = 1;
+            _data.objectColor = 0;
+            _data.objectSize = 100.0;
+            _data.objectMode = 0;
+
+            SimData _data1;
+
+            _data1.objectId = 1;
+            _data1.objectPos.x = 500;
+            _data1.objectPos.y = 750;
+            _data1.objectPos.theta = 0;
+            _data1.objectType = 1;
+            _data1.objectColor = 0;
+            _data1.objectSize = 100.0;
+            _data1.objectMode = 0;
+
+            SimData _data2;
+            _data2.objectId = 2;
+            _data2.objectPos.x = 500;
+            _data2.objectPos.y = 1050;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 1;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            SimData _data3;
+            _data2.objectId = 3;
+            _data2.objectPos.x = 100;
+            _data2.objectPos.y = 900;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 2;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            SimData _data4;
+            _data2.objectId = 4;
+            _data2.objectPos.x = 1000;
+            _data2.objectPos.y = 900;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 2;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            SimData _data5;
+            _data2.objectId = 5;
+            _data2.objectPos.x = 900;
+            _data2.objectPos.y = 1050;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 1;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            SimData _data6;
+            _data2.objectId = 6;
+            _data2.objectPos.x = 1000;
+            _data2.objectPos.y = 1150;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 0;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            SimData _data7;
+            _data2.objectId = 7;
+            _data2.objectPos.x = 1150;
+            _data2.objectPos.y = 1050;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 0;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            QList< SimData > _datas;
+            _datas.push_back( _data );
+            _datas.push_back( _data1 );
+            _datas.push_back( _data2 );
+            _datas.push_back( _data3 );
+            _datas.push_back( _data4 );
+            _datas.push_back( _data5 );
+            _datas.push_back( _data6 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+            _datas.push_back( _data7 );
+
+            _simServer.sendSimData( socket, _datas );
+        } );
+
+    connect(
+        & _simServer,
+        & SimTcpServer::startStrat,
+        this,
+        [ this ]()
+        {
+            start();
         } );
 
     //_lidar.reset( new LidarRPLidarA2(
@@ -124,7 +244,7 @@ SystemManagerSimu::SystemManagerSimu(
     //}
 
     _opponentTimer.setSingleShot( false );
-    _opponentTimer.setInterval( 10 );
+    _opponentTimer.setInterval( 100 );
 
     if( ! _simServer.listen( QHostAddress::Any, DEFAULT_SIM_PORT ) )
     {
@@ -178,7 +298,7 @@ bool SystemManagerSimu::init()
 
     tInfo( LOG ) << "System manager initialized";
 
-    start();
+    //start();
 
     return true;
 }

@@ -84,16 +84,67 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             _trajectoryManager,
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
             0.0,
-            100000.0,
+            100.0,
             0.0,
             0.0 * inv,
             true );
+    WaitAction::Ptr wait500ms =
+        std::make_shared< WaitAction >( 500 );
 
     // Our strat begins here
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
+    _actions.push_back( wait500ms );
     _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
     _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
     _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
     _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
+    _actions.push_back( move1 );
+    _actions.push_back( wait500ms );
     _actions.push_back( move1 );
     _actions.push_back( move1 );
     _actions.push_back( move1 );

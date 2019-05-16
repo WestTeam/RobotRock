@@ -1,5 +1,8 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
+#include <QDebug>
+#include <QThread>
+
 #include <QNetworkInterface>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
@@ -88,12 +91,17 @@ void SimTcpServer::incomingConnection( qintptr socketDescriptor )
         tcpSocket.get(),
         & QTcpSocket::readyRead,
         this,
-        [ tcpSocket ]()
+        [ this, tcpSocket ]()
         {
             const QByteArray data = tcpSocket->readAll();
+            if( data == "start" )
+            {
+                emit startStrat();
+            }
             tDebug( LOG ) << "Client send a data:" << data;
         } );
 
+    emit onClientConnected( tcpSocket );
 }
 
 void SimTcpServer::updateClients(SimData &data)
@@ -110,4 +118,42 @@ void SimTcpServer::sendSimData( const SocketPtr& socket, SimData &data )
     socket->write( ( char *) & data, sizeof( SimData ) );
 }
 
+
+void SimTcpServer::sendSimData( const SocketPtr& socket, QList< SimData > datas )
+{
+    int id = 1;
+
+    SimData _data;
+    _data.objectId = 0;
+    _data.objectPos.x = 100;
+    _data.objectPos.y = 450;
+    _data.objectPos.theta = 0;
+    _data.objectType = 0;
+    _data.objectColor = 0;
+    _data.objectSize = 100.0;
+    _data.objectMode = 0;
+
+    socket->write( ( char *) & _data, sizeof( SimData ) );
+    socket->waitForBytesWritten( 1000 );
+    QThread::msleep( 10 );
+
+    for( auto data : datas )
+    {
+        SimData _data;
+        _data.objectId = id;
+        _data.objectPos.x = rand() % 3000 + 1;
+        _data.objectPos.y = rand() % 2000 + 1;
+        _data.objectPos.theta = 0;
+        _data.objectType = 1;
+        _data.objectColor = rand() % 3;
+        _data.objectSize = 100.0;
+        _data.objectMode = 0;
+        id+=1;
+
+        socket->write( ( char *) & _data, sizeof( SimData ) );
+        socket->waitForBytesWritten( 1000 );
+        QThread::msleep( 10 );
+        qDebug() << "pushing";
+    }
+}
 

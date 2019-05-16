@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QTcpServer>
 #include <QTcpSocket>
+#include <QList>
 
 #include "Odometry.hpp"
 
@@ -43,14 +44,16 @@ public:
 
     void updateClients(SimData &data);
 
+    void sendSimData( const SocketPtr& socket, SimData &data); // TODO: XXX
+    void sendSimData( const SocketPtr& socket, QList< SimData > datas ); // TODO: XXX
+
 signals:
     void error( QTcpSocket::SocketError socketError );
+    void onClientConnected( const SocketPtr& socket );
+    void startStrat();
 
 protected:
     void incomingConnection( qintptr socketDescriptor ) override;
-
-private:
-    void sendSimData( const SocketPtr& socket, SimData &data); // TODO: XXX
 
 private:
     QHash< QObject*, SocketPtr > _clients;
