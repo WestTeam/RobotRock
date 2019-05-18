@@ -95,7 +95,7 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            1200,
+            1000,
             600 * inv,
             true );
 
@@ -105,11 +105,69 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            600,
+            700,
             600 * inv,
             true );
 
-    // >>>>>>>>>>>>>>>>>>>>>>>>>>>><< OUR STRAT
+    MoveAction::Ptr moveSmall =
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
+            0.0,
+            50.0,
+            0.0,
+            0.0 * inv,
+            true );
+
+    MoveAction::Ptr moveALittleForward =
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
+            0.0,
+            100.0,
+            0.0,
+            0.0 * inv,
+            true );
+
+    MoveAction::Ptr moveALittleForward2 =
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
+            0.0,
+            150.0,
+            0.0,
+            0.0 * inv,
+            true );
+
+    MoveAction::Ptr turnA90 =
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
+                90.0 * inv,
+                0.0,
+                0.0,
+                0.0,
+                true );
+
+    MoveAction::Ptr turnRedZone =
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL,
+                20.0 * inv,
+                0.0,
+                0.0,
+                0.0,
+                true );
+
+    MoveAction::Ptr orientationZoneDepose =
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL,
+                -20.0 * inv,
+                0.0,
+                0.0,
+                0.0,
+                true );
 
     _actions.push_back( wait500Ms );
     _actions.push_back( wait500Ms );
@@ -120,7 +178,32 @@ void StrategyManagerFoo::buildStrat( const Color& color )
     _actions.push_back( wait500Ms );
     _actions.push_back( wait500Ms );
 
+    _actions.push_back( turnA90 );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+
+    _actions.push_back( moveALittleForward );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+
+    _actions.push_back( moveALittleForward2 );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+
     _actions.push_back( moveToStartZone );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+
+    _actions.push_back( orientationZoneDepose );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+    _actions.push_back( wait500Ms );
+
+    _actions.push_back( moveALittleForward2 );
     _actions.push_back( wait500Ms );
     _actions.push_back( wait500Ms );
     _actions.push_back( wait500Ms );
