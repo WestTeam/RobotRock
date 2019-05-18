@@ -125,8 +125,8 @@ void SimTcpServer::sendSimData( const SocketPtr& socket, QList< SimData > datas 
 
     SimData _data;
     _data.objectId = 0;
-    _data.objectPos.x = 100;
-    _data.objectPos.y = 450;
+    _data.objectPos.x = 320;
+    _data.objectPos.y = 600;
     _data.objectPos.theta = 0;
     _data.objectType = 0;
     _data.objectColor = 0;
@@ -139,21 +139,22 @@ void SimTcpServer::sendSimData( const SocketPtr& socket, QList< SimData > datas 
 
     for( auto data : datas )
     {
-        SimData _data;
+        /*SimData _data;
         _data.objectId = id;
-        _data.objectPos.x = rand() % 3000 + 1;
-        _data.objectPos.y = rand() % 2000 + 1;
+        //_data.objectPos.x = rand() % 3000 + 1;
+        //_data.objectPos.y = rand() % 2000 + 1;
+        _data.objectPos.x = data.objectPos.x;
+        _data.objectPos.y = data.objectPos.y;
         _data.objectPos.theta = 0;
         _data.objectType = 1;
         _data.objectColor = rand() % 3;
         _data.objectSize = 100.0;
         _data.objectMode = 0;
-        id+=1;
+        id+=1;*/
 
-        socket->write( ( char *) & _data, sizeof( SimData ) );
+        socket->write( ( char *) & data, sizeof( SimData ) );
         socket->waitForBytesWritten( 1000 );
         QThread::msleep( 10 );
-        qDebug() << "pushing";
     }
 }
 
