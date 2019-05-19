@@ -11,6 +11,7 @@
 #include <QTcpSocket>
 #include <QList>
 
+#include "Common.hpp"
 #include "Odometry.hpp"
 
 namespace WestBot {
@@ -50,7 +51,10 @@ public:
 signals:
     void error( QTcpSocket::SocketError socketError );
     void onClientConnected( const SocketPtr& socket );
+
     void startStrat();
+    void stop();
+    void changeColor( DigitalValue value );
 
 protected:
     void incomingConnection( qintptr socketDescriptor ) override;

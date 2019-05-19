@@ -98,7 +98,23 @@ void SimTcpServer::incomingConnection( qintptr socketDescriptor )
             {
                 emit startStrat();
             }
-            tDebug( LOG ) << "Client send a data:" << data;
+            else if( data == "stop" )
+            {
+                emit stop();
+
+            }
+            else if( data == "color0" )
+            {
+                emit changeColor( DigitalValue::ON );
+            }
+            else if( data == "color1" )
+            {
+                emit changeColor( DigitalValue::OFF );
+            }
+            else
+            {
+                tDebug( LOG ) << "Client send a data:" << data;
+            }
         } );
 
     emit onClientConnected( tcpSocket );
@@ -121,21 +137,7 @@ void SimTcpServer::sendSimData( const SocketPtr& socket, SimData &data )
 
 void SimTcpServer::sendSimData( const SocketPtr& socket, QList< SimData > datas )
 {
-    int id = 1;
 
-    SimData _data;
-    _data.objectId = 0;
-    _data.objectPos.x = 320;
-    _data.objectPos.y = 600;
-    _data.objectPos.theta = 0;
-    _data.objectType = 0;
-    _data.objectColor = 0;
-    _data.objectSize = 100.0;
-    _data.objectMode = 0;
-
-    socket->write( ( char *) & _data, sizeof( SimData ) );
-    socket->waitForBytesWritten( 1000 );
-    QThread::msleep( 10 );
 
     for( auto data : datas )
     {

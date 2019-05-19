@@ -120,10 +120,19 @@ SystemManagerSimu::SystemManagerSimu(
         this,
         [ this ]( const SimTcpServer::SocketPtr& socket )
         {
-            int id = 0;
+            SimData data;
+            data.objectId = 0;
+            data.objectPos.x = -1180;
+            data.objectPos.y = 600;
+            data.objectPos.theta = 0;
+            data.objectType = 0;
+            data.objectColor = 0;
+            data.objectSize = 100.0;
+            data.objectMode = 0;
+
 
             SimData _data;
-            _data.objectId = 0;
+            _data.objectId = 1;
             _data.objectPos.x = 500;
             _data.objectPos.y = 450;
             _data.objectPos.theta = 0;
@@ -133,7 +142,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data.objectMode = 0;
 
             SimData _data1;
-            _data1.objectId = 1;
+            _data1.objectId = 2;
             _data1.objectPos.x = 500;
             _data1.objectPos.y = 750;
             _data1.objectPos.theta = 0;
@@ -143,7 +152,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data1.objectMode = 0;
 
             SimData _data2;
-            _data2.objectId = 2;
+            _data2.objectId = 3;
             _data2.objectPos.x = 500;
             _data2.objectPos.y = 1050;
             _data2.objectPos.theta = 0;
@@ -153,7 +162,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data2.objectMode = 0;
 
             SimData _data3;
-            _data3.objectId = 3;
+            _data3.objectId = 4;
             _data3.objectPos.x = 1000;
             _data3.objectPos.y = 900;
             _data3.objectPos.theta = 0;
@@ -163,7 +172,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data3.objectMode = 0;
 
             SimData _data4;
-            _data4.objectId = 4;
+            _data4.objectId = 5;
             _data4.objectPos.x = 1000;
             _data4.objectPos.y = 900;
             _data4.objectPos.theta = 0;
@@ -173,7 +182,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data4.objectMode = 0;
 
             SimData _data5;
-            _data5.objectId = 5;
+            _data5.objectId = 6;
             _data5.objectPos.x = 900;
             _data5.objectPos.y = 1050;
             _data5.objectPos.theta = 0;
@@ -183,7 +192,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data5.objectMode = 0;
 
             SimData _data6;
-            _data6.objectId = 6;
+            _data6.objectId = 7;
             _data6.objectPos.x = 1000;
             _data6.objectPos.y = 1150;
             _data6.objectPos.theta = 0;
@@ -193,7 +202,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data6.objectMode = 0;
 
             SimData _data7;
-            _data7.objectId = 7;
+            _data7.objectId = 8;
             _data7.objectPos.x = 1150;
             _data7.objectPos.y = 1050;
             _data7.objectPos.theta = 0;
@@ -203,6 +212,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data7.objectMode = 0;
 
             QList< SimData > _datas;
+            _datas.push_back( data );
             _datas.push_back( _data );
             _datas.push_back( _data1 );
             _datas.push_back( _data2 );
@@ -223,6 +233,26 @@ SystemManagerSimu::SystemManagerSimu(
         {
             start();
         } );
+
+    connect(
+        & _simServer,
+        & SimTcpServer::changeColor,
+        this,
+        [ this ]( DigitalValue value )
+        {
+            tDebug( LOG ) << "Color button changed to:" << value;
+            displayColor( value );
+        } );
+
+    connect(
+        & _simServer,
+        & SimTcpServer::stop,
+        this,
+        [ this ]()
+        {
+            stop();
+        } );
+
 
     //_lidar.reset( new LidarRPLidarA2(
     //    LIDAR_TTY,
@@ -389,11 +419,11 @@ void SystemManagerSimu::initRecalage()
 {
     if( _color == Color::Yellow )
     {
-        _odometry->setPosition({.x=320, .y=600, .theta=0});
+        _odometry->setPosition({.x=1180, .y=600, .theta=0});
     }
     else
     {
-        _odometry->setPosition({.x=320, .y=600, .theta=0});
+        _odometry->setPosition({.x=-1180, .y=600, .theta=RAD( 180.0 )});
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x
