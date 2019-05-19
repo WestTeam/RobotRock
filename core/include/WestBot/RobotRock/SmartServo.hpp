@@ -6,11 +6,13 @@
 #include <array>
 #include <mutex>          // std::mutex, std::unique_lock
 #include <queue>
-#include <QMutex>
 
+#include <QMutex>
 #include <QString>
 
 #include "Hal.hpp"
+
+#include <WestBot/HumanAfterAll/Category.hpp>
 
 namespace WestBot {
 namespace RobotRock {

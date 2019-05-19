@@ -4,17 +4,18 @@
 #define WESTBOT_ROBOTROCK_ARM_HIGH_LEVEL_HPP_
 
 #include <array>
+#include <memory>
 #include <mutex>          // std::mutex, std::unique_lock
 #include <queue>
-#include <QMutex>
 
+#include <QMutex>
 #include <QString>
 
+#include "ArmLowLevel.hpp"
 #include "Hal.hpp"
+#include "Odometry.hpp"
 
-#include <WestBot/RobotRock/Odometry.hpp>
-#include <WestBot/RobotRock/ArmLowLevel.hpp>
-
+#include <WestBot/HumanAfterAll/Category.hpp>
 
 namespace WestBot {
 namespace RobotRock {
@@ -24,7 +25,6 @@ enum ArmHighLevelMode {
         ARM_HL_MODE_HORIZONTAL, // head is pointing the ground
         ARM_HL_MODE_VERTICAL  // head is in the same alignment as the lower arm
 };
-
 
 typedef struct
 {
@@ -36,6 +36,8 @@ typedef struct
 class ArmHighLevel
 {
 public:
+    using Ptr = std::shared_ptr< ArmHighLevel >;
+
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.ArmHighLevel" );
 
     ArmHighLevel();
