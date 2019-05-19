@@ -6,12 +6,18 @@
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
-#include <WestBot/RobotRock/Hal.hpp>
-#include <WestBot/RobotRock/StrategyManagerFoo.hpp>
-#include <WestBot/RobotRock/SystemManagerHw.hpp>
-
 //#define DEBUG
 //#define SIMU
+#define USE_SIMULATOR
+
+#ifdef USE_SIMULATOR
+#include <WestBot/RobotRock/SystemManagerSimu.hpp>
+#else
+#include <WestBot/RobotRock/Hal.hpp>
+#include <WestBot/RobotRock/SystemManagerHw.hpp>
+#endif
+
+#include <WestBot/RobotRock/StrategyManagerHomologation.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -35,9 +41,12 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
+    StrategyManagerHomologation::Ptr strategyHomologation =
+        std::make_shared< StrategyManagerHomologation >();
+
+#ifndef USE_SIMULATOR
     Hal::Ptr hal = std::make_shared< Hal >();
-    StrategyManagerFoo::Ptr strategyFoo;
-    SystemManagerHw system( hal, strategyFoo );
+    SystemManagerHw system( hal, strategyHomologation );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 
@@ -46,12 +55,24 @@ int main( int argc, char *argv[] )
         tFatal( LOG ) << "Failed to init system manager";
     }
 
-#ifdef DEBUG
+  #ifdef DEBUG
     hal->dump();
-#endif
+  #endif
 
-#ifdef SIMU
+  #ifdef SIMU
     hal->_modeSimu.write( 1 );
+  #endif
+#else
+
+    SystemManagerSimu system( strategyHomologation );
+
+    tInfo( LOG ) << "==== System started ! ==== ";
+
+    if( ! system.init() )
+    {
+        tFatal( LOG ) << "Failed to init system manager";
+    }
+
 #endif
 
     tInfo( LOG ) << "==== System ready ! ==== ";
