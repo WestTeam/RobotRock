@@ -16,6 +16,119 @@ namespace RobotRock {
 // resultat de l'actions...
 
 // Move actions
+MoveAction::Ptr moveToAccelerator(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        0,
+        190,
+        true );
+}
+
+MoveAction::Ptr alignToAccelerator(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        true );
+}
+
+MoveAction::Ptr moveToAccelerator2(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * -200,
+        190,
+        true );
+}
+
+MoveAction::Ptr moveToAccelerator3(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * -500,
+        190,
+        true );
+}
+
+MoveAction::Ptr moveToBalance(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 150,
+        1200,
+        true );
+
+}
+
+MoveAction::Ptr moveToBalance2(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 150,
+        1400,
+        true );
+}
+
+MoveAction::Ptr moveToCenterZone2(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 150,
+        1050,
+        true );
+}
+
+MoveAction::Ptr turnA90(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
+        90.0,
+        0.0,
+        0.0,
+        0.0,
+        true );
+}
+
 MoveAction::Ptr moveToCenterZone(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
@@ -28,7 +141,7 @@ MoveAction::Ptr moveToCenterZone(
         inv * 500,
         600,
         true );
-};
+}
 
 MoveAction::Ptr moveToStartZone(
     const TrajectoryManager::Ptr& trajectoryManager,
@@ -86,17 +199,101 @@ MoveAction::Ptr moveALittleForward2(
         true );
 }
 
-MoveAction::Ptr turnA90(
+MoveAction::Ptr turnR90(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL,
+        inv * -90.0,
+        0.0,
+        0.0,
+        0.0,
+        true );
+}
+
+MoveAction::Ptr turnA180(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
     return std::make_shared< MoveAction >(
         trajectoryManager,
         TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
-        90.0,
+        inv * -180.0,
         0.0,
         0.0,
         0.0,
+        true );
+}
+
+MoveAction::Ptr onSaqueDedans(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 250,
+        1050.0,
+        true );
+}
+
+MoveAction::Ptr onSaqueDedans2(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 800,
+        1050.0,
+        true );
+}
+
+MoveAction::Ptr goingBackALittle(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 150,
+        1150,
+        true );
+}
+
+MoveAction::Ptr getHighPucks(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 500,
+        1200,
+        true );
+}
+
+MoveAction::Ptr getHighPucks2(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        inv * 500,
+        1350,
         true );
 }
 

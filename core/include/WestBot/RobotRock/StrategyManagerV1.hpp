@@ -39,7 +39,12 @@ public:
 private:
     TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
 
-    QList< Action::Ptr > _actions;
+    QList< Action::Ptr > _list1;
+    QList< Action::Ptr > _list2;
+    QList< Action::Ptr > _list3;
+    QList< Action::Ptr > _avoidList;
+
+    //QList< Action::Ptr > _actions;
     Action::Ptr _currentAction;
     bool _stratIsRunning;
     bool _obstacleToClose;

@@ -17,7 +17,7 @@
 #include <WestBot/RobotRock/SystemManagerHw.hpp>
 #endif
 
-#include <WestBot/RobotRock/StrategyManagerHomologation.hpp>
+//#include <WestBot/RobotRock/StrategyManagerHomologation.hpp>
 #include <WestBot/RobotRock/StrategyManagerV1.hpp>
 
 using namespace WestBot;
@@ -42,8 +42,8 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
-    StrategyManagerHomologation::Ptr strategyHomologation =
-        std::make_shared< StrategyManagerHomologation >();
+    //StrategyManagerHomologation::Ptr strategyHomologation =
+    //    std::make_shared< StrategyManagerHomologation >();
 
     StrategyManagerV1::Ptr strategyV1 =
         std::make_shared< StrategyManagerV1 >();
