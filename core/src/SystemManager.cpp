@@ -38,7 +38,6 @@ public:
     void stop()
     {
         _isRunning = false;
-        terminate();
     }
 
 private:
