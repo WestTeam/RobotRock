@@ -15,21 +15,17 @@ namespace
 }
 
 ArmAction::ArmAction(
-    const ArmHighLevel::Ptr& armLeft,
-    const ArmHighLevel::Ptr& armRight,
+    const ArmHighLevel::Ptr& arm,
     ArmAction::Type type,
     double xMm,
     double yMm,
-    double zMm,
-    ArmAction::AppliedTo toArm )
+    double zMm )
     : Action( "ArmAction" )
-    , _armLeft( armLeft )
-    , _armRight( armRight )
+    , _arm( arm )
     , _type( type )
     , _xMm( xMm )
     , _yMm( yMm )
     , _zMm( zMm )
-    , _toArm( toArm )
 {
 }
 

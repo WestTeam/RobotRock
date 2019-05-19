@@ -28,33 +28,22 @@ public:
         PUCK_RELEASE
     };
 
-    enum AppliedTo
-    {
-        ARM_LEFT = 0,
-        ARM_RIGHT,
-        BOTH
-    };
-
     ArmAction(
-        const ArmHighLevel::Ptr& armLeft,
-        const ArmHighLevel::Ptr& armRight,
+        const ArmHighLevel::Ptr& arm,
         Type type,
         double xMm,
         double yMm,
-        double zMm,
-        AppliedTo toArm
+        double zMm
         );
 
     void execute() override;
 
 private:
-    ArmHighLevel::Ptr _armLeft;
-    ArmHighLevel::Ptr _armRight;
+    ArmHighLevel::Ptr _arm;
     Type _type;
     double _xMm;
     double _yMm;
     double _zMm;
-    AppliedTo _toArm;
 };
 
 }
