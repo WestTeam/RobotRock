@@ -36,6 +36,8 @@ SystemManagerSimu::SystemManagerSimu(
     //, _monitoring( nullptr )
     , _game( nullptr )
 {
+    _color = Color::Yellow;
+
     _startButton.reset( new InputSimu( 'T', "Tirette" ) );
 
     _colorButton.reset( new InputSimu( 'C', "Color" ) );
@@ -120,20 +122,12 @@ SystemManagerSimu::SystemManagerSimu(
         this,
         [ this ]( const SimTcpServer::SocketPtr& socket )
         {
-            SimData data;
-            data.objectId = 0;
-            data.objectPos.x = -1180;
-            data.objectPos.y = 600;
-            data.objectPos.theta = 0;
-            data.objectType = 0;
-            data.objectColor = 0;
-            data.objectSize = 100.0;
-            data.objectMode = 0;
-
-
+            // LEFT SIDE
+            static int id = 0;
+            {
             SimData _data;
-            _data.objectId = 1;
-            _data.objectPos.x = 500;
+            _data.objectId = id++;
+            _data.objectPos.x = -1 * ( 1500 - 500 );
             _data.objectPos.y = 450;
             _data.objectPos.theta = 0;
             _data.objectType = 1;
@@ -142,8 +136,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data.objectMode = 0;
 
             SimData _data1;
-            _data1.objectId = 2;
-            _data1.objectPos.x = 500;
+            _data1.objectId = id++;
+            _data1.objectPos.x = -1 * ( 1500 - 500 );
             _data1.objectPos.y = 750;
             _data1.objectPos.theta = 0;
             _data1.objectType = 1;
@@ -152,8 +146,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data1.objectMode = 0;
 
             SimData _data2;
-            _data2.objectId = 3;
-            _data2.objectPos.x = 500;
+            _data2.objectId = id++;
+            _data2.objectPos.x = -1 * ( 1500 - 500 );
             _data2.objectPos.y = 1050;
             _data2.objectPos.theta = 0;
             _data2.objectType = 1;
@@ -162,8 +156,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data2.objectMode = 0;
 
             SimData _data3;
-            _data3.objectId = 4;
-            _data3.objectPos.x = 1000;
+            _data3.objectId = id++;
+            _data3.objectPos.x = -1 * ( 1500 - 1000 );
             _data3.objectPos.y = 900;
             _data3.objectPos.theta = 0;
             _data3.objectType = 1;
@@ -172,8 +166,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data3.objectMode = 0;
 
             SimData _data4;
-            _data4.objectId = 5;
-            _data4.objectPos.x = 1000;
+            _data4.objectId = id++;
+            _data4.objectPos.x = -1 * ( 1500 - 1000 );
             _data4.objectPos.y = 900;
             _data4.objectPos.theta = 0;
             _data4.objectType = 1;
@@ -182,8 +176,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data4.objectMode = 0;
 
             SimData _data5;
-            _data5.objectId = 6;
-            _data5.objectPos.x = 900;
+            _data5.objectId = id++;
+            _data5.objectPos.x = -1 * ( 1500 - 900 );
             _data5.objectPos.y = 1050;
             _data5.objectPos.theta = 0;
             _data5.objectType = 1;
@@ -192,8 +186,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data5.objectMode = 0;
 
             SimData _data6;
-            _data6.objectId = 7;
-            _data6.objectPos.x = 1000;
+            _data6.objectId = id++;
+            _data6.objectPos.x = -1 * ( 1500 - 1000 );
             _data6.objectPos.y = 1150;
             _data6.objectPos.theta = 0;
             _data6.objectType = 1;
@@ -202,8 +196,8 @@ SystemManagerSimu::SystemManagerSimu(
             _data6.objectMode = 0;
 
             SimData _data7;
-            _data7.objectId = 8;
-            _data7.objectPos.x = 1150;
+            _data7.objectId = id++;
+            _data7.objectPos.x = -1 * ( 1500 - 1150 );
             _data7.objectPos.y = 1050;
             _data7.objectPos.theta = 0;
             _data7.objectType = 1;
@@ -212,7 +206,7 @@ SystemManagerSimu::SystemManagerSimu(
             _data7.objectMode = 0;
 
             QList< SimData > _datas;
-            _datas.push_back( data );
+            //_datas.push_back( data );
             _datas.push_back( _data );
             _datas.push_back( _data1 );
             _datas.push_back( _data2 );
@@ -223,6 +217,103 @@ SystemManagerSimu::SystemManagerSimu(
             _datas.push_back( _data7 );
 
             _simServer.sendSimData( socket, _datas );
+            }
+
+            // RIGHT SIDE
+            {
+            SimData _data;
+            _data.objectId = id++;
+            _data.objectPos.x = ( 1500 - 500 );
+            _data.objectPos.y = 450;
+            _data.objectPos.theta = 0;
+            _data.objectType = 1;
+            _data.objectColor = 0;
+            _data.objectSize = 100.0;
+            _data.objectMode = 0;
+
+            SimData _data1;
+            _data1.objectId = id++;
+            _data1.objectPos.x = ( 1500 - 500 );
+            _data1.objectPos.y = 750;
+            _data1.objectPos.theta = 0;
+            _data1.objectType = 1;
+            _data1.objectColor = 0;
+            _data1.objectSize = 100.0;
+            _data1.objectMode = 0;
+
+            SimData _data2;
+            _data2.objectId = id++;
+            _data2.objectPos.x = ( 1500 - 500 );
+            _data2.objectPos.y = 1050;
+            _data2.objectPos.theta = 0;
+            _data2.objectType = 1;
+            _data2.objectColor = 1;
+            _data2.objectSize = 100.0;
+            _data2.objectMode = 0;
+
+            SimData _data3;
+            _data3.objectId = id++;
+            _data3.objectPos.x = ( 1500 - 1000 );
+            _data3.objectPos.y = 900;
+            _data3.objectPos.theta = 0;
+            _data3.objectType = 1;
+            _data3.objectColor = 2;
+            _data3.objectSize = 100.0;
+            _data3.objectMode = 0;
+
+            SimData _data4;
+            _data4.objectId = id++;
+            _data4.objectPos.x = ( 1500 - 1000 );
+            _data4.objectPos.y = 900;
+            _data4.objectPos.theta = 0;
+            _data4.objectType = 1;
+            _data4.objectColor = 2;
+            _data4.objectSize = 100.0;
+            _data4.objectMode = 0;
+
+            SimData _data5;
+            _data5.objectId = id++;
+            _data5.objectPos.x = ( 1500 - 900 );
+            _data5.objectPos.y = 1050;
+            _data5.objectPos.theta = 0;
+            _data5.objectType = 1;
+            _data5.objectColor = 1;
+            _data5.objectSize = 100.0;
+            _data5.objectMode = 0;
+
+            SimData _data6;
+            _data6.objectId = id++;
+            _data6.objectPos.x = ( 1500 - 1000 );
+            _data6.objectPos.y = 1150;
+            _data6.objectPos.theta = 0;
+            _data6.objectType = 1;
+            _data6.objectColor = 0;
+            _data6.objectSize = 100.0;
+            _data6.objectMode = 0;
+
+            SimData _data7;
+            _data7.objectId = id++;
+            _data7.objectPos.x = ( 1500 - 1150 );
+            _data7.objectPos.y = 1050;
+            _data7.objectPos.theta = 0;
+            _data7.objectType = 1;
+            _data7.objectColor = 0;
+            _data7.objectSize = 100.0;
+            _data7.objectMode = 0;
+
+            QList< SimData > _datas;
+            //_datas.push_back( data );
+            _datas.push_back( _data );
+            _datas.push_back( _data1 );
+            _datas.push_back( _data2 );
+            _datas.push_back( _data3 );
+            _datas.push_back( _data4 );
+            _datas.push_back( _data5 );
+            _datas.push_back( _data6 );
+            _datas.push_back( _data7 );
+
+            _simServer.sendSimData( socket, _datas );
+            }
         } );
 
     connect(
@@ -342,7 +433,7 @@ void SystemManagerSimu::start()
 
     initRecalage();
 
-    displayColor( _colorButton->digitalRead() );
+    //displayColor( _colorButton->digitalRead() );
 
     blinkColorLed();
 
@@ -419,11 +510,11 @@ void SystemManagerSimu::initRecalage()
 {
     if( _color == Color::Yellow )
     {
-        _odometry->setPosition({.x=1180, .y=600, .theta=0});
+        _odometry->setPosition({.x=-1180, .y=600, .theta=0});
     }
     else
     {
-        _odometry->setPosition({.x=-1180, .y=600, .theta=RAD( 180.0 )});
+        _odometry->setPosition({.x=1180, .y=600, .theta=RAD( 180.0 )});
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x

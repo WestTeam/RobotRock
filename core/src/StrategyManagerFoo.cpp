@@ -69,14 +69,15 @@ void StrategyManagerFoo::buildStrat( const Color& color )
 
     if( color == Color::Yellow )
     {
-        inv = 1.0;
-        shift = 20.0;
+        inv = -1.0;
+        shift = 0.0;
+        offset = 0.0;
     }
     else
     {
         inv = 1.0;
-        shift = -18.0;
-        offset = 90.0;
+        shift = 0.0;
+        offset = 0.0;
     }
 
     WaitAction::Ptr wait500Ms =
@@ -95,8 +96,8 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            1000,
-            600 * inv,
+            inv * 500,
+            600,
             true );
 
     MoveAction::Ptr moveToStartZone =
@@ -105,8 +106,8 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            700,
-            600 * inv,
+            inv * 800,
+            600,
             true );
 
     MoveAction::Ptr moveSmall =
@@ -116,7 +117,7 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             0.0,
             50.0,
             0.0,
-            0.0 * inv,
+            0.0,
             true );
 
     MoveAction::Ptr moveALittleForward =
@@ -126,7 +127,7 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             0.0,
             100.0,
             0.0,
-            0.0 * inv,
+            0.0,
             true );
 
     MoveAction::Ptr moveALittleForward2 =
@@ -136,14 +137,14 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             0.0,
             150.0,
             0.0,
-            0.0 * inv,
+            0.0,
             true );
 
     MoveAction::Ptr turnA90 =
             std::make_shared< MoveAction >(
                 _trajectoryManager,
                 TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
-                90.0 * inv,
+                90.0,
                 0.0,
                 0.0,
                 0.0,
@@ -153,7 +154,7 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             std::make_shared< MoveAction >(
                 _trajectoryManager,
                 TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL,
-                20.0 * inv,
+                20.0,
                 0.0,
                 0.0,
                 0.0,
@@ -163,7 +164,7 @@ void StrategyManagerFoo::buildStrat( const Color& color )
             std::make_shared< MoveAction >(
                 _trajectoryManager,
                 TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL,
-                -20.0 * inv,
+                20.0 * inv,
                 0.0,
                 0.0,
                 0.0,
