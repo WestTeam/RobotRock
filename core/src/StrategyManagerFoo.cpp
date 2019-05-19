@@ -30,8 +30,6 @@ StrategyManagerFoo::StrategyManagerFoo()
 
 bool StrategyManagerFoo::init( const TrajectoryManager::Ptr& trajectoryManager )
 {
-    tDebug( LOG ) << "HERE 3";
-
     if ( ! _init )
     {
         _trajectoryManager = trajectoryManager;

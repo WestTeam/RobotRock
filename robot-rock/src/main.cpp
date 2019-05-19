@@ -18,6 +18,7 @@
 #endif
 
 #include <WestBot/RobotRock/StrategyManagerHomologation.hpp>
+#include <WestBot/RobotRock/StrategyManagerV1.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -44,6 +45,9 @@ int main( int argc, char *argv[] )
     StrategyManagerHomologation::Ptr strategyHomologation =
         std::make_shared< StrategyManagerHomologation >();
 
+    StrategyManagerV1::Ptr strategyV1 =
+        std::make_shared< StrategyManagerV1 >();
+
 #ifndef USE_SIMULATOR
     Hal::Ptr hal = std::make_shared< Hal >();
     SystemManagerHw system( hal, strategyHomologation );
@@ -64,7 +68,7 @@ int main( int argc, char *argv[] )
   #endif
 #else
 
-    SystemManagerSimu system( strategyHomologation );
+    SystemManagerSimu system( strategyV1 );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 
