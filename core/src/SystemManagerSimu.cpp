@@ -406,11 +406,9 @@ bool SystemManagerSimu::init()
 
     //_distanceSensor.start();
 
-    displayColor( _colorButton->digitalRead() );
+    //displayColor( _colorButton->digitalRead() );
 
     tInfo( LOG ) << "System manager initialized";
-
-    //start();
 
     return true;
 }
