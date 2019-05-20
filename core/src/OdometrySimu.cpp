@@ -43,4 +43,11 @@ void OdometrySimu::addError( RobotPos pos )
     _cumulatedError.x += pos.x;
     _cumulatedError.y += pos.y;
     _cumulatedError.theta += pos.theta;
+
+    while (_cumulatedError.theta > M_PI)
+        _cumulatedError.theta -= 2*M_PI;
+
+    while (_cumulatedError.theta <= -M_PI)
+        _cumulatedError.theta += 2*M_PI;
+
 }
