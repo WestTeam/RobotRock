@@ -33,7 +33,7 @@ MoveAction::Ptr turnToCenterZone(
     return std::make_shared< MoveAction >(
         trajectoryManager,
         TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL,
-        90.0,
+        inv * 90.0,
         0.0,
         0,
         0,
@@ -50,7 +50,7 @@ MoveAction::Ptr moveALittleForward(
         TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS,
         0.0,
         0.0,
-        700,
+        720,
         inv * 500,
         true );
 }
@@ -64,8 +64,50 @@ MoveAction::Ptr moveALittleForward2(
         TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS,
         0.0,
         0.0,
-        850,
+        880,
         inv * 500,
+        true );
+}
+
+MoveAction::Ptr moveToStartZone(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        600,
+        inv * 800,
+        true );
+}
+
+MoveAction::Ptr orientationZoneDepose(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL,
+        -20.0 * inv,
+        0.0,
+        0.0,
+        0.0,
+        true );
+}
+
+MoveAction::Ptr moveALittleForward3(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
+        0.0,
+        200.0,
+        0,
+        0,
         true );
 }
 
@@ -184,19 +226,6 @@ MoveAction::Ptr turnA90(
 
 
 
-MoveAction::Ptr moveToStartZone(
-    const TrajectoryManager::Ptr& trajectoryManager,
-    float inv )
-{
-    return std::make_shared< MoveAction >(
-        trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-        0.0,
-        0.0,
-        600,
-        inv * 800,
-        true );
-}
 
 MoveAction::Ptr moveSmall(
     const TrajectoryManager::Ptr& trajectoryManager,
@@ -325,19 +354,6 @@ MoveAction::Ptr turnRedZone(
         true );
 }
 
-MoveAction::Ptr orientationZoneDepose(
-    const TrajectoryManager::Ptr& trajectoryManager,
-    float inv )
-{
-    return std::make_shared< MoveAction >(
-        trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_REL,
-        20.0 * inv,
-        0.0,
-        0.0,
-        0.0,
-        true );
-}
 */
 // Wait actions
 WaitAction::Ptr wait500Ms()
