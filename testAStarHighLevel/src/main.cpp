@@ -34,11 +34,15 @@ int main( int argc, char *argv[] )
 
     AStarHighLevel astar( 60, 40 );
 
-    //astar.setCurrentPos( 0, 0 );
-    //astar.setTarget( 60, 40 );
-    //astar.setObstacle( 20, 25, 35, 42 );
+    astar.setCurrentPos( 0, 0 );
+    astar.setTarget( 59, 39 );
+    astar.setObstacle( 5, 5, 20, 20 );
 
-    //astar.dumpMap();
+    astar.dumpMap();
+
+    astar.processCurrentRoute(false);
+
+    astar.dumpMap();
 
     return app.exec();
 }

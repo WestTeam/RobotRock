@@ -10,7 +10,7 @@ using namespace WestBot::RobotRock;
 AStarHighLevel::AStarHighLevel( uint mapWidth, uint mapHeight )
     : _mapWidth( mapWidth )
     , _mapHeight( mapHeight )
-    , _astar( _mapWidth, _mapHeight )
+    , _map( nullptr )
 {
     _astar.setHeuristics( WestBot::AStar::AStarHeuristics::euclidean );
 
@@ -24,7 +24,7 @@ void AStarHighLevel::setMap( uint mapWidth, uint mapHeight )
     _mapWidth = mapWidth;
     _mapHeight = mapHeight;
 
-    /*if( mapWidth == 0 || mapHeight == 0 )
+    if( mapWidth == 0 || mapHeight == 0 )
     {
         return;
     }
@@ -44,9 +44,8 @@ void AStarHighLevel::setMap( uint mapWidth, uint mapHeight )
             _map[i][j].expandCost = 1;
         }
     }
-    */
 
-    //_astar.setMatrix( _mapWidth, _mapHeight );
+    _astar.setMatrix( _mapWidth, _mapHeight );
 }
 
 void AStarHighLevel::destroyMap()
@@ -118,9 +117,9 @@ void AStarHighLevel::processCurrentRoute( bool saveChanges )
 
 void AStarHighLevel::dumpMap()
 {
-    for( uint i = 0; i <= _mapWidth; i++ )
+    for( uint i = 0; i < _mapWidth; i++ )
     {
-        for( uint j = 0; j <= _mapHeight; j++ )
+        for( uint j = 0; j < _mapHeight; j++ )
         {
             std::cout << _map[ i ][ j ].c;
         }
