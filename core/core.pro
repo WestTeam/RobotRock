@@ -12,6 +12,7 @@ INCLUDEPATH += include \
 SOURCES += \
     src/Action.cpp \
     src/ArmAction.cpp \
+    src/AStarHighLevel.cpp \
     src/Experiment.cpp \
     src/GameThread.cpp \
     src/Hal.cpp \
@@ -51,8 +52,9 @@ SOURCES += \
 HEADERS += \
     include/Macros.hpp \
     include/WestBot/RobotRock/Action.hpp \
-    include/WestBot/RobotRock/ArmAction.hpp \
     include/WestBot/RobotRock/ActionList.hpp \
+    include/WestBot/RobotRock/ArmAction.hpp \
+    include/WestBot/RobotRock/AStarHighLevel.hpp \
     include/WestBot/RobotRock/Common.hpp \
     include/WestBot/RobotRock/Experiment.hpp \
     include/WestBot/RobotRock/GameThread.hpp \
@@ -94,3 +96,7 @@ HEADERS += \
 
 INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
+
+# We are trying our AStar algorithm
+INCLUDEPATH += ../../astar/include/
+LIBS += -L../../astar/lib -lAStar

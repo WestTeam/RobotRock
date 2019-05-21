@@ -16,7 +16,8 @@ SUBDIRS = core robot-rock test1 \
     testArmLowLevel \
     testArmHighLevel \
     testSimServer \
-    testRobotSimu
+    testRobotSimu \
+    testAStarHighLevel
 
 robot-rock.depedends = core
 test1.depends = core
