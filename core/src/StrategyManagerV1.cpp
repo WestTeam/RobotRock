@@ -79,160 +79,28 @@ void StrategyManagerV1::buildStrat( const Color& color )
 
     // List 1: On va chercher le goldenium
     // On prend les 2 pucks rouge et on fonce a l'accelerateur
-   /* _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToAccelerator( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToAccelerator2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToAccelerator3( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToBalance( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToBalance2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToCenterZone2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
-    _list1.push_back( turnR90( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( onSaqueDedans( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( onSaqueDedans2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToAccelerator( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToAccelerator2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToBalance( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToBalance2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( goingBackALittle( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( getHighPucks( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( getHighPucks2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToBalance( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToBalance2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToCenterZone2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( moveToStartZone( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-
     _list1.push_back( orientationZoneDepose( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
+    _list1.push_back( moveALittleForward3( _trajectoryManager, inv ) );
 
-    _list1.push_back( moveALittleForward2( _trajectoryManager, inv ) );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    _list1.push_back( wait500Ms() );
-    */
-    /*
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( moveToCenterZone( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( turnA90( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( moveALittleForward( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( moveALittleForward2( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( moveToStartZone( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( orientationZoneDepose( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( moveALittleForward2( _trajectoryManager, inv ) );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-*/
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );
 }

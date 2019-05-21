@@ -10,8 +10,7 @@
 namespace WestBot {
 namespace RobotRock {
 
-// Move actions
-
+// ACTIONS FOR HOMOLOGATION
 MoveAction::Ptr moveToCenterZone(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
@@ -111,7 +110,8 @@ MoveAction::Ptr moveALittleForward3(
         true );
 }
 
-/*MoveAction::Ptr moveToAccelerator(
+// ACTIONS FOR STRAT V1
+MoveAction::Ptr moveToAccelerator(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -122,20 +122,6 @@ MoveAction::Ptr moveALittleForward3(
         0.0,
         190,
         0,
-        true );
-}
-
-MoveAction::Ptr alignToAccelerator(
-    const TrajectoryManager::Ptr& trajectoryManager,
-    float inv )
-{
-    return std::make_shared< MoveAction >(
-        trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
-        0.0,
-        0.0,
-        0.0,
-        0.0,
         true );
 }
 
@@ -210,23 +196,6 @@ MoveAction::Ptr moveToCenterZone2(
         true );
 }
 
-MoveAction::Ptr turnA90(
-    const TrajectoryManager::Ptr& trajectoryManager,
-    float inv )
-{
-    return std::make_shared< MoveAction >(
-        trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL,
-        inv * -90.0,
-        0.0,
-        0.0,
-        0.0,
-        true );
-}
-
-
-
-
 MoveAction::Ptr moveSmall(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
@@ -236,35 +205,6 @@ MoveAction::Ptr moveSmall(
         TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
         0.0,
         50.0,
-        0.0,
-        0.0,
-        true );
-}
-
-
-MoveAction::Ptr turnR90(
-    const TrajectoryManager::Ptr& trajectoryManager,
-    float inv )
-{
-    return std::make_shared< MoveAction >(
-        trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_REL,
-        inv * -90.0,
-        0.0,
-        0.0,
-        0.0,
-        true );
-}
-
-MoveAction::Ptr turnA180(
-    const TrajectoryManager::Ptr& trajectoryManager,
-    float inv )
-{
-    return std::make_shared< MoveAction >(
-        trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS,
-        inv * -180.0,
-        0.0,
         0.0,
         0.0,
         true );
@@ -354,7 +294,6 @@ MoveAction::Ptr turnRedZone(
         true );
 }
 
-*/
 // Wait actions
 WaitAction::Ptr wait500Ms()
 {
