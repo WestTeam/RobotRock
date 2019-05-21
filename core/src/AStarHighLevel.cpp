@@ -113,6 +113,15 @@ void AStarHighLevel::processCurrentRoute( bool saveChanges )
     _processedPath = _astar.getPath( saveChanges );
 
     // TODO: handle save changes properly
+    if( 0 == _processedPath.size() )
+    {
+        return;
+    }
+
+    for( auto pathIt = _processedPath.begin(); pathIt != _processedPath.end(); ++pathIt )
+    {
+        _map[ pathIt->first ][ pathIt->second ].c = '*';
+    }
 }
 
 void AStarHighLevel::dumpMap()

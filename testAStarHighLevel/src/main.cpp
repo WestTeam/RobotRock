@@ -40,7 +40,9 @@ int main( int argc, char *argv[] )
 
     astar.dumpMap();
 
-    astar.processCurrentRoute(false);
+    astar.processCurrentRoute( false );
+
+    tDebug( LOG ) << "GETTING THE PATH NOW...";
 
     astar.dumpMap();
 
