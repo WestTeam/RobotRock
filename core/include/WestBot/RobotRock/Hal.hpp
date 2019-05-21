@@ -138,6 +138,12 @@ public:
     ItemRegister _qei5RefValue;
     ItemRegister _qei5CntValue;
 
+    ItemRegister _pwmCustom0Value;
+    ItemRegister _pwmCustom1Value;
+    ItemRegister _pwmCustom2Value;
+    ItemRegister _pwmCustom3Value;
+
+
     // General Smart Servo Command
     ItemRegister _smartServoCmdValid;
     ItemRegister _smartServoCmdId;
@@ -231,23 +237,38 @@ public:
     ItemRegister _pidAngleOutput;
 
     // PID Custom
-    ItemRegister _pidCustomFreqHz;
-    ItemRegister _pidCustomFreqHzLatest;
-    ItemRegister _pidCustomEnable;
-    ItemRegister _pidCustomOverride;
-    ItemRegister _pidCustomInverted;
-    ItemRegister _pidCustomKp;
-    ItemRegister _pidCustomKi;
-    ItemRegister _pidCustomKd;
-    ItemRegister _pidCustomSpeed;
-    ItemRegister _pidCustomAcceleration;
-    ItemRegister _pidCustomSaturation;
-    ItemRegister _pidCustomPosition;
-    ItemRegister _pidCustomTarget;
-    ItemRegister _pidCustomOutput;
+    ItemRegister _pidCustom1FreqHz;
+    ItemRegister _pidCustom1FreqHzLatest;
+    ItemRegister _pidCustom1Enable;
+    ItemRegister _pidCustom1Override;
+    ItemRegister _pidCustom1Inverted;
+    ItemRegister _pidCustom1Kp;
+    ItemRegister _pidCustom1Ki;
+    ItemRegister _pidCustom1Kd;
+    ItemRegister _pidCustom1Speed;
+    ItemRegister _pidCustom1Acceleration;
+    ItemRegister _pidCustom1Saturation;
+    ItemRegister _pidCustom1Position;
+    ItemRegister _pidCustom1Target;
+    ItemRegister _pidCustom1Output;
+    ItemRegister _pidCustom1LastReference;
 
-    ItemRegister _pidCustomLastReference;
-
+    // PID Custom
+    ItemRegister _pidCustom2FreqHz;
+    ItemRegister _pidCustom2FreqHzLatest;
+    ItemRegister _pidCustom2Enable;
+    ItemRegister _pidCustom2Override;
+    ItemRegister _pidCustom2Inverted;
+    ItemRegister _pidCustom2Kp;
+    ItemRegister _pidCustom2Ki;
+    ItemRegister _pidCustom2Kd;
+    ItemRegister _pidCustom2Speed;
+    ItemRegister _pidCustom2Acceleration;
+    ItemRegister _pidCustom2Saturation;
+    ItemRegister _pidCustom2Position;
+    ItemRegister _pidCustom2Target;
+    ItemRegister _pidCustom2Output;
+    ItemRegister _pidCustom2LastReference;
 
     // Layer 3
     ItemRegister _trajFreqHz;

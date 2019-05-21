@@ -34,10 +34,20 @@ int main(int argc, char *argv[])
 
     Vl6180x vl6180x;
 
+
     while( 1 )
     {
-        tDebug( LOG ) << "Read distance:" << vl6180x.distance( 0 );
-        a.processEvents();
+        for (int i = 0; i < 4; i++)
+        {
+            if (vl6180x.status(i))
+            {
+                tDebug( LOG ) << "Read distance " << i << ":" << vl6180x.distance( i ) << *vl6180x.distancePointer(i) << vl6180x.samplingPeriod(i);
+            }
+        }
+
+        QThread::msleep(50);
+
+        //a.processEvents();
     }
 
     return a.exec();
