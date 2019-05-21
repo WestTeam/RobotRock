@@ -79,7 +79,7 @@ void StrategyManagerV1::buildStrat( const Color& color )
 
     // List 1: On va chercher le goldenium
     // On prend les 2 pucks rouge et on fonce a l'accelerateur
-    _list1.push_back( wait500Ms() );
+   /* _list1.push_back( wait500Ms() );
     _list1.push_back( wait500Ms() );
     _list1.push_back( wait500Ms() );
 
@@ -192,7 +192,7 @@ void StrategyManagerV1::buildStrat( const Color& color )
     _list1.push_back( wait500Ms() );
     _list1.push_back( wait500Ms() );
     _list1.push_back( wait500Ms() );
-
+    */
     /*
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );

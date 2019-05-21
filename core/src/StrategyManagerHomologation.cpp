@@ -86,7 +86,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
 
-    _actions.push_back( turnA90( _trajectoryManager, inv ) );
+    _actions.push_back( turnToCenterZone( _trajectoryManager, inv ) );
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
@@ -100,7 +100,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
-
+/*
     _actions.push_back( moveToStartZone( _trajectoryManager, inv ) );
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
@@ -115,7 +115,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
     _actions.push_back( wait500Ms() );
-
+*/
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );
 }

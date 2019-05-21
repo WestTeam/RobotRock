@@ -1,5 +1,7 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
+#include <math.h>
+
 #include <QThread>
 #include <QDate>
 
@@ -701,7 +703,6 @@ void TrajectoryManagerSimu::run()
                     currentPos = _odometry->getPosition();
 
                     float newAngle = atan2(_commandY-currentPos.y,_commandX-currentPos.x);
-
 
                     switch (_trajType)
                     {
