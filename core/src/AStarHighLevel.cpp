@@ -4,6 +4,7 @@
 
 #include <WestBot/RobotRock/AStarHighLevel.hpp>
 #include <WestBot/RobotRock/MoveAction.hpp>
+#include <WestBot/RobotRock/WaitAction.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -25,6 +26,11 @@ namespace
             x,
             inv * y,
             true );
+    }
+
+    WaitAction::Ptr wait500Ms()
+    {
+        return std::make_shared< WaitAction >( 500 );
     }
 }
 
@@ -148,14 +154,14 @@ void AStarHighLevel::processCurrentRoute( bool saveChanges )
     for( auto pathIt = _processedPath.begin(); pathIt != _processedPath.end(); ++pathIt )
     {
         _map[ pathIt->first ][ pathIt->second ].c = '*';
-        _actions.push_back(
+        /*_actions.push_back(
             moveGenericAction( _trajectoryManager,
-            pathIt->first,
-            pathIt->second,
-            _inv ) );
+           1350,
+           500,
+            _inv ) );*/
     }
 
-    emit newRoute( _actions );
+    emit newRoute( _processedPath );
 }
 
 void AStarHighLevel::dumpMap()

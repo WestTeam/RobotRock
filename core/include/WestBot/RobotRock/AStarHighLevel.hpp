@@ -56,7 +56,7 @@ public:
     void dumpMap();
 
 signals:
-    void newRoute( const QList< Action::Ptr >& actions ); // This can emit a new QList of actions
+    void newRoute( QList< QPair< uint, uint > > path ); // This can emit a new QList of actions
 
 private:
     TrajectoryManager::Ptr _trajectoryManager;

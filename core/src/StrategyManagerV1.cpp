@@ -16,19 +16,36 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY(
         LOG,
         "WestBot.RobotRock.StrategyManagerV1" )
+
+    // TEST FOR A*
+    MoveAction::Ptr moveGenericAction(
+        const TrajectoryManager::Ptr& trajectoryManager,
+        double x,
+        double y,
+        float inv )
+    {
+        return std::make_shared< MoveAction >(
+            trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS,
+            0.0,
+            0.0,
+            x,
+            y,
+            true );
+    }
 }
 
 StrategyManagerV1::StrategyManagerV1( QObject* parent )
     : _trajectoryManager( nullptr )
-    , _astar( _trajectoryManager, 1.0, 3000, 2000 )
+    , _astar( _trajectoryManager, 1.0, 67, 100 )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
     , _init( false )
 {
-    _astar.setCurrentPos( 0, 0 );
-    _astar.setTarget( 1800, 900 );
-    _astar.setObstacle( 800, 800, 1200, 1200 );
+    _astar.setCurrentPos( 19, 10 );
+    _astar.setTarget( 50, 80 );
+    _astar.setObstacle( 20, 20, 60, 60 );
 
     _astarTimer.setInterval( 10000 );
 
@@ -36,10 +53,18 @@ StrategyManagerV1::StrategyManagerV1( QObject* parent )
         & _astar,
         & AStarHighLevel::newRoute,
         this,
-        [ this ]( const QList< Action::Ptr >& actions )
+        [ this ]( QList< QPair< uint, uint > > actions )
         {
-            //_list1.clear();
-            //_list1.append( actions );
+            tDebug( LOG ) << "NEW ACTIONS LIST TO AVOID OBSTACLE" << actions.size();
+            for( auto pathIt = actions.begin(); pathIt != actions.end(); ++pathIt )
+            {
+                tDebug( LOG ) << "Actions pos:" << pathIt->first << pathIt->second;
+                _avoidList.push_back(
+                    moveGenericAction( _trajectoryManager,
+                   ( ( pathIt->first - 2.51 ) * 30 ),
+                   -1.0 * ( 1500 - ( ( pathIt->second + 2.51 ) * 30 ) ),
+                   1.0 ) );
+            }
         } );
 
     connect(
@@ -158,6 +183,7 @@ void StrategyManagerV1::doStrat( const Color& color )
 
         if( _avoidList.size() != 0 )
         {
+            tDebug( LOG ) << "WE HAVE A LIST TO AVOID THE OBSTACLE";
             _currentAction = _avoidList.takeFirst();
             _currentAction->execute();
         }
