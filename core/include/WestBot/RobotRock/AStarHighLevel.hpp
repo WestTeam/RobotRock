@@ -14,6 +14,9 @@
 #include <WestBot/AStar/NodeState.hpp>
 #include <WestBot/AStar/Utils.hpp>
 
+#include "Action.hpp"
+#include "TrajectoryManager.hpp"
+
 namespace WestBot {
 namespace RobotRock {
 
@@ -31,7 +34,12 @@ public:
         char c;
     };
 
-    AStarHighLevel( uint mapWidth, uint mapHeight );
+    AStarHighLevel(
+        const TrajectoryManager::Ptr& trajectoryManager,
+        float inv,
+        uint mapWidth,
+        uint mapHeight );
+
     ~AStarHighLevel() override = default;
 
     void setMap( uint mapWidth, uint mapHeight );
@@ -48,13 +56,17 @@ public:
     void dumpMap();
 
 signals:
-    void newRoute(); // This can emit a new QList of actions
+    void newRoute( const QList< Action::Ptr >& actions ); // This can emit a new QList of actions
 
 private:
+    TrajectoryManager::Ptr _trajectoryManager;
+    float _inv;
     uint _mapWidth;
     uint _mapHeight;
     WestBot::AStar::AStar _astar;
     QList< QPair< uint, uint > > _processedPath;
+
+    QList< Action::Ptr > _actions;
 
     MapNode** _map;
 };

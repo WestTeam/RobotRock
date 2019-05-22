@@ -18,13 +18,42 @@ namespace
         "WestBot.RobotRock.StrategyManagerV1" )
 }
 
-StrategyManagerV1::StrategyManagerV1()
+StrategyManagerV1::StrategyManagerV1( QObject* parent )
     : _trajectoryManager( nullptr )
+    , _astar( _trajectoryManager, 1.0, 3000, 2000 )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
     , _init( false )
 {
+    _astar.setCurrentPos( 0, 0 );
+    _astar.setTarget( 1800, 900 );
+    _astar.setObstacle( 800, 800, 1200, 1200 );
+
+    _astarTimer.setInterval( 10000 );
+
+    connect(
+        & _astar,
+        & AStarHighLevel::newRoute,
+        this,
+        [ this ]( const QList< Action::Ptr >& actions )
+        {
+            //_list1.clear();
+            //_list1.append( actions );
+        } );
+
+    connect(
+        & _astarTimer,
+        & QTimer::timeout,
+        this,
+        [ this ]()
+        {
+            _astar.processCurrentRoute( false );
+            _astar.dumpMap();
+        } );
+
+    _astarTimer.setSingleShot( true );
+    _astarTimer.start();
 }
 
 bool StrategyManagerV1::init( const TrajectoryManager::Ptr& trajectoryManager )
@@ -77,9 +106,14 @@ void StrategyManagerV1::buildStrat( const Color& color )
         offset = 0.0;
     }
 
+    _list1.push_back( wait500Ms() );
+    _list1.push_back( wait500Ms() );
+    _list1.push_back( wait500Ms() );
+    _list1.push_back( wait500Ms() );
+
     // List 1: On va chercher le goldenium
     // On prend les 2 pucks rouge et on fonce a l'accelerateur
-    _list1.push_back( moveToAccelerator( _trajectoryManager, inv ) );
+    /*_list1.push_back( moveToAccelerator( _trajectoryManager, inv ) );
     _list1.push_back( moveToAccelerator2( _trajectoryManager, inv ) );
     _list1.push_back( moveToAccelerator3( _trajectoryManager, inv ) );
     _list1.push_back( moveToBalance( _trajectoryManager, inv ) );
@@ -100,7 +134,7 @@ void StrategyManagerV1::buildStrat( const Color& color )
     _list1.push_back( moveToStartZone( _trajectoryManager, inv ) );
     _list1.push_back( orientationZoneDepose( _trajectoryManager, inv ) );
     _list1.push_back( moveALittleForward3( _trajectoryManager, inv ) );
-
+    */
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );
 }

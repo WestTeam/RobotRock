@@ -5,6 +5,9 @@ QT += core network serialport
 TARGET = robot-rock
 SOURCES = src/main.cpp
 
+INCLUDEPATH += ../../astar/include/
+LIBS += -L../../astar/lib -lAStar
+
 INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
 

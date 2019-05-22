@@ -18,7 +18,7 @@ namespace RobotRock {
 class StrategyManagerFoo : public StrategyManager
 {
 public:
-    StrategyManagerFoo();
+    StrategyManagerFoo( QObject* parent = nullptr );
 
     ~StrategyManagerFoo() override = default;
 

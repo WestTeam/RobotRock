@@ -18,7 +18,7 @@ namespace
         "WestBot.RobotRock.StrategyManagerFoo" )
 }
 
-StrategyManagerFoo::StrategyManagerFoo()
+StrategyManagerFoo::StrategyManagerFoo( QObject* parent )
     : _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )

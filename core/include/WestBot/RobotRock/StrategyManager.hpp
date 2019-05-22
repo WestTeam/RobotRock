@@ -5,6 +5,8 @@
 
 #include <memory>
 
+#include <QObject>
+
 #include "Common.hpp"
 #include "TrajectoryManager.hpp"
 
@@ -14,12 +16,12 @@ namespace RobotRock {
 /*!
  * \brief This class is an abstract class and defines what is a strategy manager
  */
-class StrategyManager
+class StrategyManager : public QObject
 {
 public:
     using Ptr = std::shared_ptr< StrategyManager >;
 
-    virtual ~StrategyManager() = default;
+    virtual ~StrategyManager() override = default;
 
     virtual bool init( const TrajectoryManager::Ptr& trajectoryManager ) = 0;
     virtual void deinit() = 0;

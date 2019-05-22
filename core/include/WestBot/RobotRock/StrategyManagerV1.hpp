@@ -4,9 +4,11 @@
 #define WESTBOT_ROBOTROCK_STRATEGYMANAGERV1_HPP_
 
 #include <QList>
+#include <QTimer>
 
 #include "Action.hpp"
 #include "StrategyManager.hpp"
+#include "AStarHighLevel.hpp"
 
 namespace WestBot {
 namespace RobotRock {
@@ -18,7 +20,7 @@ namespace RobotRock {
 class StrategyManagerV1 : public StrategyManager
 {
 public:
-    StrategyManagerV1();
+    StrategyManagerV1( QObject* parent = nullptr );
 
     ~StrategyManagerV1() override = default;
 
@@ -39,6 +41,8 @@ public:
 private:
     TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
 
+    AStarHighLevel _astar;
+
     QList< Action::Ptr > _list1;
     QList< Action::Ptr > _list2;
     QList< Action::Ptr > _list3;
@@ -49,6 +53,8 @@ private:
     bool _stratIsRunning;
     bool _obstacleToClose;
     bool _init;
+
+    QTimer _astarTimer;
 };
 
 }

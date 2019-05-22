@@ -3,12 +3,39 @@
 #include <iostream>
 
 #include <WestBot/RobotRock/AStarHighLevel.hpp>
+#include <WestBot/RobotRock/MoveAction.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
-AStarHighLevel::AStarHighLevel( uint mapWidth, uint mapHeight )
-    : _mapWidth( mapWidth )
+namespace
+{
+    // TEST FOR A*
+    MoveAction::Ptr moveGenericAction(
+        const TrajectoryManager::Ptr& trajectoryManager,
+        int x,
+        int y,
+        float inv )
+    {
+        return std::make_shared< MoveAction >(
+            trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS,
+            0.0,
+            0.0,
+            x,
+            inv * y,
+            true );
+    }
+}
+
+AStarHighLevel::AStarHighLevel(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    float inv,
+    uint mapWidth,
+    uint mapHeight )
+    : _trajectoryManager( trajectoryManager )
+    , _inv( inv )
+    , _mapWidth( mapWidth )
     , _mapHeight( mapHeight )
     , _map( nullptr )
 {
@@ -121,7 +148,14 @@ void AStarHighLevel::processCurrentRoute( bool saveChanges )
     for( auto pathIt = _processedPath.begin(); pathIt != _processedPath.end(); ++pathIt )
     {
         _map[ pathIt->first ][ pathIt->second ].c = '*';
+        _actions.push_back(
+            moveGenericAction( _trajectoryManager,
+            pathIt->first,
+            pathIt->second,
+            _inv ) );
     }
+
+    emit newRoute( _actions );
 }
 
 void AStarHighLevel::dumpMap()

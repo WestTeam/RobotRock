@@ -32,7 +32,7 @@ int main( int argc, char *argv[] )
 
     tInfo( LOG ) << "==== Test ready ! ==== ";
 
-    AStarHighLevel astar( 60, 40 );
+    /*AStarHighLevel astar( 60, 40 );
 
     astar.setCurrentPos( 0, 0 );
     astar.setTarget( 59, 39 );
@@ -45,6 +45,6 @@ int main( int argc, char *argv[] )
     tDebug( LOG ) << "GETTING THE PATH NOW...";
 
     astar.dumpMap();
-
+    */
     return app.exec();
 }

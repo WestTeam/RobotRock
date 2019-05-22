@@ -18,7 +18,7 @@ namespace
         "WestBot.RobotRock.StrategyManagerHomologation" )
 }
 
-StrategyManagerHomologation::StrategyManagerHomologation()
+StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
     : _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )

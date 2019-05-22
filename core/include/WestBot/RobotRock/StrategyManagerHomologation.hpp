@@ -17,7 +17,7 @@ namespace RobotRock {
 class StrategyManagerHomologation : public StrategyManager
 {
 public:
-    StrategyManagerHomologation();
+    StrategyManagerHomologation( QObject* parent = nullptr );
 
     ~StrategyManagerHomologation() override = default;
 
