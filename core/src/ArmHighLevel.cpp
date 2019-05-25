@@ -133,12 +133,14 @@ ArmHighLevel::~ArmHighLevel()
 
 bool ArmHighLevel::init(
             const Odometry::Ptr& odometry,
-            const ArmLowLevelBase::Ptr& armLL
+            const ArmLowLevelBase::Ptr& armLL,
+            bool isLeft
         )
 {
     bool ret = true;
     _attached = true;
 
+    _isLeft = isLeft;
     _odometry = odometry;
     _armLL = armLL;
 
@@ -299,12 +301,15 @@ int circle_circle_intersection(double x0, double y0, double r0,
     {
         double theta1 = atan2(yi - y0,xi - x0);
         double theta2 = atan2(y1 - yi,x1 - xi)-theta1;
+        bool theta_ok = true;
 
         tDebug(LOG) << "ArmHighLevel: moveArmRel atan2: " << y1 - yi << x1 - xi << theta2 << DEG(theta2);
 
 
         double theta1_prime = atan2(yi_prime - y0,xi_prime - x0);
         double theta2_prime = atan2(y1 - yi_prime,x1 - xi_prime)-theta1_prime;
+        bool theta_prime_ok = true;
+
 
         tDebug(LOG) << "ArmHighLevel: moveArmRel atan2 prime : " << y1 - yi_prime << x1 - xi_prime << theta2_prime << DEG(theta2_prime);
 
@@ -345,15 +350,46 @@ int circle_circle_intersection(double x0, double y0, double r0,
         // check if the angles are feasable
         if (!(std::abs(DEG(theta1)) <= SERVO_UPPER_MAX_ANGLE_DEG && std::abs(theta2) <= SERVO_LOWER_MAX_ANGLE_DEG))
         {
+            theta_ok = false;
+        }
+
+        // check if the angles are feasable
+        if (!(std::abs(DEG(theta1_prime)) <= SERVO_UPPER_MAX_ANGLE_DEG && std::abs(theta2_prime) <= SERVO_LOWER_MAX_ANGLE_DEG))
+        {
+            theta_prime_ok = false;
+        }
+
+        if (theta_ok == false)
+        {
             selected_theta1 = theta1_prime;
             selected_theta2 = theta2_prime;
 
             tDebug(LOG) << "ArmHighLevel: circle_circle_intersection: solution 1 angles are too big " << DEG(theta1) << DEG(theta2);
 
-            if (!(std::abs(DEG(theta1_prime)) <= SERVO_UPPER_MAX_ANGLE_DEG && std::abs(theta2_prime) <= SERVO_LOWER_MAX_ANGLE_DEG))
+            if (theta_prime_ok == false)
             {
                 tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: solution 1 & 2 angles are too big " << DEG(theta1_prime) << DEG(theta2_prime);
                 return false;
+            }
+        }
+
+
+        if (theta_ok && theta_prime_ok)
+        {
+            // in the case both are ok, we need to choose the best one according do the fact the arm is the right or left one.
+            if (_isLeft)
+            {
+                if (theta2_prime < theta2)
+                {
+                    selected_theta1 = theta1_prime;
+                    selected_theta2 = theta2_prime;
+                }
+            } else {
+                if (theta2_prime > theta2)
+                {
+                    selected_theta1 = theta1_prime;
+                    selected_theta2 = theta2_prime;
+                }
             }
         }
 
@@ -367,12 +403,10 @@ int circle_circle_intersection(double x0, double y0, double r0,
             selected_theta2 = theta2_prime;
         }
 
-
-
         _armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,DEG(selected_theta1));
         _armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,DEG(selected_theta2));
 
-        return _armLL->waitServosTargetOk(2000);
+        return _armLL->waitServosTargetOk(4000);
     } else {
         tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: no solutions " << ok;
         return false;
@@ -512,11 +546,18 @@ bool ArmHighLevel::actionSafePosition()
 
 bool ArmHighLevel::actionGroundPuckCollection(double xMm, double yMm)
 {
-    setVacuum(true);
 
     setMode(ARM_HL_MODE_HORIZONTAL);
-    moveArmAbs(xMm,yMm);
+    bool ret = moveArmAbs(xMm,yMm);
+
+    if (!ret)
+    {
+        tWarning(LOG) << "ArmHighLevel: actionGroundPuckCollection: cannot reach target" << xMm << yMm;
+        return false;
+    }
+
 #define PUCK_WIDTH 25.0
+    setVacuum(true);
 
     moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
     QThread::msleep(100);
@@ -647,7 +688,7 @@ bool ArmHighLevel::actionPuckStore()
 {
     setMode(ARM_HL_MODE_HORIZONTAL);
 
-#define STORE_Z 200.0
+#define STORE_Z 280.0
 
     moveZ(STORE_Z);
 
@@ -674,10 +715,12 @@ bool ArmHighLevel::actionPuckStore()
 
     double dist = getObjectDistance();
 
-    if (dist > (PUCK_WIDTH+10.0) || dist < 15.0 )
+    if (dist > (PUCK_WIDTH))
     {
         tWarning(LOG) << "ArmHighLevel: actionPuckStore: Puck store action issue " << dist;
         return false;
+    } else {
+        tInfo(LOG) <<  "ArmHighLevel: actionPuckStore: Sotre OK!! New count " << _storagePuckCount+1;
     }
 
     _storagePuckCount++;
@@ -688,6 +731,9 @@ bool ArmHighLevel::actionPuckStore()
 
 bool ArmHighLevel::actionPuckUnstore()
 {
+    if (getPuckCount() == 0)
+        return false;
+
     setMode(ARM_HL_MODE_HORIZONTAL);
 
     moveZ(STORE_Z);
@@ -697,8 +743,10 @@ bool ArmHighLevel::actionPuckUnstore()
 
 
     double targetZ = _storagePos.z + count*PUCK_WIDTH  + 30.0;
+    moveZ(targetZ);
 
-
+    double dist;
+/*
     tDebug(LOG) <<  "ArmHighLevel: actionPuckUnstore: getPuckCount / targetZ" << count << targetZ;
 
 
@@ -710,50 +758,64 @@ bool ArmHighLevel::actionPuckUnstore()
         return false;
     }
 
-    moveZ(targetZ);
+*/
 
     setVacuum(true);
 
-    QThread::msleep(500);
+    QThread::msleep(200);
 
     dist = getObjectDistance();
 
-    targetZ -= dist;
+//    targetZ -= dist;
 
     tDebug(LOG) <<  "ArmHighLevel: actionPuckUnstore: Before catch: dist / targetZ" << dist << targetZ;
-
+/*
     if (targetZ < (_storagePos.z + (PUCK_WIDTH-8.0)))
     {
         targetZ = _storagePos.z + (PUCK_WIDTH);
         tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: no puck found while we expected" << count << "dist:" << dist;
     }
+*/
+
+    targetZ = _storagePos.z + count*PUCK_WIDTH  + 10.0;
 
     moveZ(targetZ);
 
     dist = getObjectDistance();
 
-    if (dist > 5.0)
+    if (dist > PUCK_WIDTH)
     {
-        tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: puck not found" << dist;
+        tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: puck issue, count is wrong?" << _storagePuckCount;
         return false;
     }
 
-    targetZ += PUCK_WIDTH;
+    targetZ = _storagePos.z + count*PUCK_WIDTH;
 
-    moveZ(targetZ);
-
-
-    dist = getObjectDistance();
-
-    if (dist > 5.0)
+    for (int i = 0; i < 3; i++)
     {
-        tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: puck not catched(retry needed?)" << dist;
-        return false;
+        moveZ(targetZ);
+        QThread::msleep(200);
+
+        moveZ(targetZ+PUCK_WIDTH);
+
+        dist = getObjectDistance();
+
+        if (dist > 10.0)
+        {
+            targetZ -= 2.0;
+            tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: puck not catched(retry needed?)" << dist;
+            //return false;
+        }
+        else
+        {
+            _storagePuckCount--;
+
+            return true;
+        }
+
     }
 
-    _storagePuckCount--;
-
-    return true;
+    return false;
 }
 
 
@@ -772,7 +834,10 @@ bool ArmHighLevel::actionPuckRelease(double xMm, double yMm, double zMm)
         tWarning(LOG) << " ArmHighLevel::actionPuckRelease Init getObjectDistance too big (puck not locked?)" << initDist;
     }
 
-    moveArmAbs(xMm,yMm);
+    bool ok = moveArmAbs(xMm,yMm);
+
+    if (!ok)
+        return false;
 
     dist1 = getObjectDistance();
 

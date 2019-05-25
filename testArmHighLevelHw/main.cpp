@@ -75,7 +75,7 @@ int main( int argc, char *argv[] )
     ItemRegister::Ptr pump = std::make_shared< ItemRegister >( hal->_motor4Value );
     ItemRegister::Ptr valve = std::make_shared< ItemRegister >( hal->_output2 );
 
-
+    bool isLeft = true;
 
     bool initOk = armLLPtr->init(hal,
                pidfirstreg,
@@ -93,12 +93,14 @@ int main( int argc, char *argv[] )
                true,
                0.0
                );
-*/
+               */
+
 
     ItemRegister::Ptr pidfirstreg = std::make_shared< ItemRegister >( hal->_pidCustom2FreqHz );
     ItemRegister::Ptr pump = std::make_shared< ItemRegister >( hal->_motor5Value );
     ItemRegister::Ptr valve = std::make_shared< ItemRegister >( hal->_output1 );
 
+    bool isLeft = false;
 
 
     bool initOk = armLLPtr->init(hal,
@@ -115,7 +117,7 @@ int main( int argc, char *argv[] )
                SMART_SERVO_DYNAMIXEL,
                7,
                false,
-               0.3
+               2.0
                );
 
     ///// GENERAL CONFIG /////
@@ -130,57 +132,77 @@ int main( int argc, char *argv[] )
     unsigned int tId;
     unsigned int i;
 
+    double inv = 1.0;
+
+    if (isLeft == true)
+        inv = -1.0;
+
     // TEST 1: Grab and release items
     {
         tId = 1;
 
+        bool actionOk;
+
         ArmHighLevel armHL;
 
-        armHL.init(odometryPtr,armLLPtr);
+        armHL.init(odometryPtr,armLLPtr,isLeft);
 
         armHL.enable();
 
-        armHL.confArmPos(194.6,-118.5);
-        armHL.confStorage(138.0,-50.0,150.8);
+        //armHL.confArmPos(194.6,-118.5);
+        armHL.confArmPos(197,-118.5*inv);
+        //armHL.confStorage(138.0,-50.0,150.8);
+        armHL.confStorage(155,-55.0*inv,150.8);
 
         armHL.setMode(ARM_HL_MODE_HORIZONTAL);
 
         armHL.moveZ(200.0);
 
-        armHL.setVacuum(true);
+        //armHL.setVacuum(true);
 
-        armHL.moveArmRel(300.0,-120.0);
+        actionOk = armHL.moveArmRel(300.0,-120.0*inv);
 
-        armHL.actionGroundPuckCollection(300.0,-120.0);
+        if (actionOk)
+        {
+            actionOk = armHL.actionGroundPuckCollection(266.0,-70.0*inv);
+
+            if (actionOk)
+            {
+                armHL.moveZ(220.0);
+
+                actionOk = armHL.actionPuckStore();
+
+                if (actionOk)
+                {
+                    actionOk = armHL.actionPuckUnstore();
+
+                    if (actionOk)
+                    {
+                        actionOk = armHL.moveArmRel(266.0,-70.0*inv);
+
+                        if (actionOk)
+                        {
+                            armHL.actionPuckRelease(266.0,-70.0*inv,50.0);
+                        }
+                    }
+                }
+            }
+        }
+        armHL.moveZ(220.0);
+
+        //armHL.actionGroundPuckCollection(300.0,-160.0);
+
+        //armHL.moveZ(220.0);
+
+        //armHL.actionPuckStore();
+/*
+        armHL.actionGroundPuckCollection(266.0,-150.0*inv);
 
         armHL.moveZ(220.0);
 
-/*
-        armHL.moveZ(25.0);
-
-        armHL.moveZ(150.0);
-
-        armHL.moveZ(25.0);
-
-        armHL.moveZ(150.0);
-
-        armHL.moveZ(25.0);
-
-        armHL.moveZ(150.0);
-
-        armHL.moveZ(25.0);
-
-        armHL.moveZ(150.0);
-
-        armHL.moveZ(25.0);
-
-        armHL.moveZ(150.0);
-
-        armHL.moveZ(25.0);
+        armHL.actionPuckStore();
 */
-        //armHL.actionPuckStore();
-
-        //armHL.actionPuckUnstore();
+        //
 
         //armHL.actionPuckRelease(300.0,120.0,50.0);
         /*
