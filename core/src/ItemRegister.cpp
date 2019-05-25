@@ -28,3 +28,8 @@ void ItemRegister::write( int32_t data )
     uint32_t* tmp = ( uint32_t* )( & data );
     _layer.write( _offset, _size, *tmp );
 }
+
+int ItemRegister::offset()
+{
+    return _offset;
+}

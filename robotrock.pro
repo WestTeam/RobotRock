@@ -12,7 +12,8 @@ SUBDIRS = core robot-rock test1 testLidar \
     testHomologation \
     TestVl6180x \
     testArmLowLevel \
-    testArmHighLevel
+    testArmHighLevel \
+    testArmHighLevelHw
 
 robot-rock.depedends = core
 test1.depends = core
