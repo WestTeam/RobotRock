@@ -188,6 +188,9 @@ public:
     void setAction( bool waitPosition );
     void checkStatus();
 
+    uint16_t getTarget();
+
+
     uint16_t getPosition( bool Update );
     uint16_t getLoad( bool Update );
     uint8_t getVoltage( bool Update );
@@ -212,6 +215,8 @@ private:
     uint8_t _protocol;
     uint8_t _busId; // id on the hw bus
     uint8_t _devId;
+
+    uint16_t _target;
 
     uint16_t _current_pos;
     uint16_t _current_load;

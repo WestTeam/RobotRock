@@ -42,6 +42,41 @@ void log_management(int argc, char *argv[]){
     app.exec();
 }
 
+void getStoreUnstore(ArmHighLevel* arm, double x, double y)
+{
+    bool actionOk;
+
+    actionOk = arm->moveArmRel(x,y);
+
+    if (actionOk)
+    {
+        actionOk = arm->actionGroundPuckCollection(x,y);
+
+        if (actionOk)
+        {
+            arm->moveZ(220.0);
+
+            actionOk = arm->actionPuckStore();
+
+            if (actionOk)
+            {
+                actionOk = arm->actionPuckUnstore();
+
+                if (actionOk)
+                {
+                    actionOk = arm->moveArmRel(x,y);
+
+                    if (actionOk)
+                    {
+                        actionOk = arm->actionPuckRelease(x,y,50.0);
+                    }
+                }
+            }
+        }
+    }
+    arm->moveZ(220.0);
+}
+
 int main( int argc, char *argv[] )
 {
     std::thread thread_logs(log_management,argc,argv);
@@ -68,20 +103,21 @@ int main( int argc, char *argv[] )
     odometryPtr->setPosition({.x=0.0,.y=0.0,.theta=RAD(0.0)});
 
 
-    ArmLowLevel::Ptr armLLPtr = std::make_shared< ArmLowLevel >();
+    ArmLowLevel::Ptr armL = std::make_shared< ArmLowLevel >();
+    ArmLowLevel::Ptr armR = std::make_shared< ArmLowLevel >();
 
-/*
-    ItemRegister::Ptr pidfirstreg = std::make_shared< ItemRegister >( hal->_pidCustom1FreqHz );
-    ItemRegister::Ptr pump = std::make_shared< ItemRegister >( hal->_motor4Value );
-    ItemRegister::Ptr valve = std::make_shared< ItemRegister >( hal->_output2 );
+
+    ItemRegister::Ptr pidfirstregL = std::make_shared< ItemRegister >( hal->_pidCustom1FreqHz );
+    ItemRegister::Ptr pumpL = std::make_shared< ItemRegister >( hal->_motor4Value );
+    ItemRegister::Ptr valveL = std::make_shared< ItemRegister >( hal->_output2 );
 
     bool isLeft = true;
 
-    bool initOk = armLLPtr->init(hal,
-               pidfirstreg,
+    bool initOk = armL->init(hal,
+               pidfirstregL,
                true,
-               pump,
-               valve,
+               pumpL,
+               valveL,
                &vl6180xL,
                vl6180xL.distancePointer(0),
                SMART_SERVO_DYNAMIXEL,
@@ -93,21 +129,21 @@ int main( int argc, char *argv[] )
                true,
                0.0
                );
-               */
 
 
-    ItemRegister::Ptr pidfirstreg = std::make_shared< ItemRegister >( hal->_pidCustom2FreqHz );
-    ItemRegister::Ptr pump = std::make_shared< ItemRegister >( hal->_motor5Value );
-    ItemRegister::Ptr valve = std::make_shared< ItemRegister >( hal->_output1 );
 
-    bool isLeft = false;
+    ItemRegister::Ptr pidfirstregR = std::make_shared< ItemRegister >( hal->_pidCustom2FreqHz );
+    ItemRegister::Ptr pumpR = std::make_shared< ItemRegister >( hal->_motor5Value );
+    ItemRegister::Ptr valveR = std::make_shared< ItemRegister >( hal->_output1 );
+
+    isLeft = false;
 
 
-    bool initOk = armLLPtr->init(hal,
-               pidfirstreg,
+    initOk = armR->init(hal,
+               pidfirstregR,
                true,
-               pump,
-               valve,
+               pumpR,
+               valveR,
                &vl6180xR,
                vl6180xR.distancePointer(0),
                SMART_SERVO_DYNAMIXEL,
@@ -143,23 +179,47 @@ int main( int argc, char *argv[] )
 
         bool actionOk;
 
-        ArmHighLevel armHL;
+        ArmHighLevel armHLL;
 
-        armHL.init(odometryPtr,armLLPtr,isLeft);
+        armHLL.init(odometryPtr,armL,true);
 
-        armHL.enable();
+        armHLL.enable();
 
         //armHL.confArmPos(194.6,-118.5);
-        armHL.confArmPos(197,-118.5*inv);
+        armHLL.confArmPos(197,-118.5*-1.0);
         //armHL.confStorage(138.0,-50.0,150.8);
-        armHL.confStorage(155,-55.0*inv,150.8);
+        armHLL.confStorage(155,-55.0*-1.0,150.8);
 
-        armHL.setMode(ARM_HL_MODE_HORIZONTAL);
+        armHLL.setMode(ARM_HL_MODE_HORIZONTAL);
 
-        armHL.moveZ(200.0);
+        armHLL.moveZ(200.0);
+
+
+        ArmHighLevel armHLR;
+
+        armHLR.init(odometryPtr,armR,false);
+
+        armHLR.enable();
+
+        //armHL.confArmPos(194.6,-118.5);
+        armHLR.confArmPos(197,-118.5*1.0);
+        //armHL.confStorage(138.0,-50.0,150.8);
+        armHLR.confStorage(155,-55.0*1.0,150.8);
+
+        armHLR.setMode(ARM_HL_MODE_HORIZONTAL);
+
+        armHLR.moveZ(200.0);
+
 
         //armHL.setVacuum(true);
 
+        std::thread* threadL= new std::thread(getStoreUnstore,&armHLL,266.0,-70.0*-1.0);
+        std::thread* threadR= new std::thread(getStoreUnstore,&armHLR,266.0,-70.0*1.0);
+
+        threadL->join();
+        threadR->join();
+
+/*
         actionOk = armHL.moveArmRel(300.0,-120.0*inv);
 
         if (actionOk)
@@ -182,14 +242,14 @@ int main( int argc, char *argv[] )
 
                         if (actionOk)
                         {
-                            armHL.actionPuckRelease(266.0,-70.0*inv,50.0);
+                            actionOk = armHL.actionPuckRelease(266.0,-70.0*inv,50.0);
                         }
                     }
                 }
             }
         }
         armHL.moveZ(220.0);
-
+*/
         //armHL.actionGroundPuckCollection(300.0,-160.0);
 
         //armHL.moveZ(220.0);

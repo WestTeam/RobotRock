@@ -406,7 +406,7 @@ int circle_circle_intersection(double x0, double y0, double r0,
         _armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,DEG(selected_theta1));
         _armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,DEG(selected_theta2));
 
-        return _armLL->waitServosTargetOk(4000);
+        return _armLL->waitServosTargetOk(2000);
     } else {
         tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: no solutions " << ok;
         return false;

@@ -528,13 +528,40 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         moving |= _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
         moving |= _smartServo[ARM_LL_SERVO_WRIST]->moving();
 
-        tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->moving() << _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving() << _smartServo[ARM_LL_SERVO_WRIST]->moving();
-        try {
-            tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_LOWER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_WRIST]->getPosition(true);
-        } catch (...) {
+        if (timeoutMsLocal < (timeoutMs / 2.0))
+        {
+            moving = false;
+            for (int i=0;i<=ARM_LL_SERVO_WRIST;i++)
+            {
+                try {
+                    double pos;
+                    if (_smartServo[i]->moving())
+                    {
+                        uint16_t target = _smartServo[i]->getTarget();
+                        uint16_t pos = _smartServo[i]->getPosition(true);
 
+                        if (abs(target-pos) < 20*2)
+                        {
+                            tWarning(LOG) << "waitServosTargetOk:" << i << "is close to destination, seems ok (target/pos)" << target << pos;
+                        } else {
+                            moving |= true;
+                            tWarning(LOG) << "waitServosTargetOk:" << i << "seems really bloked (target/pos)" << target << pos;
+                        }
+                    }
+                } catch (...) {
+
+                }
+            }
+/*
+            tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->moving() << _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving() << _smartServo[ARM_LL_SERVO_WRIST]->moving();
+            try {
+                pos[0] =
+                tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_LOWER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_WRIST]->getPosition(true);
+            } catch (...) {
+
+
+            }*/
         }
-
 
     } while (moving && timeoutMsLocal > 0);
 

@@ -401,6 +401,11 @@ public:
         return _curDistance+14.0;
     }
 
+    bool isDistanceCoherent()
+    {
+        return true;
+    }
+
 private:
 
     Odometry::Ptr _odometry;
@@ -501,7 +506,7 @@ int main( int argc, char *argv[] )
 
         ArmHighLevel armHL;
 
-        armHL.init(odometryPtr,armLLPtr);
+        armHL.init(odometryPtr,armLLPtr, false);
 
         armHL.enable();
 
@@ -556,13 +561,13 @@ int main( int argc, char *argv[] )
 
         ArmHighLevel armHL;
 
-        armHL.init(odometryPtr,armLLPtr);
+        armHL.init(odometryPtr,armLLPtr, false);
 
         armHL.enable();
 
         armHL.confArmPos(0.0,0.0);
 
-        armHL.confStorage(ARM_HL_STORAGE_LEFT,0,25,25);
+        armHL.confStorage(0,25,25);
 
         bool ret;
 
@@ -573,12 +578,12 @@ int main( int argc, char *argv[] )
             tFatal(LOG) << "Test" << tId << "actionGroundPuckCollection 1 failed";
         }
 
-        ret = armHL.actionPuckStore(ARM_HL_STORAGE_LEFT);
+        ret = armHL.actionPuckStore();
 
 
         if (!ret)
         {
-            tFatal(LOG) << "Test" << tId << "actionPuckStore 1 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckStore 1  failed";
         }
 
 
@@ -589,24 +594,24 @@ int main( int argc, char *argv[] )
             tFatal(LOG) << "Test" << tId << "actionGroundPuckCollection 2 failed";
         }
 
-        ret = armHL.actionPuckStore(ARM_HL_STORAGE_LEFT);
+        ret = armHL.actionPuckStore();
 
 
         if (!ret)
         {
-            tFatal(LOG) << "Test" << tId << "actionPuckStore 2 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckStore 2  failed";
         }
 
-        if (armHL.getPuckCount(ARM_HL_STORAGE_LEFT) != 2)
+        if (armHL.getPuckCount() != 2)
         {
-            tFatal(LOG) << "Test" << tId << "getPuckCount puck count issue" << armHL.getPuckCount(ARM_HL_STORAGE_LEFT);
+            tFatal(LOG) << "Test" << tId << "getPuckCount puck count issue" << armHL.getPuckCount();
         }
 
-        ret = armHL.actionPuckUnstore(ARM_HL_STORAGE_LEFT);
+        ret = armHL.actionPuckUnstore();
 
         if (!ret)
         {
-            tFatal(LOG) << "Test" << tId << "actionPuckUnstore 1 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckUnstore 1  failed";
         }
 
         ret = armHL.actionPuckRelease(50.0,50.0,25.0);
@@ -618,11 +623,11 @@ int main( int argc, char *argv[] )
 
 
 
-        ret = armHL.actionPuckUnstore(ARM_HL_STORAGE_LEFT);
+        ret = armHL.actionPuckUnstore();
 
         if (!ret)
         {
-            tFatal(LOG) << "Test" << tId << "actionPuckUnstore 2 ARM_HL_STORAGE_LEFT failed";
+            tFatal(LOG) << "Test" << tId << "actionPuckUnstore 2  failed";
         }
 
         ret = armHL.actionPuckRelease(25.0,25.0,25.0);
@@ -632,9 +637,9 @@ int main( int argc, char *argv[] )
             tFatal(LOG) << "Test" << tId << "actionPuckRelease 2 failed";
         }
 
-        if (armHL.getPuckCount(ARM_HL_STORAGE_LEFT) != 0)
+        if (armHL.getPuckCount() != 0)
         {
-            tFatal(LOG) << "Test" << tId << "getPuckCount released puck count issue" << armHL.getPuckCount(ARM_HL_STORAGE_LEFT);
+            tFatal(LOG) << "Test" << tId << "getPuckCount released puck count issue" << armHL.getPuckCount();
         }
 
         ret = armHL.actionCheckGoldDoorOpen(-50.0,-20.0);
