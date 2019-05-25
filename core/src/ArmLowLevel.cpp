@@ -19,7 +19,7 @@ ArmLowLevel::ArmLowLevel()
     , _smartServo {nullptr,nullptr,nullptr}
 {
     _refInverted = 1;
-
+    _vaccumEnabled = false;
 }
 
 ArmLowLevel::~ArmLowLevel()
@@ -103,8 +103,9 @@ bool ArmLowLevel::init(
 
         for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,100);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,120);
             _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,0);
+
             _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,512);
 
             //_smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_PUNCH,32);
@@ -139,7 +140,7 @@ bool ArmLowLevel::init(
 
             {
                 _smartServo[i]->setEnable(false,true);
-                _smartServo[i]->setPosition(false,false,1024/2);
+                _smartServo[i]->setPositionAndSpeed(false,false,1024/2,400);
             }
 
             QThread::msleep(500);
@@ -152,7 +153,7 @@ bool ArmLowLevel::init(
         }
     }
 
-    _pid = new Pid(pidFirstReg->layer(),pidFirstReg->offset());
+    _pid = new Pid(pidFirstReg->_layer,pidFirstReg->offset());
 
 
 #ifndef Z_DISABLED
@@ -386,7 +387,7 @@ bool ArmLowLevel::waitZTargetOk(double timeoutMs)
 {
     bool ret = false;
 
-#define WAIT_STEP_MS (10.0)
+#define WAIT_STEP_MS (100.0)
 #define WAIT_MARGIN_MM (5.0)
 #define WAIT_MAX_MS (10000.0)
 
@@ -462,7 +463,19 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 
     try {
         //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
-        _smartServo[id]->setPosition(false,false,(uint16_t)pos);
+        uint16_t speed = 400;
+        if (_vaccumEnabled)
+        {
+            if (id == ARM_LL_SERVO_UPPER_ARM)
+            {
+                speed = 180;
+            }
+            if (id == ARM_LL_SERVO_LOWER_ARM)
+            {
+                speed = 180;
+            }
+        }
+        _smartServo[id]->setPositionAndSpeed(false,false,(uint16_t)pos,speed);
     } catch (...) {
 
     }
@@ -515,7 +528,13 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         moving |= _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
         moving |= _smartServo[ARM_LL_SERVO_WRIST]->moving();
 
-        tInfo( LOG ) << moving << timeoutMsLocal;
+        tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->moving() << _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving() << _smartServo[ARM_LL_SERVO_WRIST]->moving();
+        try {
+            tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_LOWER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_WRIST]->getPosition(true);
+        } catch (...) {
+
+        }
+
 
     } while (moving && timeoutMsLocal > 0);
 
@@ -527,6 +546,10 @@ void ArmLowLevel::setVacuumPower(float percentage)
 {
     float max = 3.7/12.0*32768.0;
     float value = percentage/100.0*max;
+    if (value != 0)
+        _vaccumEnabled = true;
+    else
+        _vaccumEnabled = false;
     _vacuumPwm->write((uint16_t)value);
 }
 void ArmLowLevel::setVacuumValve(bool enable)

@@ -122,7 +122,7 @@ void Vl6180x::readData()
 
             if( crc != trame.header.crc )
             {
-                tWarning( LOG ) << "Trame not valid: CRC error";
+                tWarning( LOG ) << "Trame not valid: CRC error" << crc << trame.header.crc;
                 return;
             }
 

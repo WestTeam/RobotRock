@@ -127,6 +127,8 @@ private:
     bool _wristInverted;
     double _zOffset;
 
+    bool _vaccumEnabled;
+
     Hal::Ptr _hal;
     ItemRegister::Ptr _vacuumPwm;
     ItemRegister::Ptr _vacuumValve;

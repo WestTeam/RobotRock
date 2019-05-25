@@ -285,7 +285,7 @@ uint8_t SmartServo::getRawRead8(uint8_t addr)
 }
 uint16_t SmartServo::getRawRead16(uint8_t addr)
 {
-    tDebug( LOG ) <<  "SmartServo [" << _name << "] RAW Read 16bit to addr" << addr;
+    //tDebug( LOG ) <<  "SmartServo [" << _name << "] RAW Read 16bit to addr" << addr;
 
     #ifndef USE_QMUTEX
     std::unique_lock<std::mutex> lck(_cmdMutex);

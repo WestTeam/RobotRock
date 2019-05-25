@@ -52,7 +52,7 @@ public:
     ~ArmHighLevel();
 
     bool init(
-         const Odometry::Ptr& odometry, const ArmLowLevelBase::Ptr& armLL
+         const Odometry::Ptr& odometry, const ArmLowLevelBase::Ptr& armLL, bool isLeft
     );
 
     bool isAttached() const;
@@ -98,9 +98,10 @@ public:
     bool actionPuckRelease(double xMm, double yMm, double zMm);
 
 private:
-
     bool _attached;
     bool _initOk;
+
+    bool _isLeft;
 
     ArmHighLevelMode _mode;
 
