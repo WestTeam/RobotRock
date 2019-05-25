@@ -7,27 +7,6 @@
 
 #include <WestBot/RobotRock/ArmHighLevel.hpp>
 
-using namespace WestBot;
-using namespace WestBot::RobotRock;
-
-/* circle_circle_intersection() *
- * Determine the points where 2 circles in a common plane intersect.
- *
- * int circle_circle_intersection(
- *                                // center and radius of 1st circle
- *                                double x0, double y0, double r0,
- *                                // center and radius of 2nd circle
- *                                double x1, double y1, double r1,
- *                                // 1st intersection point
- *                                double *xi, double *yi,
- *                                // 2nd intersection point
- *                                double *xi_prime, double *yi_prime)
- *
- * This is a public domain work. 3/26/2005 Tim Voght
- *
- */
-//#include <stdio.h>
-//#include <math.h>
 
 int circle_circle_intersection(double x0, double y0, double r0,
                                double x1, double y1, double r1,
@@ -91,6 +70,30 @@ int circle_circle_intersection(double x0, double y0, double r0,
   return 1;
 }
 
+
+using namespace WestBot;
+using namespace WestBot::RobotRock;
+
+/* circle_circle_intersection() *
+ * Determine the points where 2 circles in a common plane intersect.
+ *
+ * int circle_circle_intersection(
+ *                                // center and radius of 1st circle
+ *                                double x0, double y0, double r0,
+ *                                // center and radius of 2nd circle
+ *                                double x1, double y1, double r1,
+ *                                // 1st intersection point
+ *                                double *xi, double *yi,
+ *                                // 2nd intersection point
+ *                                double *xi_prime, double *yi_prime)
+ *
+ * This is a public domain work. 3/26/2005 Tim Voght
+ *
+ */
+//#include <stdio.h>
+//#include <math.h>
+
+
 ArmHighLevel::ArmHighLevel()
     : _attached( false )
     //, _initOk( false )
@@ -99,8 +102,7 @@ ArmHighLevel::ArmHighLevel()
 {
     _armPos = { .x=0.0, .y=0.0, .theta = 0.0 };
 
-    _storagePuckCount[ARM_HL_STORAGE_LEFT] = 0;
-    _storagePuckCount[ARM_HL_STORAGE_RIGHT] = 0;
+    _storagePuckCount = 0;
 
 
 /*
@@ -223,11 +225,17 @@ void ArmHighLevel::confArmPos(double xMm,double yMm)
     _armPos.y = yMm;
 }
 
-void ArmHighLevel::confStorage(enum ArmHighLevelStorage id, double xMm,double yMm, double zMm)
+void ArmHighLevel::getArmPos(double &xMm,double &yMm)
 {
-    _storagePos[id].x = xMm;
-    _storagePos[id].y = yMm;
-    _storagePos[id].z = zMm;
+    xMm = _armPos.x;
+    yMm = _armPos.y;
+}
+
+void ArmHighLevel::confStorage(double xMm,double yMm, double zMm)
+{
+    _storagePos.x = xMm;
+    _storagePos.y = yMm;
+    _storagePos.z = zMm;
 }
 
 // move Arm to absolute position
@@ -301,20 +309,65 @@ int circle_circle_intersection(double x0, double y0, double r0,
         tDebug(LOG) << "ArmHighLevel: moveArmRel atan2 prime : " << y1 - yi_prime << x1 - xi_prime << theta2_prime << DEG(theta2_prime);
 
 
+        if (theta1>M_PI)
+            theta1-=2*M_PI;
+        if (theta1<=-M_PI)
+            theta1+=2*M_PI;
+
+        if (theta2>M_PI)
+            theta2-=2*M_PI;
+        if (theta2<=-M_PI)
+            theta2+=2*M_PI;
+
+
+        if (theta1_prime>M_PI)
+            theta1_prime-=2*M_PI;
+        if (theta1_prime<=-M_PI)
+            theta1_prime+=2*M_PI;
+
+        if (theta2_prime>M_PI)
+            theta2_prime-=2*M_PI;
+        if (theta2_prime<=-M_PI)
+            theta2_prime+=2*M_PI;
+
+
         tDebug(LOG) << "ArmHighLevel: moveArmRel angles: " << DEG(theta1) << DEG(theta2);
         tDebug(LOG) << "ArmHighLevel: moveArmRel angles primes: " << DEG(theta1_prime) << DEG(theta2_prime);
+
 
         double selected_theta1 = theta1;
         double selected_theta2 = theta2;
 
+#define SERVO_UPPER_MAX_ANGLE_DEG 95.0
+#define SERVO_LOWER_MAX_ANGLE_DEG 150.0
+
+
+        // check if the angles are feasable
+        if (!(std::abs(DEG(theta1)) <= SERVO_UPPER_MAX_ANGLE_DEG && std::abs(theta2) <= SERVO_LOWER_MAX_ANGLE_DEG))
+        {
+            selected_theta1 = theta1_prime;
+            selected_theta2 = theta2_prime;
+
+            tDebug(LOG) << "ArmHighLevel: circle_circle_intersection: solution 1 angles are too big " << DEG(theta1) << DEG(theta2);
+
+            if (!(std::abs(DEG(theta1_prime)) <= SERVO_UPPER_MAX_ANGLE_DEG && std::abs(theta2_prime) <= SERVO_LOWER_MAX_ANGLE_DEG))
+            {
+                tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: solution 1 & 2 angles are too big " << DEG(theta1_prime) << DEG(theta2_prime);
+                return false;
+            }
+        }
+
+
         // we select the smallest theta
         // should we need to also keep the closest solution compared to the current one ? to
         // avoid doing too much movements
-        if (0 && abs(theta2_prime) < abs(theta2))
+        if (0 && std::abs(theta2_prime) < std::abs(theta2))
         {
             selected_theta1 = theta1_prime;
             selected_theta2 = theta2_prime;
         }
+
+
 
         _armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,DEG(selected_theta1));
         _armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,DEG(selected_theta2));
@@ -339,8 +392,7 @@ void ArmHighLevel::moveZ(double ZMm)
 }
 
 void ArmHighLevel::setMode(enum ArmHighLevelMode mode)
-{
-    _mode = mode;
+{    _mode = mode;
     if (_mode == ARM_HL_MODE_HORIZONTAL)
         _armLL->setServoPos(ARM_LL_SERVO_WRIST,-90.0);
     else
@@ -406,7 +458,7 @@ void ArmHighLevel::getObjectPos(double &xMm, double &yMm, double &zMm)
 
 double ArmHighLevel::getObjectDistance()
 {
-#define SUCTION_CUP_LENGTH 14.0
+#define SUCTION_CUP_LENGTH 10.0
 
     double dist = _armLL->getDistance();
     double distObj = dist;
@@ -418,9 +470,9 @@ double ArmHighLevel::getObjectDistance()
     return distObj;
 }
 
-uint8_t ArmHighLevel::getPuckCount(enum ArmHighLevelStorage id)
+uint8_t ArmHighLevel::getPuckCount()
 {
-    return _storagePuckCount[id];
+    return _storagePuckCount;
 }
 
 ///// ACTION /////
@@ -466,16 +518,22 @@ bool ArmHighLevel::actionGroundPuckCollection(double xMm, double yMm)
     moveArmAbs(xMm,yMm);
 #define PUCK_WIDTH 25.0
 
-    moveZ(PUCK_WIDTH+15.0);
+    moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
+    QThread::msleep(100);
     double dist = getObjectDistance();
-    if (dist >= PUCK_WIDTH)
+    tDebug(LOG) << dist << _armLL->getDistance() << _armLL->isDistanceCoherent();
+    if (dist >= PUCK_WIDTH*2.5)
     {
         tWarning(LOG) << "ArmHighLevel: actionGroundPuckCollection: Distance too big (no puck?)" << dist;
         setVacuum(false);
         return false;
     }
 
-    moveZ(PUCK_WIDTH);
+    moveZ(PUCK_WIDTH+3.5);//+PUCK_WIDTH*2-dist-3.0);
+
+    //QThread::msleep(200);
+
+    //moveZ(PUCK_WIDTH);
 
     moveZ(PUCK_WIDTH+50);
 
@@ -585,26 +643,34 @@ bool ArmHighLevel::actionGoldPuckCollection(double xMm, double yMm)
     return true;
 }
 
-bool ArmHighLevel::actionPuckStore(enum ArmHighLevelStorage id)
+bool ArmHighLevel::actionPuckStore()
 {
     setMode(ARM_HL_MODE_HORIZONTAL);
 
 #define STORE_Z 200.0
 
     moveZ(STORE_Z);
-    moveArmRel(_storagePos[id].x,_storagePos[id].y);
 
-    uint8_t count = getPuckCount(id);
+    QThread::msleep(500);
 
-    double targetZ = _storagePos[id].z + count*PUCK_WIDTH + PUCK_WIDTH + 10.0;
+    moveArmRel(_storagePos.x,_storagePos.y);
+
+    uint8_t count = getPuckCount();
+
+    double targetZ = _storagePos.z + count*PUCK_WIDTH + PUCK_WIDTH + 10.0;
 
     moveZ(targetZ);
 
     setVacuum(false);
 
-    targetZ = _storagePos[id].z + count*PUCK_WIDTH + PUCK_WIDTH + PUCK_WIDTH;
+    QThread::msleep(500);
+
+
+    targetZ = _storagePos.z + count*PUCK_WIDTH + PUCK_WIDTH + PUCK_WIDTH;
 
     moveZ(targetZ);
+
+    QThread::msleep(200);
 
     double dist = getObjectDistance();
 
@@ -614,22 +680,27 @@ bool ArmHighLevel::actionPuckStore(enum ArmHighLevelStorage id)
         return false;
     }
 
-    _storagePuckCount[id]++;
+    _storagePuckCount++;
 
     return true;
 
 }
 
-bool ArmHighLevel::actionPuckUnstore(enum ArmHighLevelStorage id)
+bool ArmHighLevel::actionPuckUnstore()
 {
     setMode(ARM_HL_MODE_HORIZONTAL);
 
     moveZ(STORE_Z);
-    moveArmRel(_storagePos[id].x,_storagePos[id].y);
+    moveArmRel(_storagePos.x,_storagePos.y);
 
-    uint8_t count = getPuckCount(id);
+    uint8_t count = getPuckCount();
 
-    double targetZ = _storagePos[id].z + count*PUCK_WIDTH  + 30.0;
+
+    double targetZ = _storagePos.z + count*PUCK_WIDTH  + 30.0;
+
+
+    tDebug(LOG) <<  "ArmHighLevel: actionPuckUnstore: getPuckCount / targetZ" << count << targetZ;
+
 
     double dist = getObjectDistance();
 
@@ -643,9 +714,19 @@ bool ArmHighLevel::actionPuckUnstore(enum ArmHighLevelStorage id)
 
     setVacuum(true);
 
+    QThread::msleep(500);
+
     dist = getObjectDistance();
 
     targetZ -= dist;
+
+    tDebug(LOG) <<  "ArmHighLevel: actionPuckUnstore: Before catch: dist / targetZ" << dist << targetZ;
+
+    if (targetZ < (_storagePos.z + (PUCK_WIDTH-8.0)))
+    {
+        targetZ = _storagePos.z + (PUCK_WIDTH);
+        tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: no puck found while we expected" << count << "dist:" << dist;
+    }
 
     moveZ(targetZ);
 
@@ -661,13 +742,16 @@ bool ArmHighLevel::actionPuckUnstore(enum ArmHighLevelStorage id)
 
     moveZ(targetZ);
 
+
+    dist = getObjectDistance();
+
     if (dist > 5.0)
     {
         tWarning(LOG) << "ArmHighLevel: actionPuckUnstore: puck not catched(retry needed?)" << dist;
         return false;
     }
 
-    _storagePuckCount[id]--;
+    _storagePuckCount--;
 
     return true;
 }
@@ -688,7 +772,7 @@ bool ArmHighLevel::actionPuckRelease(double xMm, double yMm, double zMm)
         tWarning(LOG) << " ArmHighLevel::actionPuckRelease Init getObjectDistance too big (puck not locked?)" << initDist;
     }
 
-    moveZ(zMm);
+    moveArmAbs(xMm,yMm);
 
     dist1 = getObjectDistance();
 
@@ -698,7 +782,7 @@ bool ArmHighLevel::actionPuckRelease(double xMm, double yMm, double zMm)
         tWarning(LOG) << " ArmHighLevel::actionPuckRelease After Z Move getObjectDistance too big (puck lost?)" << dist1 << initDist;
     }
 
-    moveArmAbs(xMm,yMm);
+    moveZ(zMm);
 
     dist2 = getObjectDistance();
 

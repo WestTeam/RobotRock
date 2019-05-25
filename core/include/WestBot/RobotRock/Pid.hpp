@@ -20,7 +20,7 @@ class Pid
 public:
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Pid" );
 
-    Pid(Memory& layer, int offset);
+    Pid(Memory &layer, int offset);
     ~Pid();
 
     void setOverride(bool override);
@@ -44,7 +44,7 @@ public:
     int32_t getReference();
 
 private:
-
+    Memory _layer;
     ItemRegister _pidFreqHz;
     ItemRegister _pidFreqHzLatest;
     ItemRegister _pidEnable;

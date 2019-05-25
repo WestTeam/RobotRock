@@ -61,8 +61,12 @@ public:
         return *tmp;
     }
 
-private:
+    int offset();
+
     Memory _layer;
+
+private:
+
     int _offset;
     int _size;
 };

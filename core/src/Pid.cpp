@@ -11,27 +11,26 @@ using namespace WestBot;
 using namespace WestBot::RobotRock;
 
 
-Pid::Pid(Memory& layer, int offset)
-    :  _pidFreqHz( layer, (offset+0)* 4, 16 )
-      , _pidFreqHzLatest( layer, (offset+0) * 4 + 2, 16 )
-      , _pidEnable( layer, (offset+1) * 4, 8 )
-      , _pidOverride(  layer, (offset+1) * 4 + 1, 8 )
-      , _pidInverted(  layer, (offset+1) * 4 + 2, 8 )
-      , _pidKp( layer, (offset+2) * 4, 32 )
-      , _pidKi( layer, (offset+3) * 4, 32 )
-      , _pidKd(  layer, (offset+4) * 4, 32 )
-      , _pidSpeed(  layer, (offset+5) * 4, 32 )
-      , _pidAcceleration(  layer, (offset+6) * 4, 32 )
-      , _pidSaturation(  layer, (offset+7) * 4, 32 )
-      , _pidPosition(  layer, (offset+8) * 4, 32 )
-      , _pidTarget( layer, (offset+9) * 4, 32 )
-      , _pidOutput( layer, (offset+10) * 4, 32 )
-      , _pidReference( layer, (offset+11) * 4, 32 )
+Pid::Pid(Memory &layer, int offset)
+    : _layer(layer)
+      ,_pidFreqHz( _layer, offset+(0)* 4, 16 )
+      , _pidFreqHzLatest( _layer, offset+(0) * 4 + 2, 16 )
+      , _pidEnable( _layer, offset+(1) * 4, 8 )
+      , _pidOverride(  _layer, offset+(1) * 4 + 1, 8 )
+      , _pidInverted(  _layer, offset+(1) * 4 + 2, 8 )
+      , _pidKp( _layer, offset+(2) * 4, 32 )
+      , _pidKi( _layer, offset+(3) * 4, 32 )
+      , _pidKd(  _layer, offset+(4) * 4, 32 )
+      , _pidSpeed(  _layer, offset+(5) * 4, 32 )
+      , _pidAcceleration(  _layer, offset+(6) * 4, 32 )
+      , _pidSaturation(  _layer, offset+(7) * 4, 32 )
+      , _pidPosition(  _layer, offset+(8) * 4, 32 )
+      , _pidTarget( _layer, offset+(9) * 4, 32 )
+      , _pidOutput( _layer, offset+(10) * 4, 32 )
+      , _pidReference( _layer, offset+(11) * 4, 32 )
 {
 
     setEnable(false);
-
-
     /*
      *
     _hal->_pidCustomTarget.write( _hal->_pidCustomPosition.read< int32_t >() );
