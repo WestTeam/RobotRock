@@ -5,7 +5,6 @@
 #include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/ActionList.hpp>
-
 #include <WestBot/RobotRock/SystemManager.hpp>
 
 #include "StrategyManagerHomologation.hpp"

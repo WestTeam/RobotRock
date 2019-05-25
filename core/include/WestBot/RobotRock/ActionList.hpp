@@ -10,6 +10,22 @@
 namespace WestBot {
 namespace RobotRock {
 
+// TEST FOR A*
+inline MoveAction::Ptr moveGenericAction(
+    const TrajectoryManager::Ptr& trajectoryManager,
+    double x,
+    double y )
+{
+    return std::make_shared< MoveAction >(
+        trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS,
+        0.0,
+        0.0,
+        x,
+        y,
+        true );
+}
+
 // ACTIONS FOR HOMOLOGATION
 inline MoveAction::Ptr moveToCenterZone(
     const TrajectoryManager::Ptr& trajectoryManager,

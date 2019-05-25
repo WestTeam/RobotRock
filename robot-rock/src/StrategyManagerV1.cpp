@@ -17,23 +17,6 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY(
         LOG,
         "WestBot.RobotRock.StrategyManagerV1" )
-
-    // TEST FOR A*
-    MoveAction::Ptr moveGenericAction(
-        const TrajectoryManager::Ptr& trajectoryManager,
-        double x,
-        double y,
-        float inv )
-    {
-        return std::make_shared< MoveAction >(
-            trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS,
-            0.0,
-            0.0,
-            x,
-            y,
-            true );
-    }
 }
 
 StrategyManagerV1::StrategyManagerV1( QObject* parent )
@@ -67,8 +50,7 @@ StrategyManagerV1::StrategyManagerV1( QObject* parent )
                 _avoidList.push_back(
                     moveGenericAction( _trajectoryManager,
                    ( ( pathIt->first - 2.51 ) * 30 ),
-                   -1.0 * ( 1500 - ( ( pathIt->second + 2.51 ) * 30 ) ),
-                   1.0 ) );
+                   -1.0 * ( 1500 - ( ( pathIt->second + 2.51 ) * 30 ) ) ) );
             }
         } );
 
