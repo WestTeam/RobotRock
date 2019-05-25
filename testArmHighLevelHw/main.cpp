@@ -77,6 +77,63 @@ void getStoreUnstore(ArmHighLevel* arm, double x, double y)
     arm->moveZ(220.0);
 }
 
+
+
+void getStoreUnstoreDouble(ArmHighLevel* arm, double x1, double y1, double x2, double y2)
+{
+    bool actionOk;
+
+    actionOk = arm->moveArmRel(x1,y1);
+
+    if (actionOk)
+    {
+        actionOk = arm->actionGroundPuckCollection(x1,y1);
+
+        if (actionOk)
+        {
+            arm->moveZ(220.0);
+
+            actionOk = arm->actionPuckStore();
+
+            if (actionOk)
+            {
+                actionOk = arm->actionGroundPuckCollection(x2,y2);
+
+                if (actionOk)
+                {
+                    actionOk = arm->actionPuckStore();
+
+                    if (actionOk)
+                    {
+                        actionOk = arm->actionPuckUnstore();
+
+                        if (actionOk)
+                        {
+                            actionOk = arm->actionPuckRelease(x1,y1,50.0);
+                        }
+
+                    }
+
+                    if (actionOk)
+                    {
+                        actionOk = arm->actionPuckUnstore();
+
+                        if (actionOk)
+                        {
+                            actionOk = arm->actionPuckRelease(x1,y1,60.0);
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    arm->moveZ(220.0);
+}
+
+
+
+
 int main( int argc, char *argv[] )
 {
     std::thread thread_logs(log_management,argc,argv);
@@ -213,8 +270,12 @@ int main( int argc, char *argv[] )
 
         //armHL.setVacuum(true);
 
-        std::thread* threadL= new std::thread(getStoreUnstore,&armHLL,266.0,-70.0*-1.0);
-        std::thread* threadR= new std::thread(getStoreUnstore,&armHLR,266.0,-70.0*1.0);
+        //std::thread* threadL= new std::thread(getStoreUnstore,&armHLL,266.0,-70.0*-1.0);
+        //std::thread* threadR= new std::thread(getStoreUnstore,&armHLR,266.0,-70.0*1.0);
+        std::thread* threadL= new std::thread(getStoreUnstoreDouble,&armHLL,266.0,-70.0*-1.0,266.0,-150.0*-1.0);
+        std::thread* threadR= new std::thread(getStoreUnstoreDouble,&armHLR,266.0,-70.0*1.0,266.0,-150.0*1.0);
+
+
 
         threadL->join();
         threadR->join();

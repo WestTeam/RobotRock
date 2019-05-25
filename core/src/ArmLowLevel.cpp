@@ -602,7 +602,7 @@ double ArmLowLevel::getDistance()
 
     if (status[0] && status[1])
     {
-        if (distance[0] > distance[1])
+        if (distance[0] <= distance[1])
             return distance[0];
         else
             return distance[1];
