@@ -11,7 +11,7 @@ namespace WestBot {
 namespace RobotRock {
 
 // ACTIONS FOR HOMOLOGATION
-MoveAction::Ptr moveToCenterZone(
+inline MoveAction::Ptr moveToCenterZone(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -25,7 +25,7 @@ MoveAction::Ptr moveToCenterZone(
         true );
 }
 
-MoveAction::Ptr turnToCenterZone(
+inline MoveAction::Ptr turnToCenterZone(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -40,7 +40,7 @@ MoveAction::Ptr turnToCenterZone(
 }
 
 
-MoveAction::Ptr moveALittleForward(
+inline MoveAction::Ptr moveALittleForward(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -54,7 +54,7 @@ MoveAction::Ptr moveALittleForward(
         true );
 }
 
-MoveAction::Ptr moveALittleForward2(
+inline MoveAction::Ptr moveALittleForward2(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -68,7 +68,7 @@ MoveAction::Ptr moveALittleForward2(
         true );
 }
 
-MoveAction::Ptr moveToStartZone(
+inline MoveAction::Ptr moveToStartZone(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -82,7 +82,7 @@ MoveAction::Ptr moveToStartZone(
         true );
 }
 
-MoveAction::Ptr orientationZoneDepose(
+inline MoveAction::Ptr orientationZoneDepose(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -96,7 +96,7 @@ MoveAction::Ptr orientationZoneDepose(
         true );
 }
 
-MoveAction::Ptr moveALittleForward3(
+inline MoveAction::Ptr moveALittleForward3(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -111,7 +111,7 @@ MoveAction::Ptr moveALittleForward3(
 }
 
 // ACTIONS FOR STRAT V1
-MoveAction::Ptr moveToAccelerator(
+inline MoveAction::Ptr moveToAccelerator(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -125,7 +125,7 @@ MoveAction::Ptr moveToAccelerator(
         true );
 }
 
-MoveAction::Ptr moveToAccelerator2(
+inline MoveAction::Ptr moveToAccelerator2(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -139,7 +139,7 @@ MoveAction::Ptr moveToAccelerator2(
         true );
 }
 
-MoveAction::Ptr moveToAccelerator3(
+inline MoveAction::Ptr moveToAccelerator3(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -153,7 +153,7 @@ MoveAction::Ptr moveToAccelerator3(
         true );
 }
 
-MoveAction::Ptr moveToBalance(
+inline MoveAction::Ptr moveToBalance(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -168,7 +168,7 @@ MoveAction::Ptr moveToBalance(
 
 }
 
-MoveAction::Ptr moveToBalance2(
+inline MoveAction::Ptr moveToBalance2(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -182,7 +182,7 @@ MoveAction::Ptr moveToBalance2(
         true );
 }
 
-MoveAction::Ptr moveToCenterZone2(
+inline MoveAction::Ptr moveToCenterZone2(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -196,7 +196,7 @@ MoveAction::Ptr moveToCenterZone2(
         true );
 }
 
-MoveAction::Ptr moveSmall(
+inline MoveAction::Ptr moveSmall(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -210,7 +210,7 @@ MoveAction::Ptr moveSmall(
         true );
 }
 
-MoveAction::Ptr onSaqueDedans(
+inline MoveAction::Ptr onSaqueDedans(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -224,7 +224,7 @@ MoveAction::Ptr onSaqueDedans(
         true );
 }
 
-MoveAction::Ptr onSaqueDedans2(
+inline MoveAction::Ptr onSaqueDedans2(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -238,7 +238,7 @@ MoveAction::Ptr onSaqueDedans2(
         true );
 }
 
-MoveAction::Ptr goingBackALittle(
+inline MoveAction::Ptr goingBackALittle(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -252,7 +252,7 @@ MoveAction::Ptr goingBackALittle(
         true );
 }
 
-MoveAction::Ptr getHighPucks(
+inline MoveAction::Ptr getHighPucks(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -266,7 +266,7 @@ MoveAction::Ptr getHighPucks(
         true );
 }
 
-MoveAction::Ptr getHighPucks2(
+inline MoveAction::Ptr getHighPucks2(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -280,7 +280,7 @@ MoveAction::Ptr getHighPucks2(
         true );
 }
 
-MoveAction::Ptr turnRedZone(
+inline MoveAction::Ptr turnRedZone(
     const TrajectoryManager::Ptr& trajectoryManager,
     float inv )
 {
@@ -295,7 +295,7 @@ MoveAction::Ptr turnRedZone(
 }
 
 // Wait actions
-WaitAction::Ptr wait500Ms()
+inline WaitAction::Ptr wait500Ms()
 {
     return std::make_shared< WaitAction >( 500 );
 }

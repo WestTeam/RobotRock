@@ -36,8 +36,6 @@ SOURCES += \
     src/OdometrySimu.cpp \
     src/SimTcpServer.cpp \
     src/StrategyManagerFoo.cpp \
-    src/StrategyManagerHomologation.cpp \
-    src/StrategyManagerV1.cpp \
     src/SystemManager.cpp \
     src/SystemManagerHw.cpp \
     src/SystemManagerSimu.cpp \
@@ -80,8 +78,6 @@ HEADERS += \
     include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
     include/WestBot/RobotRock/StrategyManagerFoo.hpp \
-    include/WestBot/RobotRock/StrategyManagerHomologation.hpp \
-    include/WestBot/RobotRock/StrategyManagerV1.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/SystemManagerHw.hpp \
     include/WestBot/RobotRock/SystemManagerSimu.hpp \
