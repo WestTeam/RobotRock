@@ -35,7 +35,6 @@ SOURCES += \
     src/OdometryHw.cpp \
     src/OdometrySimu.cpp \
     src/SimTcpServer.cpp \
-    src/StrategyManagerFoo.cpp \
     src/SystemManager.cpp \
     src/SystemManagerHw.cpp \
     src/SystemManagerSimu.cpp \
