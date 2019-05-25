@@ -3,7 +3,16 @@
 QT += core network serialport
 
 TARGET = robot-rock
-SOURCES = src/main.cpp
+SOURCES =  \
+    src/StrategyManagerHomologation.cpp \
+    src/StrategyManagerV1.cpp \
+    src/main.cpp
+
+HEADERS += \
+    include/StrategyManagerHomologation.hpp \
+    include/StrategyManagerV1.hpp
+
+INCLUDEPATH += include/
 
 INCLUDEPATH += ../../astar/include/
 LIBS += -L../../astar/lib -lAStar

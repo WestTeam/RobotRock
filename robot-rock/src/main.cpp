@@ -17,8 +17,8 @@
 #include <WestBot/RobotRock/SystemManagerHw.hpp>
 #endif
 
-//#include <WestBot/RobotRock/StrategyManagerHomologation.hpp>
-#include <WestBot/RobotRock/StrategyManagerV1.hpp>
+//#include "StrategyManagerHomologation.hpp"
+#include "StrategyManagerV1.hpp"
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
