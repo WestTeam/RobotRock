@@ -106,6 +106,7 @@ bool SmartServo::attach(
     _protocol = protocol;
     _busId = busId;
     _hal = hal;
+    _target = 0;
 
     #ifndef USE_QMUTEX
     std::unique_lock<std::mutex> lck(_staticData._mutex);
@@ -285,7 +286,7 @@ uint8_t SmartServo::getRawRead8(uint8_t addr)
 }
 uint16_t SmartServo::getRawRead16(uint8_t addr)
 {
-    tDebug( LOG ) <<  "SmartServo [" << _name << "] RAW Read 16bit to addr" << addr;
+    //tDebug( LOG ) <<  "SmartServo [" << _name << "] RAW Read 16bit to addr" << addr;
 
     #ifndef USE_QMUTEX
     std::unique_lock<std::mutex> lck(_cmdMutex);
@@ -421,6 +422,8 @@ void SmartServo::setPosition(bool onHold, bool waitPosition, uint16_t pos)
     }
     if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
+
+    _target = pos;
 }
 
 void SmartServo::setPositionAndSpeed(bool onHold, bool waitPosition, uint16_t pos, uint16_t speed)
@@ -457,6 +460,8 @@ void SmartServo::setPositionAndSpeed(bool onHold, bool waitPosition, uint16_t po
     }
     if (_hal->_smartServoCmdError.read<uint8_t>())
         throw SmartServoBusError(std::string{__FUNCTION__}+":"+std::to_string(__LINE__),_name.toStdString() + "|devId:" + std::to_string(_devId) + "|busId:" + std::to_string(_busId));
+
+    _target = pos;
 }
 void SmartServo::setAction(bool waitPosition)
 {
@@ -529,6 +534,11 @@ void SmartServo::checkStatus()
     _current_voltage    = _hal->_smartServoCmdGetStatusVoltage.read<uint8_t>();
     _current_temp       = _hal->_smartServoCmdGetStatusTemp.read<uint8_t>();
 
+}
+
+uint16_t SmartServo::getTarget()
+{
+    return _target;
 }
 
 uint16_t SmartServo::getPosition(bool Update)

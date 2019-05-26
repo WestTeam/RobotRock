@@ -18,7 +18,8 @@ ArmLowLevel::ArmLowLevel()
     , _initOk( false )
     , _smartServo {nullptr,nullptr,nullptr}
 {
-    _refInverted = -1;
+    _refInverted = 1;
+    _vaccumEnabled = false;
 }
 
 ArmLowLevel::~ArmLowLevel()
@@ -40,6 +41,8 @@ ArmLowLevel::~ArmLowLevel()
             }
         }
 
+        delete _pid;
+
     }
 
 }
@@ -47,26 +50,45 @@ ArmLowLevel::~ArmLowLevel()
 
 bool ArmLowLevel::init(
         const Hal::Ptr& hal,
-        ItemRegister::Ptr vacuumPwm,
-        ItemRegister::Ptr vacuumValve,
+        const ItemRegister::Ptr& pidFirstReg,
+        bool pidInputInverted,
+        const ItemRegister::Ptr& vacuumPwm,
+        const ItemRegister::Ptr& vacuumValve,
+        Vl6180x* distanceSensors,
         uint32_t* distanceMmPtr,
         uint8_t upperArmProtocol,
         uint8_t upperArmbusId,
         uint8_t lowerArmProtocol,
         uint8_t lowerArmbusId,
         uint8_t wristProtocol,
-        uint8_t wristbusId)
+        uint8_t wristbusId,
+        bool wristInverted,
+        double zOffset)
 {
     bool ret = true;
     _attached = false;
+    _wristInverted = wristInverted;
+    _zOffset = zOffset;
+
+
+
+    if (pidInputInverted)
+        _refInverted = -1;
+    else
+        _refInverted = 1;
+
+    //Memory _pidlayer = pidFirstReg->layer();
 
     _hal = hal;
 
     _vacuumPwm = vacuumPwm;
+    setVacuumPower(0.0);
+
     _vacuumValve = vacuumValve;
 
     _distanceMmPtr = distanceMmPtr;
 
+    _distanceSensors = distanceSensors;
 
     try {
         _smartServo[ARM_LL_SERVO_UPPER_ARM] = new SmartServo("Upper ARM protocol:"+ QString::number(upperArmProtocol) + " bus:" + QString::number(upperArmbusId));
@@ -81,8 +103,13 @@ bool ArmLowLevel::init(
 
         for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,128);
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,16);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,120);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,0);
+
+            _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,512);
+
+            //_smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_PUNCH,32);
+
         }
 
         _attached = true;
@@ -93,6 +120,7 @@ bool ArmLowLevel::init(
         {
             try {
                 if (_smartServo[i] != nullptr)
+                     tDebug( LOG ) << "ArmLowLevel: Init -> Due to error, deleting servo " << i;
                     delete _smartServo[i];
             } catch (...)
             {
@@ -108,8 +136,14 @@ bool ArmLowLevel::init(
     for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
     {
         try {
-            _smartServo[i]->setEnable(false,true);
-            _smartServo[i]->setPosition(false,false,1024/2);
+            tDebug( LOG ) << "ArmLowLevel: Init -> Servo " << i;
+
+            {
+                _smartServo[i]->setEnable(false,true);
+                _smartServo[i]->setPositionAndSpeed(false,false,1024/2,400);
+            }
+
+            QThread::msleep(500);
 
         } catch (...)
         {
@@ -119,92 +153,75 @@ bool ArmLowLevel::init(
         }
     }
 
+    _pid = new Pid(pidFirstReg->_layer,pidFirstReg->offset());
+
+
 #ifndef Z_DISABLED
+
     // we now have to init the Z axe
     // first step: INIT the PID module
 
-    _hal->_pidCustomTarget.write( _hal->_pidCustomPosition.read< int32_t >() );
+    //_hal->_pidCustomTarget.write( _hal->_pidCustomPosition.read< int32_t >() );
+    _pid->setTarget(_pid->getInput());
+
 
     // we disable PID during config
-    _hal->_pidCustomEnable.write( 0 );
+    //_hal->_pidCustomEnable.write( 0 );
+    _pid->setEnable(false);
+
+
 
     // we get sw control of the PID
-    _hal->_pidCustomOverride.write( 1 );
+    //_hal->_pidCustomOverride.write( 1 );
+    _pid->setOverride(true);
 
     // to check if we need to invert or not
-    _hal->_pidCustomInverted.write( 0 );
+    //_hal->_pidCustomInverted.write( 0 );
+    _pid->setInverted(false);
 
     // we set coefs
-    _hal->_pidCustomKp.write( (float)300.0 );
-    _hal->_pidCustomKi.write( (float)0.0 );
-    _hal->_pidCustomKd.write( (float)0.0 );
+    //_hal->_pidCustomKp.write( (float)300.0 );
+    //_hal->_pidCustomKi.write( (float)0.0 );
+    //_hal->_pidCustomKd.write( (float)0.0 );
+    _pid->setKp(50.0);
+    _pid->setKi(0.0);
+    _pid->setKd(0.0);
 
     // we set speed, acc and output saturation
-    _hal->_pidCustomSpeed.write( (float)50.0 );
-    _hal->_pidCustomAcceleration.write( (float)0.012 );
-    _hal->_pidCustomSaturation.write( 12000 );
+    //_hal->_pidCustomSpeed.write( (float)40.0 );
+    //_hal->_pidCustomAcceleration.write( (float)0.010 );
+    //_hal->_pidCustomSaturation.write( 10000 );
+    _pid->setSpeed(40.0);
+    _pid->setAcceleration(0.010);
+    _pid->setSaturation(12000);
 
 
 
     // second step: find the Z reference (UP)
 #define CALIBRATION_Z_FAKE_REF 666666
-#define CALIBRATION_Z_STEP 100
+#define CALIBRATION_Z_STEP 300
 #define CALIBRATION_Z_TIMEOUT 1000
-#define CALIBRATION_Z_TIMEOUT_STEP 10
+#define CALIBRATION_Z_TIMEOUT_STEP 100
 
     // before finding the reference incrementally, we verify if we are "on" the ref point
     int32_t initialRef;
     int32_t currentPos;
 
+    _pid->setEnable(true);
+
     {
-        bool refAway = false;
-        uint8_t refAwayRetryCount = 3;
-
-        do {
-            _hal->_pidCustomLastReference.write(CALIBRATION_Z_FAKE_REF);
-            QThread::msleep( 10 );
-            initialRef = _hal->_pidCustomLastReference.read< int32_t >();
-            currentPos = _hal->_pidCustomPosition.read< int32_t >();
-            tDebug(LOG) << "Loop" << initialRef << currentPos;
-
-            int32_t initPos = currentPos;
-
-            if (initialRef != CALIBRATION_Z_FAKE_REF)
-            {
-                // it means we are on the ref point, so we need to move away
-                initPos -= CALIBRATION_Z_STEP*20*_refInverted;
-            } else {
-                // OK!
-                refAway = true;
-            }
-
-            _hal->_pidCustomEnable.write( 1 );
-            _hal->_pidCustomTarget.write( initPos );
-            QThread::msleep( CALIBRATION_Z_TIMEOUT );
-
-        } while (refAway == false && refAwayRetryCount--);
-
-        tDebug(LOG) << "Next";
-
-
-        if (!refAway)
-        {
-            tWarning( LOG ) << "ArmLowLevel: Init -> Z Calibration: Ref Away issue for intialisation" << initialRef << currentPos;
-            ret = false;
-            goto endfunction;
-        }
 
         bool refFound = false;
 
-
-        initialRef = _hal->_pidCustomLastReference.read< int32_t >();
         do {
 
-            currentPos = _hal->_pidCustomPosition.read< int32_t >();
-            int32_t targetPos = currentPos + CALIBRATION_Z_STEP*_refInverted;
-            _hal->_pidCustomTarget.write( targetPos );
+            currentPos = _pid->getInput();//_hal->_pidCustomPosition.read< int32_t >();
 
-            tDebug(LOG) << "Loop 2" << currentPos << targetPos;
+            int32_t targetPos = currentPos + CALIBRATION_Z_STEP*_refInverted;
+            //_hal->_pidCustomTarget.write( targetPos );
+            _pid->setTarget(targetPos);
+
+            tDebug(LOG) << "Loop 2" << currentPos << targetPos << _hal->_pidCustom1Enable.read<uint8_t>() << _hal->_pidCustom1Output.read<int32_t>() << _pid->getOutput();
 
 
             int32_t timeoutMs = CALIBRATION_Z_TIMEOUT;
@@ -212,19 +229,19 @@ bool ArmLowLevel::init(
                 QThread::msleep( CALIBRATION_Z_TIMEOUT_STEP );
                 timeoutMs -= CALIBRATION_Z_TIMEOUT_STEP;
 
-                tDebug(LOG) << "Loop 3" << _hal->_pidCustomPosition.read< int32_t >() << targetPos;
+                tDebug(LOG) << "Loop 3" << _pid->getInput() << targetPos;
 
 
                 // if we have moved more than half of the target
-                if (abs(targetPos-_hal->_pidCustomPosition.read< int32_t >()) < CALIBRATION_Z_STEP / 2)
+                if (abs(targetPos-_pid->getInput()) < CALIBRATION_Z_STEP / 2)
                     break;
             } while (timeoutMs > 0);
 
             // check ref
-            int32_t currentRef = _hal->_pidCustomLastReference.read< int32_t >();
-            currentPos =  _hal->_pidCustomPosition.read< int32_t >();
+            //int32_t currentRef = _pid->getReference();//_hal->_pidCustomLastReference.read< int32_t >();
+            currentPos =  _pid->getInput();//_hal->_pidCustomPosition.read< int32_t >();
 
-            if (currentRef != initialRef)
+            /*if (currentRef != initialRef)
             {
                 // new ref found
                 tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: New Ref Found" << currentRef;
@@ -243,7 +260,8 @@ bool ArmLowLevel::init(
                     refFound = true;
                 }
 
-            } else {
+            } else */
+            {
                 if (timeoutMs <= 0)
                 {
                     // if we are here, it means possiblity 2 things:
@@ -251,21 +269,24 @@ bool ArmLowLevel::init(
                     // 2: there is an issue in the system
 
                     // either case, we cannot continue
-                    tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: Motor Blocked without reaching reference point (initRef/CurRef/CurPos)" << initialRef << currentRef << currentPos;
+                    tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: Motor Blocked at (CurPos)" << currentPos;
 
                     _refZ = currentPos;
 
                     tDebug( LOG ) << "ArmLowLevel: Init -> Z Calibration: Current Z" << getZ();
 
-                    _hal->_pidCustomSaturation.write( 30000 );
+                    //_hal->_pidCustomSaturation.write( 18000 );
 
                     setZ(getZ()-20.0);
+
+                    _pid->setSaturation(18000);
 
 
                     //_hal->_pidCustomTarget.write( currentPos-CALIBRATION_Z_STEP*10 );
 
-                    ret = false;
-                    goto endfunction;
+                    refFound = true;
+                    //ret = false;
+                    //goto endfunction;
                 }
             }
 
@@ -276,59 +297,11 @@ bool ArmLowLevel::init(
 
     }
 #endif
-
 endfunction:
     tDebug( LOG ) << "ArmLowLevel: Init Done" << ret;
 
     return ret;
 }
-
-
-/*
-
-    bool init(
-        const Hal::Ptr& hal,
-        ItemRegister::Ptr vacuumPwm,
-        ItemRegister::Ptr vacuumValve,
-        uint32_t* distanceMmPtr,
-        uint8_t upperArmProtocol,
-        uint8_t upperArmbusId,
-        uint8_t lowerArmProtocol,
-        uint8_t lowerArmbusId,
-        uint8_t wristProtocol,
-        uint8_t wristbusId
-    );
-
-    void disable();
-
-    bool isAttached() const;
-
-    // general
-    void disable();
-
-    // Motor Z
-    void enableZ(bool enable);
-    void setZ(double mmAbs);
-    double getZ();
-    bool waitZTargetOk(double timeoutMs = 0);
-    void setZSpeed(double speed);
-    void setZSAcc(double acc);
-
-    // Servos
-    void enableServo(enum ArmLowLevelLeg, bool enable);
-    void setServoPos(enum ArmLowLevelLeg, double angleDegs);
-    void setServosPos(double angleDegs1, double angleDegs2, double angleDegs3) ;
-    double getServoPos(enum ArmLowLevelLeg);
-    bool waitServoTargetOk(enum ArmLowLevelLeg, double timeoutMs);
-    bool waitServosTargetOk(double timeoutMs);
-
-    // Vacuum
-    setVacuumPower(float percentage) ;
-    setVacuumValve(bool enable);
-
-    // Distance
-    double getDistance();
-*/
 
 
 void ArmLowLevel::disable()
@@ -357,31 +330,35 @@ bool ArmLowLevel::isAttached() const
 void ArmLowLevel::enableZ(bool enable)
 {
 #ifndef Z_DISABLED
-    _hal->_pidCustomEnable.write( (uint8_t)enable );
+    //_hal->_pidCustomEnable.write( (uint8_t)enable );
+    _pid->setEnable(enable);
 #endif
 }
 void ArmLowLevel::setZ(double mmAbs)
 {
 
-#define Z_ENCODER_TICK_PER_MM (1024.0/2.0)
-#define Z_REF_POS_ABS_MM (320.0)
-#define Z_MIN_POS_MM (40.0)
-
+#define Z_ENCODER_TICK_PER_MM (1024.0/4.0*0.97)
+#define Z_REF_POS_ABS_MM (283.0)
+#define Z_MIN_POS_MM (45.0)
+//37.6 max
+//280.0
 #ifndef Z_DISABLED
 
     if (mmAbs < Z_MIN_POS_MM)
         mmAbs = Z_MIN_POS_MM;
 
-    if (mmAbs > Z_REF_POS_ABS_MM)
-        mmAbs = Z_REF_POS_ABS_MM;
+    if (mmAbs > (Z_REF_POS_ABS_MM+_zOffset))
+        mmAbs = (Z_REF_POS_ABS_MM+_zOffset);
 
     _targetZMmAbs = mmAbs;
 
     // convert mmAbs into ticks
-    int32_t target = _refZ-((int32_t)((Z_REF_POS_ABS_MM-mmAbs)*Z_ENCODER_TICK_PER_MM))*_refInverted;
+    int32_t target = _refZ-((int32_t)(((Z_REF_POS_ABS_MM+_zOffset)-mmAbs)*Z_ENCODER_TICK_PER_MM))*_refInverted;
 
-    _hal->_pidCustomTarget.write( target );
-    tDebug(LOG) << target << _refZ << Z_REF_POS_ABS_MM-mmAbs << ((int32_t)((Z_REF_POS_ABS_MM-mmAbs)*Z_ENCODER_TICK_PER_MM));
+    //_hal->_pidCustomTarget.write( target );
+    _pid->setTarget(target);
+
+    tDebug(LOG) << mmAbs << target << _refZ << (Z_REF_POS_ABS_MM+_zOffset)-mmAbs << ((int32_t)(((Z_REF_POS_ABS_MM+_zOffset)-mmAbs)*Z_ENCODER_TICK_PER_MM));
 #endif
 
 }
@@ -390,16 +367,19 @@ double ArmLowLevel::getZ()
     double ret = 0.0;
 
 #ifndef Z_DISABLED
-    int32_t currentPos = _hal->_pidCustomPosition.read< int32_t >();
+    int32_t currentPos = _pid->getInput();//_hal->_pidCustomPosition.read< int32_t >();
 
-    ret = Z_REF_POS_ABS_MM - ((double)((_refZ-currentPos)*_refInverted))*1.0/Z_ENCODER_TICK_PER_MM;
+    ret = (Z_REF_POS_ABS_MM+_zOffset) - ((double)((_refZ-currentPos)*_refInverted))*1.0/Z_ENCODER_TICK_PER_MM;
 
-    if (ret > Z_REF_POS_ABS_MM)
-        ret = Z_REF_POS_ABS_MM;
+    if (ret > (Z_REF_POS_ABS_MM+_zOffset))
+        ret = (Z_REF_POS_ABS_MM+_zOffset);
 
     if (ret < Z_MIN_POS_MM)
         ret = Z_MIN_POS_MM;
 #endif
+
+    //tDebug(LOG) << ret << currentPos << _refZ-currentPos << ((double)((_refZ-currentPos)*_refInverted))*1.0/Z_ENCODER_TICK_PER_MM;
+
 
     return ret;
 }
@@ -407,7 +387,7 @@ bool ArmLowLevel::waitZTargetOk(double timeoutMs)
 {
     bool ret = false;
 
-#define WAIT_STEP_MS (10.0)
+#define WAIT_STEP_MS (100.0)
 #define WAIT_MARGIN_MM (5.0)
 #define WAIT_MAX_MS (10000.0)
 
@@ -440,23 +420,28 @@ void ArmLowLevel::setZSpeed(double speed)
 #define PID_FREQ_HZ (10000.0)
 
     double pidSpeed = speed * Z_ENCODER_TICK_PER_MM / PID_FREQ_HZ;
-    _hal->_pidCustomSpeed.write( (float)pidSpeed );
+    //_hal->_pidCustomSpeed.write( (float)pidSpeed );
+    _pid->setSpeed((float)pidSpeed);
 }
 void ArmLowLevel::setZAcc(double acc)
 {
 // acc in mm per second ^2
     double pidAcc = acc * Z_ENCODER_TICK_PER_MM / PID_FREQ_HZ;
-    _hal->_pidCustomAcceleration.write( (float)pidAcc );
+    //_hal->_pidCustomAcceleration.write( (float)pidAcc );
+    _pid->setAcceleration((float)pidAcc);
+
 }
 
 
 void ArmLowLevel::enableServo(enum ArmLowLevelLeg id, bool enable)
 {
     try {
-        if (enable)
-            _smartServo[id]->enable();
-        else
-            _smartServo[id]->disable();
+        {
+            if (enable)
+                _smartServo[id]->enable();
+            else
+                _smartServo[id]->disable();
+        }
     } catch (...) {
 
     }
@@ -467,6 +452,9 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 #define SERVO_TICK_PER_DEG (1024.0/SERVO_RANGE_DEG)
 #define SERVO_OFFSET (1024.0/2.0)
 
+    if (id == ARM_LL_SERVO_WRIST && _wristInverted)
+        angleDegs = -1.0*angleDegs;
+
     double pos = (SERVO_OFFSET+angleDegs*SERVO_TICK_PER_DEG);
     if (pos > 1023)
         pos = 1023;
@@ -475,8 +463,19 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 
     try {
         //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
-
-        _smartServo[id]->setPosition(false,false,(uint16_t)pos);
+        uint16_t speed = 400;
+        if (_vaccumEnabled)
+        {
+            if (id == ARM_LL_SERVO_UPPER_ARM)
+            {
+                speed = 180;
+            }
+            if (id == ARM_LL_SERVO_LOWER_ARM)
+            {
+                speed = 180;
+            }
+        }
+        _smartServo[id]->setPositionAndSpeed(false,false,(uint16_t)pos,speed);
     } catch (...) {
 
     }
@@ -491,6 +490,10 @@ double ArmLowLevel::getServoPos(enum ArmLowLevelLeg id)
 {
     uint16_t posRaw = _smartServo[id]->getPosition(true);
     double pos = ((double)(posRaw)-SERVO_OFFSET)/SERVO_TICK_PER_DEG;
+
+    if (id == ARM_LL_SERVO_WRIST && _wristInverted)
+        pos = -1.0*pos;
+
     return pos;
 }
 bool ArmLowLevel::waitServoTargetOk(enum ArmLowLevelLeg id, double timeoutMs)
@@ -525,7 +528,40 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         moving |= _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
         moving |= _smartServo[ARM_LL_SERVO_WRIST]->moving();
 
-        tInfo( LOG ) << moving << timeoutMsLocal;
+        if (timeoutMsLocal < (timeoutMs / 2.0))
+        {
+            moving = false;
+            for (int i=0;i<=ARM_LL_SERVO_WRIST;i++)
+            {
+                try {
+                    double pos;
+                    if (_smartServo[i]->moving())
+                    {
+                        uint16_t target = _smartServo[i]->getTarget();
+                        uint16_t pos = _smartServo[i]->getPosition(true);
+
+                        if (abs(target-pos) < 20*2)
+                        {
+                            tWarning(LOG) << "waitServosTargetOk:" << i << "is close to destination, seems ok (target/pos)" << target << pos;
+                        } else {
+                            moving |= true;
+                            tWarning(LOG) << "waitServosTargetOk:" << i << "seems really bloked (target/pos)" << target << pos;
+                        }
+                    }
+                } catch (...) {
+
+                }
+            }
+/*
+            tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->moving() << _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving() << _smartServo[ARM_LL_SERVO_WRIST]->moving();
+            try {
+                pos[0] =
+                tInfo( LOG ) << moving << timeoutMsLocal << _smartServo[ARM_LL_SERVO_UPPER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_LOWER_ARM]->getPosition(true) << _smartServo[ARM_LL_SERVO_WRIST]->getPosition(true);
+            } catch (...) {
+
+
+            }*/
+        }
 
     } while (moving && timeoutMsLocal > 0);
 
@@ -537,6 +573,10 @@ void ArmLowLevel::setVacuumPower(float percentage)
 {
     float max = 3.7/12.0*32768.0;
     float value = percentage/100.0*max;
+    if (value != 0)
+        _vaccumEnabled = true;
+    else
+        _vaccumEnabled = false;
     _vacuumPwm->write((uint16_t)value);
 }
 void ArmLowLevel::setVacuumValve(bool enable)
@@ -547,6 +587,55 @@ void ArmLowLevel::setVacuumValve(bool enable)
 // Distance
 double ArmLowLevel::getDistance()
 {
-    return ((double)*_distanceMmPtr);
+    bool status[2];
+    double distance[2];
+
+    status[0] = _distanceSensors->status(0);
+    status[1] = _distanceSensors->status(1);
+
+    distance[0] = _distanceSensors->distance(0);
+    distance[1] = _distanceSensors->distance(1);
+
+
+    if (!status[0] || !status[1])
+        tWarning( LOG ) << "getDistance status issues (status/distance)" << status[0] << distance[0] << status[1] << distance[1];
+
+    if (status[0] && status[1])
+    {
+        if (distance[0] <= distance[1])
+            return distance[0];
+        else
+            return distance[1];
+    }
+    if (status[0])
+        return distance[0];
+    else
+        return distance[1];
+
+
+    //return ((double)*_distanceMmPtr);
 }
 
+bool ArmLowLevel::isDistanceCoherent()
+{
+    double d1 = _distanceSensors->distance(0);
+    double d2 = _distanceSensors->distance(1);
+
+    double diff = abs(d1-d2);
+
+    tDebug(LOG) << "isDistanceCoherent: d1/d2/diff" << d1 << d2 << diff;
+
+
+    bool ret = true;
+
+    if (_distanceSensors->status(0) && _distanceSensors->status(1))
+    {
+        if (diff > d1/2.0 || diff > d2/2.0)
+            ret = false;
+    }
+
+    if (!ret)
+        tWarning( LOG ) << "isDistanceCoherent: not coherent" << d1 << d2 << diff;
+
+    return ret;
+}

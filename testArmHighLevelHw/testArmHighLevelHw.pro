@@ -3,7 +3,7 @@
 QT += core network serialport
 
 
-TARGET = testArmHighLevel
+TARGET = testArmHighLevelHw
 SOURCES = main.cpp
 
 INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/

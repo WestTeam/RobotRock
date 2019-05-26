@@ -14,6 +14,8 @@
 
 
 #include <WestBot/RobotRock/SmartServo.hpp>
+#include <WestBot/RobotRock/Vl6180x.hpp>
+#include <WestBot/RobotRock/Pid.hpp>
 
 
 namespace WestBot {
@@ -53,6 +55,8 @@ public:
 
     // Distance
     virtual double getDistance() = 0;
+    virtual bool isDistanceCoherent() = 0;
+
 };
 
 
@@ -61,20 +65,28 @@ class ArmLowLevel: public ArmLowLevelBase
 public:
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.ArmLowLevel" );
 
+    using Ptr = std::shared_ptr< ArmLowLevel >;
+
+
     ArmLowLevel();
     ~ArmLowLevel();
 
     bool init(
         const Hal::Ptr& hal,
-        ItemRegister::Ptr vacuumPwm,
-        ItemRegister::Ptr vacuumValve,
+        const ItemRegister::Ptr& pidFirstReg,
+        bool pidInputInverted,
+        const ItemRegister::Ptr& vacuumPwm,
+        const ItemRegister::Ptr& vacuumValve,
+        Vl6180x* distanceSensors,
         uint32_t* distanceMmPtr,
         uint8_t upperArmProtocol,
         uint8_t upperArmbusId,
         uint8_t lowerArmProtocol,
         uint8_t lowerArmbusId,
         uint8_t wristProtocol,
-        uint8_t wristbusId
+        uint8_t wristbusId,
+        bool wristInverted,
+        double zOffset
     );
 
     bool isAttached() const;
@@ -104,13 +116,18 @@ public:
 
     // Distance
     double getDistance();
-
+    bool isDistanceCoherent();
 
 
 private:
 
     bool _attached;
     bool _initOk;
+
+    bool _wristInverted;
+    double _zOffset;
+
+    bool _vaccumEnabled;
 
     Hal::Ptr _hal;
     ItemRegister::Ptr _vacuumPwm;
@@ -121,6 +138,10 @@ private:
     int32_t _refZ;
     int32_t _refInverted;
     double _targetZMmAbs;
+
+    Vl6180x* _distanceSensors;
+
+    Pid* _pid;
 
 };
 

@@ -17,6 +17,22 @@
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 
+
+
+int circle_circle_intersection(double x0, double y0, double r0,
+                               double x1, double y1, double r1,
+                               double *xi, double *yi,
+                               double *xi_prime, double *yi_prime);
+
+
+
+
+int circle_circle_intersection(double x0, double y0, double r0,
+                               double x1, double y1, double r1,
+                               double *xi, double *yi,
+                               double *xi_prime, double *yi_prime);
+
+
 namespace WestBot {
 namespace RobotRock {
 
@@ -25,6 +41,8 @@ enum ArmHighLevelMode {
         ARM_HL_MODE_HORIZONTAL, // head is pointing the ground
         ARM_HL_MODE_VERTICAL  // head is in the same alignment as the lower arm
 };
+
+enum PuckType { PUCK_UNKNOWN, PUCK_RED, PUCK_GREEN, PUCK_BLUE, PUCK_GOLD};
 
 typedef struct
 {
@@ -36,15 +54,14 @@ typedef struct
 class ArmHighLevel
 {
 public:
-    using Ptr = std::shared_ptr< ArmHighLevel >;
-
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.ArmHighLevel" );
+    using Ptr = std::shared_ptr< ArmHighLevel >;
 
     ArmHighLevel();
     ~ArmHighLevel();
 
     bool init(
-         const Odometry::Ptr& odometry, const ArmLowLevelBase::Ptr& armLL
+         const Odometry::Ptr& odometry, const ArmLowLevelBase::Ptr& armLL, bool isLeft
     );
 
     bool isAttached() const;
@@ -55,7 +72,9 @@ public:
 
     // position of the ARM axe compared to robot center
     void confArmPos(double xMm,double yMm);
-    void confStorage(enum ArmHighLevelStorage id, double xMm,double yMm, double zMm);
+    void confStorage(double xMm,double yMm, double zMm);
+
+    void getArmPos(double &xMm, double &yMm);
 
     // move Arm to absolute position
     bool moveArmAbs(double xMm, double yMm);
@@ -75,7 +94,7 @@ public:
 
     double getObjectDistance();
 
-    uint8_t getPuckCount(enum ArmHighLevelStorage id);
+    uint8_t getPuckCount();
 
     ///// ACTION /////
     bool actionSafePosition();
@@ -83,14 +102,15 @@ public:
     bool actionDistributorPuckCollection(double xMm, double yMm);
     bool actionCheckGoldDoorOpen(double xMm, double yMm);
     bool actionGoldPuckCollection(double xMm, double yMm);
-    bool actionPuckStore(enum ArmHighLevelStorage id);
-    bool actionPuckUnstore(enum ArmHighLevelStorage id);
+    bool actionPuckStore();
+    bool actionPuckUnstore();
     bool actionPuckRelease(double xMm, double yMm, double zMm);
 
 private:
-
     bool _attached;
     //bool _initOk;
+
+    bool _isLeft;
 
     ArmHighLevelMode _mode;
 
@@ -98,8 +118,8 @@ private:
     ArmLowLevelBase::Ptr _armLL;
 
     RobotPos _armPos;
-    Pos3D _storagePos[2];
-    uint8_t _storagePuckCount[2];
+    Pos3D _storagePos;
+    uint8_t _storagePuckCount;
 
 
 };
