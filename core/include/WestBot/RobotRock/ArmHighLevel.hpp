@@ -25,6 +25,14 @@ int circle_circle_intersection(double x0, double y0, double r0,
                                double *xi_prime, double *yi_prime);
 
 
+
+
+int circle_circle_intersection(double x0, double y0, double r0,
+                               double x1, double y1, double r1,
+                               double *xi, double *yi,
+                               double *xi_prime, double *yi_prime);
+
+
 namespace WestBot {
 namespace RobotRock {
 
@@ -103,6 +111,8 @@ public:
 private:
     bool _attached;
     //bool _initOk;
+
+    bool _isLeft;
 
     bool _isLeft;
 
