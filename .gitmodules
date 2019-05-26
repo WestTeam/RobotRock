@@ -1,0 +1,9 @@
+[submodule "3rdparty/rplidar"]
+	path = 3rdparty/rplidar
+	url = https://github.com/WestTeam/rplidar.git
+[submodule "3rdparty/HumanAfterAll"]
+	path = 3rdparty/HumanAfterAll
+	url = https://github.com/WestTeam/HumanAfterAll.git
+[submodule "3rdparty/a-star"]
+	path = 3rdparty/a-star
+	url = https://github.com/WestTeam/a-star.git
