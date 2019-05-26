@@ -11,6 +11,7 @@
 #include <WestBot/RobotRock/ArmLowLevel.hpp>
 #include <WestBot/RobotRock/ArmHighLevel.hpp>
 #include <WestBot/RobotRock/Vl6180x.hpp>
+#include <WestBot/RobotRock/OdometryHw.hpp>
 
 
 #define DEBUG
@@ -155,7 +156,7 @@ int main( int argc, char *argv[] )
     armPos.x = 200.0;
     armPos.y = 120.0;
 
-    Odometry::Ptr odometryPtr = std::make_shared< Odometry >( hal );
+    Odometry::Ptr odometryPtr = std::make_shared< OdometryHw >( hal );
 
     odometryPtr->setPosition({.x=0.0,.y=0.0,.theta=RAD(0.0)});
 

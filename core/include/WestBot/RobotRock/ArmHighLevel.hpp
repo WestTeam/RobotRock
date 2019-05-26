@@ -54,8 +54,6 @@ typedef struct
 class ArmHighLevel
 {
 public:
-    using Ptr = std::shared_ptr< ArmHighLevel >;
-
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.ArmHighLevel" );
     using Ptr = std::shared_ptr< ArmHighLevel >;
 
@@ -111,8 +109,6 @@ public:
 private:
     bool _attached;
     //bool _initOk;
-
-    bool _isLeft;
 
     bool _isLeft;
 
