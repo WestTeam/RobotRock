@@ -78,7 +78,6 @@ HEADERS += \
     include/WestBot/RobotRock/OdometrySimu.hpp \
     include/WestBot/RobotRock/SimTcpServer.hpp \
     include/WestBot/RobotRock/StrategyManager.hpp \
-    include/WestBot/RobotRock/StrategyManagerFoo.hpp \
     include/WestBot/RobotRock/SystemManager.hpp \
     include/WestBot/RobotRock/SystemManagerHw.hpp \
     include/WestBot/RobotRock/SystemManagerSimu.hpp \
@@ -96,5 +95,5 @@ HEADERS += \
 INCLUDEPATH += \
     ../../HumanAfterAll/include/ \
     ../../rplidar/include/ \
-    ../../astar/include/
+    ../../a-star/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar -lAStar

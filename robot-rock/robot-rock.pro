@@ -12,13 +12,13 @@ HEADERS += \
     include/StrategyManagerHomologation.hpp \
     include/StrategyManagerV1.hpp
 
-INCLUDEPATH += include/
 
-INCLUDEPATH += ../../astar/include/
-LIBS += -L../../astar/lib -lAStar
-
-INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
-LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
+INCLUDEPATH += \
+    include \
+    ../../HumanAfterAll/include/ \
+    ../../rplidar/include/ \
+    ../../a-star/include/
+LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar -lAStar
 
 INCLUDEPATH += ../core/include
 LIBS += -L../core -lcore

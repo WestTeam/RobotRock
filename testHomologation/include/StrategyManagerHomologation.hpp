@@ -1,26 +1,25 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
-#ifndef WESTBOT_ROBOTROCK_STRATEGYMANAGERFOO_HPP_
-#define WESTBOT_ROBOTROCK_STRATEGYMANAGERFOO_HPP_
+#ifndef WESTBOT_ROBOTROCK_STRATEGYMANAGERHOMOLAGATION_HPP_
+#define WESTBOT_ROBOTROCK_STRATEGYMANAGERHOMOLAGATION_HPP_
 
 #include <QList>
 
-#include "Action.hpp"
-#include "StrategyManager.hpp"
+#include <WestBot/RobotRock/Action.hpp>
+#include <WestBot/RobotRock/StrategyManager.hpp>
 
 namespace WestBot {
 namespace RobotRock {
 
 /*!
- * \brief This class manage a FOO robot strategy by handling data from FPGA
- *        and push action in the action queue.
+ * \brief This class contains the strat for our homologation.
  */
-class StrategyManagerFoo : public StrategyManager
+class StrategyManagerHomologation : public StrategyManager
 {
 public:
-    StrategyManagerFoo( QObject* parent = nullptr );
+    StrategyManagerHomologation( QObject* parent = nullptr );
 
-    ~StrategyManagerFoo() override = default;
+    ~StrategyManagerHomologation() override = default;
 
     bool init( const TrajectoryManager::Ptr& trajectoryManager ) override;
 
@@ -49,4 +48,4 @@ private:
 }
 }
 
-#endif // WESTBOT_ROBOTROCK_STRATEGYMANAGERFOO_HPP_
+#endif // WESTBOT_ROBOTROCK_STRATEGYMANAGERHOMOLAGATION_HPP_

@@ -3,10 +3,19 @@
 QT += core network serialport
 
 TARGET = homologation
-SOURCES = main.cpp
+SOURCES =  \
+    src/StrategyManagerHomologation.cpp \
+    src/main.cpp
 
-INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
-LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
+HEADERS += \
+    include/StrategyManagerHomologation.hpp
+
+INCLUDEPATH += \
+    include \
+    ../../HumanAfterAll/include/ \
+    ../../rplidar/include/ \
+    ../../a-star/include/
+LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar -lAStar
 
 INCLUDEPATH += ../core/include
 LIBS += -L../core -lcore

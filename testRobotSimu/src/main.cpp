@@ -6,8 +6,9 @@
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
 #include <WestBot/HumanAfterAll/Handler.hpp>
 
-#include <WestBot/RobotRock/StrategyManagerFoo.hpp>
 #include <WestBot/RobotRock/SystemManagerSimu.hpp>
+
+#include "StrategyManagerHomologation.hpp"
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -31,8 +32,8 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
-    StrategyManagerFoo::Ptr strategyFoo = std::make_shared< StrategyManagerFoo >();
-    SystemManagerSimu system( strategyFoo );
+    StrategyManagerHomologation::Ptr strategy = std::make_shared< StrategyManagerHomologation >();
+    SystemManagerSimu system( strategy );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 

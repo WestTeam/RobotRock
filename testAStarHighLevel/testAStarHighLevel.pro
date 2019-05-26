@@ -5,11 +5,11 @@ QT += core network serialport
 TARGET = test-astar
 SOURCES = src/main.cpp
 
-INCLUDEPATH += ../../astar/include/
-LIBS += -L../../astar/lib -lAStar
-
-INCLUDEPATH += ../../HumanAfterAll/include/
-LIBS += -L../../robot-rock/libs -lHumanAfterAll
+INCLUDEPATH += \
+    ../../HumanAfterAll/include/ \
+    ../../rplidar/include/ \
+    ../../a-star/include/
+LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar -lAStar
 
 INCLUDEPATH += ../core/include
 LIBS += -L../core -lcore
