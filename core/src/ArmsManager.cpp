@@ -6,8 +6,6 @@
 
 #include <WestBot/RobotRock/ArmsManager.hpp>
 
-#include <WestBot/RobotRock/ArmsManager.hpp>
-
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -164,49 +162,102 @@ bool ArmsManager::isAttached() const
 
     */
 
-bool getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight, RobotPos &pos)
+bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight, RobotPos &pos)
 {
 
 }
 
 
-bool getPucksAndStore(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight)
+bool ArmsManager::getPucksAndStore(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight)
+{
+    bool rleft,rright;
+
+    std::thread tl(&ArmsManager::getPucksAndStoreSingle,this,false,&listLeft,&rleft);
+    std::thread tr(&ArmsManager::getPucksAndStoreSingle,this,true,&listRight,&rright);
+
+    tl.join();
+    tr.join();
+
+    return rleft && rright;
+}
+
+void ArmsManager::getPucksAndStoreSingle(bool isRight, std::list<PuckPos> *list, bool *ret)
+{
+    *ret = true;
+    bool actionOk;
+
+    for (std::list<PuckPos>::iterator it = list->begin(); it != list->end(); ++it){
+        if (it->isOnGround)
+        {
+            actionOk = _arm[isRight]->actionGroundPuckCollection(it->x,it->y);
+
+            *ret &= actionOk;
+            if (actionOk)
+            {
+                actionOk = _arm[isRight]->actionPuckStore();
+                *ret &= actionOk;
+            }
+        }
+    }
+}
+
+
+bool ArmsManager::getPucks(PuckPos *left, PuckPos *right)
+{
+    bool rleft,rright;
+
+    std::thread tl(&ArmsManager::getPuck,this,false,left,&rleft);
+    std::thread tr(&ArmsManager::getPuck,this,true,right,&rright);
+
+    tl.join();
+    tr.join();
+
+    return rleft && rright;
+}
+
+void ArmsManager::getPuck(bool isRight, PuckPos *puck, bool *ret)
+{
+    if (puck != nullptr)
+    {
+        if (puck->isOnGround)
+        {
+            bool actionOk = _arm[isRight]->actionGroundPuckCollection(puck->x,puck->y);
+
+            *ret = actionOk;
+        }
+    } else {
+        *ret = true;
+    }
+}
+
+
+void ArmsManager::getReleaseAcceleratorPosition(RobotPos &pos)
 {
 
 }
 
-bool getPucks(PuckPos *left, PuckPos *right)
+bool ArmsManager::releasePucksAcceletator()
 {
 
 }
 
-void getReleaseAcceleratorPosition(RobotPos &pos)
+void ArmsManager::getReleaseScalePosition(RobotPos &pos)
 {
 
 }
 
-bool releasePucksAcceletator()
-{
-
-}
-
-void getReleaseScalePosition(RobotPos &pos)
-{
-
-}
-
-bool releasePucksScale()
+bool ArmsManager::releasePucksScale()
 {
 
 
 }
 
-void getReleaseGroundPosition(RobotPos &pos)
+void ArmsManager::getReleaseGroundPosition(RobotPos &pos)
 {
 
 }
 
-bool releasePucksGround()
+bool ArmsManager::releasePucksGround()
 {
 
 }

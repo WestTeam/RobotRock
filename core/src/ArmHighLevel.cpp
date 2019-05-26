@@ -547,8 +547,8 @@ bool ArmHighLevel::actionSafePosition()
 bool ArmHighLevel::actionGroundPuckCollection(double xMm, double yMm)
 {
 
-    setMode(ARM_HL_MODE_HORIZONTAL);
     bool ret = moveArmAbs(xMm,yMm);
+    setMode(ARM_HL_MODE_HORIZONTAL);
 
     if (!ret)
     {

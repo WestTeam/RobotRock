@@ -68,9 +68,13 @@ public:
     bool getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight, RobotPos &pos);
     // get a list of pucks for each arm and store each of them (if the last one cannot be stored (full), we keep it outside)
     bool getPucksAndStore(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight);
+    void getPucksAndStoreSingle(bool isRight, std::list<PuckPos> *list, bool *ret);
+
 
     // if null, no one to take
     bool getPucks(PuckPos *left, PuckPos *right);
+
+    void getPuck(bool isRight, PuckPos *puck, bool *ret);
 
     void getReleaseAcceleratorPosition(RobotPos &pos);
 
