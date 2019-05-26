@@ -1,5 +1,8 @@
 # Copyright (c) 2019 All Rights Reserved WestBot
 
+QT += core network serialport
+
+
 TARGET = testLidar
 SOURCES = src/main.cpp
 

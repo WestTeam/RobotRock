@@ -1,6 +1,7 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
 #include <QCoreApplication>
+#include <QSerialPort>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
@@ -40,8 +41,8 @@ int main( int argc, char *argv[] )
     //hal->dump();
 
     // set lidar pwm to 30%
-    hal->_motor5Override.write(1);
-    hal->_motor5Value.write(0);
+    //hal->_motor5Override.write(1);
+    //hal->_motor5Value.write(0);
     QThread::msleep( 2000 );
 
     OdometryHw odometry(hal);
@@ -49,13 +50,30 @@ int main( int argc, char *argv[] )
     // init position
     odometry.setPosition({.x=0.0,.y=0.0,.theta=RAD(0.0)});
 
-    LidarRPLidarA2 lidar( QString("/dev/ttyAL6"), 256000, std::make_shared< ItemRegister >( hal->_motor5Value ));
+    QSerialPort serial("/dev/ttyAL12");
+    serial.setBaudRate(256000);
+    serial.open(QIODevice::ReadWrite);
+    char buf[2] = {0xA5,0x40};
+    serial.write(buf,2);
+    serial.flush();
+    serial.write(buf,2);
+    serial.flush();
+    serial.close();
 
-    lidar.init();
-    lidar.startMotor(15.0);
+    LidarRPLidarA2 lidar( QString("/dev/ttyAL12"), 256000, std::make_shared< ItemRegister >( hal->_pwmCustom2Value ));
+
+    bool ret = lidar.init();
+
+    if (ret == false)
+    {
+        tFatal(LOG) << "Lidar init failure";
+    }
+    lidar.startMotor(30.0);
     QThread::msleep( 2000 );
 
     lidar.startScan();
+
+    //exit(0);
 
     LidarData data[LIDAR_MAX_SCAN_POINTS];
     uint32_t count;

@@ -17,6 +17,7 @@
 
 #define SIMU
 
+
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
@@ -25,10 +26,9 @@ using namespace WestBot::RobotRock;
 LidarRPLidarA2::LidarRPLidarA2( const QString& lidarTTY, const uint32_t baudrate, ItemRegister::Ptr Pwm)
     : _lidar( lidarTTY, baudrate )
 {
+
     _pwm = Pwm;
     _minQuality = 0;
-
-    tDebug( LOG ) << "Lidar: module initialized";
 }
 
 LidarRPLidarA2::~LidarRPLidarA2()
@@ -41,12 +41,14 @@ LidarRPLidarA2::~LidarRPLidarA2()
 }
 
 
+
 bool LidarRPLidarA2::init()
 {
-    if( ! _lidar.connect() )
+    if (! _lidar.connect() )
     {
        tWarning( LOG ) << "Lidar: Cannot connect to RPLidar";
-       throw std::exception();
+       return false;
+      // throw std::exception();
     }
     tDebug( LOG ) << "Lidar: RPLidar connected";
 
@@ -57,10 +59,12 @@ bool LidarRPLidarA2::init()
     if( ! _lidar.checkHealth() )
     {
         tWarning( LOG ) << "Lidar: RPLidar not healthy";
-        throw std::exception();
+        return false;
+
+        //throw std::exception();
     }
 
-    tDebug( LOG ) << "Lidar: module initialized";
+    tDebug( LOG ) << "Lidar: module initialized !";
 
     return true;
 }
