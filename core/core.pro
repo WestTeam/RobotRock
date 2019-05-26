@@ -89,9 +89,8 @@ HEADERS += \
     include/WestBot/RobotRock/ArmLowLevel.hpp \
     include/WestBot/RobotRock/ArmHighLevel.hpp
 
-INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
-LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
-
-# We are trying our AStar algorithm
-INCLUDEPATH += ../../astar/include/
-LIBS += -L../../astar/lib -lAStar
+INCLUDEPATH += \
+    ../../HumanAfterAll/include/ \
+    ../../rplidar/include/ \
+    ../../astar/include/
+LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar -lAStar
