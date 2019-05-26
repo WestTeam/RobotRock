@@ -12,9 +12,9 @@ HEADERS += \
 
 INCLUDEPATH += \
     include \
-    ../../HumanAfterAll/include/ \
-    ../../rplidar/include/ \
-    ../../a-star/include/
+    ../3rdparty/HumanAfterAll/include/ \
+    ../3rdparty/rplidar/include/ \
+    ../3rdparty/a-star/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar -lAStar
 
 INCLUDEPATH += ../core/include

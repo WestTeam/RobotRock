@@ -3,7 +3,9 @@
 TARGET = testRecalageLive
 SOURCES = main.cpp
 
-INCLUDEPATH += ../../HumanAfterAll/include/ ../../rplidar/include/
+INCLUDEPATH += \
+    ../3rdparty/HumanAfterAll/include/ \
+    ../3rdparty/rplidar/include/
 LIBS += -L../../robot-rock/libs -lHumanAfterAll -lRPLidar
 
 INCLUDEPATH += ../core/include
