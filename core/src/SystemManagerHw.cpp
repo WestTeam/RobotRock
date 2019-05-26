@@ -42,8 +42,15 @@ SystemManagerHw::SystemManagerHw(
     , _lidarRear( nullptr )
     , _trajectoryManager( nullptr )
     , _strategyManager( strategyManager )
+    , _armLeftLow( nullptr )
+    , _armRightLow( nullptr )
+    , _armLeft( nullptr )
+    , _armRight( nullptr )
+    , _armsManager( nullptr )
     , _monitoring( nullptr )
     , _game( nullptr )
+    , _distanceSensorLeft( "/dev/ttyAL8" )
+    , _distanceSensorRight( "/dev/ttyAL13" )
 {
     _startButton.reset(
           new InputHw(
@@ -184,6 +191,11 @@ bool SystemManagerHw::init()
 {
     tInfo( LOG ) << "System manager initializing...";
 
+    _hal->_motor4Override.write( 1 );
+    _hal->_motor5Override.write( 1 );
+
+    _hal->_motor4Value.write( 0 );
+
     // Config PID Distance
     _hal->_pidDistanceEnable.write( 0 );
     _hal->_pidDistanceOverride.write( 0 );
@@ -237,13 +249,71 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
+    _armLeftLow.reset( new ArmLowLevel() );
+
+    ItemRegister::Ptr pidfirstregL = std::make_shared< ItemRegister >( _hal->_pidCustom1FreqHz );
+    ItemRegister::Ptr pumpL = std::make_shared< ItemRegister >( _hal->_motor4Value );
+    ItemRegister::Ptr valveL = std::make_shared< ItemRegister >( _hal->_output2 );
+
+    if( ! _armLeftLow->init(
+        _hal,
+        pidfirstregL,
+        true,
+        pumpL,
+        valveL,
+        & _distanceSensorLeft,
+        _distanceSensorLeft.distancePointer( 0 ),
+        SMART_SERVO_DYNAMIXEL,
+        4,
+        SMART_SERVO_DYNAMIXEL,
+        2,
+        SMART_SERVO_DYNAMIXEL,
+        5,
+        true,
+        0.0 ) )
+    {
+        tFatal( LOG ) << "Unable to init arm left low level. Abort";
+    }
+
+    _armRightLow.reset( new ArmLowLevel() );
+
+    ItemRegister::Ptr pidfirstregR = std::make_shared< ItemRegister >( _hal->_pidCustom2FreqHz );
+    ItemRegister::Ptr pumpR = std::make_shared< ItemRegister >( _hal->_motor5Value );
+    ItemRegister::Ptr valveR = std::make_shared< ItemRegister >( _hal->_output1 );
+
+    if( ! _armLeftLow->init(
+        _hal,
+        pidfirstregR,
+        true,
+        pumpR,
+        valveR,
+        & _distanceSensorRight,
+        _distanceSensorRight.distancePointer(0),
+        SMART_SERVO_DYNAMIXEL,
+        6,
+        SMART_SERVO_DYNAMIXEL,
+        3,
+        SMART_SERVO_DYNAMIXEL,
+        7,
+        false,
+        2.0 ) )
+    {
+        tFatal( LOG ) << "Unable to init arm left low level. Abort";
+    }
+
     _armLeft.reset( new ArmHighLevel() );
 
-    // TODO: init armLeft
+    if( ! _armLeft->init( _odometry, _armLeftLow, true ) )
+    {
+        tFatal( LOG ) << "Unable to init arm left high level. Abort";
+    }
 
     _armRight.reset( new ArmHighLevel() );
 
-    // TODO: init armLeft
+    if( ! _armLeft->init( _odometry, _armRightLow, false ) )
+    {
+        tFatal( LOG ) << "Unable to init arm right high level. Abort";
+    }
 
     _armsManager.reset( new ArmsManager() );
 
@@ -256,8 +326,6 @@ bool SystemManagerHw::init()
 
     _monitoring->start();
     _monitoring->setRefreshRate( 250 );
-
-    _distanceSensor.start();
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );
