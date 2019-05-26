@@ -64,7 +64,9 @@ private:
     // Base system
     Odometry::Ptr _odometry;
     Recalage::Ptr _recalage;
-    LidarRPLidarA2::Ptr _lidar;
+    LidarRPLidarA2::Ptr _lidarTop;
+    LidarRPLidarA2::Ptr _lidarFront;
+    LidarRPLidarA2::Ptr _lidarRear;
     TrajectoryManager::Ptr _trajectoryManager;
     StrategyManager::Ptr _strategyManager;
     ArmHighLevel::Ptr _armLeft;

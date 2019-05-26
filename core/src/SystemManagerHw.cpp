@@ -21,7 +21,9 @@ namespace
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.SystemManagerHw" )
 
     const int GAME_DURATION = 100 * 1000; // 100s
-    const QString LIDAR_TTY = "/dev/ttyAL6";
+    const QString LIDAR_TOP_TTY = "/dev/ttyAL6";
+    const QString LIDAR_FRONT_TTY = "/dev/ttyAL11";
+    const QString LIDAR_REAR_TTY = "/dev/ttyAL12";
     const uint32_t LIDAR_BAUDRATE = 256000;
     const int DEFAULT_SIM_PORT = 4242;
 }
@@ -35,7 +37,9 @@ SystemManagerHw::SystemManagerHw(
     , _systemMode( SystemManagerHw::SystemMode::Full )
     , _odometry( nullptr )
     , _recalage( nullptr )
-    , _lidar( nullptr )
+    , _lidarTop( nullptr )
+    , _lidarFront( nullptr )
+    , _lidarRear( nullptr )
     , _trajectoryManager( nullptr )
     , _strategyManager( strategyManager )
     , _monitoring( nullptr )
@@ -106,8 +110,6 @@ SystemManagerHw::SystemManagerHw(
             }
         } );
 
-    // TODO: remove this.
-    // Test the avoidance
     connect(
         & _opponentDetection,
         & OpponentDetection::opponentDetected,
@@ -121,13 +123,33 @@ SystemManagerHw::SystemManagerHw(
     // we need to provide sw control on this motor
     _hal->_motor5Override.write( 1 );
 
-    _lidar.reset( new LidarRPLidarA2(
-        LIDAR_TTY,
+    _lidarTop.reset( new LidarRPLidarA2(
+        LIDAR_TOP_TTY,
         LIDAR_BAUDRATE,
         std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
-    if( ! _lidar->init() )
+    if( ! _lidarTop->init() )
     {
-        tCritical( LOG ) << "Failed to init/check health of lidar module";
+        tCritical( LOG ) << "Failed to init/check health of lidar top module";
+        return;
+    }
+
+    _lidarFront.reset( new LidarRPLidarA2(
+        LIDAR_FRONT_TTY,
+        LIDAR_BAUDRATE,
+        std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
+    if( ! _lidarFront->init() )
+    {
+        tCritical( LOG ) << "Failed to init/check health of lidar front module";
+        return;
+    }
+
+    _lidarRear.reset( new LidarRPLidarA2(
+        LIDAR_REAR_TTY,
+        LIDAR_BAUDRATE,
+        std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
+    if( ! _lidarRear->init() )
+    {
+        tCritical( LOG ) << "Failed to init/check health of lidar rear module";
         return;
     }
 
@@ -148,7 +170,6 @@ SystemManagerHw::SystemManagerHw(
            << _simServer.errorString();
     }
 }
-
 
 SystemManagerHw::~SystemManagerHw()
 {
@@ -200,7 +221,7 @@ bool SystemManagerHw::init()
 
     _recalage.reset( new Recalage() );
 
-    if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidar ) )
+    if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidarFront ) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
