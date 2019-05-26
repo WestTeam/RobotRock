@@ -9,6 +9,7 @@
 
 #include "Common.hpp"
 #include "Hal.hpp"
+#include "ArmsManager.hpp"
 #include "Nextion.hpp"
 #include "Odometry.hpp"
 
@@ -20,7 +21,10 @@ class Monitoring : public QThread
 public:
     using Ptr = std::shared_ptr< Monitoring >;
 
-    Monitoring( const Hal::Ptr& hal, const Odometry::Ptr& odometry );
+    Monitoring(
+        const Hal::Ptr& hal,
+        const Odometry::Ptr& odometry,
+        const ArmsManager::Ptr& armsManager );
 
     void setRefreshRate( int delayMs );
 
@@ -34,6 +38,7 @@ private:
 private:
     Hal::Ptr _hal;
     Odometry::Ptr _odo;
+    ArmsManager::Ptr _armsManager;
     Nextion _screen;
     int _delayMs;
     Color _color;

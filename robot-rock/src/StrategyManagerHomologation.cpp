@@ -20,7 +20,8 @@ namespace
 }
 
 StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
-    : _trajectoryManager( nullptr )
+    : _odometry( nullptr )
+    , _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
@@ -28,10 +29,13 @@ StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
 {
 }
 
-bool StrategyManagerHomologation::init( const TrajectoryManager::Ptr& trajectoryManager )
+bool StrategyManagerHomologation::init(
+    const Odometry::Ptr& odometry,
+    const TrajectoryManager::Ptr& trajectoryManager )
 {
     if( ! _init )
     {
+        _odometry = odometry;
         _trajectoryManager = trajectoryManager;
         _init = true;
     }
@@ -46,6 +50,7 @@ bool StrategyManagerHomologation::init( const TrajectoryManager::Ptr& trajectory
 void StrategyManagerHomologation::deinit()
 {
     _trajectoryManager = nullptr;
+    _odometry = nullptr;
     _init = false;
 }
 
@@ -128,12 +133,13 @@ void StrategyManagerHomologation::hardStop()
     _actions.clear();
 }
 
-void StrategyManagerHomologation::obstacleToClose( bool avoid )
+
+void StrategyManagerHomologation::obstacleAt( double xStart, double yStart, double xEnd, double yEnd )
 {
-    _obstacleToClose = avoid;
+    /*_obstacleToClose = avoid;
 
     if( _obstacleToClose )
     {
         _trajectoryManager->setAbort( true );
-    }
+    }*/
 }

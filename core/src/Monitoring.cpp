@@ -5,7 +5,10 @@
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
-Monitoring::Monitoring( const Hal::Ptr& hal, const Odometry::Ptr& odo )
+Monitoring::Monitoring(
+    const Hal::Ptr& hal,
+    const Odometry::Ptr& odo,
+    const ArmsManager::Ptr& armsManager )
     : _hal( hal )
     , _odo( odo )
     , _screen( "/dev/ttyAL0" )
@@ -56,8 +59,7 @@ void Monitoring::dump()
     }
 
     // For debugging purpose ONLY!!!
-    static int score = 0;
-    _screen.send( "tScore", QString::number( ++score ).toLatin1() );
+    _screen.send( "tScore", QString::number( _armsManager->getScore() ).toLatin1() );
 
     RobotPos currPos = _odo->getPosition();
 

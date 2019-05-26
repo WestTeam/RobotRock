@@ -7,14 +7,16 @@
 #include <mutex>          // std::mutex, std::unique_lock
 #include <queue>
 #include <QMutex>
+#include <memory>
 
 #include <QString>
 
-#include "Hal.hpp"
+#include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/Odometry.hpp>
 #include <WestBot/RobotRock/ArmHighLevel.hpp>
 
+#include "Hal.hpp"
 
 namespace WestBot {
 namespace RobotRock {
@@ -41,6 +43,8 @@ class ArmsManager
 {
 public:
     HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.ArmsManager" );
+
+    using Ptr = std::shared_ptr< ArmsManager >;
 
     ArmsManager();
     ~ArmsManager();

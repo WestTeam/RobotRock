@@ -3,10 +3,13 @@
 #ifndef WESTBOT_ROBOTROCK_SYSTEMMANAGERHW_HPP_
 #define WESTBOT_ROBOTROCK_SYSTEMMANAGERHW_HPP_
 
+#include "ArmHighLevel.hpp"
+#include "ArmsManager.hpp"
 #include "Experiment.hpp"
 #include "GameThread.hpp"
 #include "Lidar.hpp"
 #include "Monitoring.hpp"
+#include "OpponentDetection.hpp"
 #include "Recalage.hpp"
 #include "SimTcpServer.hpp"
 #include "StrategyManager.hpp"
@@ -55,7 +58,6 @@ protected:
 
 private:
     Hal::Ptr _hal;
-    QTimer _opponentTimer;
 
     SystemMode _systemMode;
 
@@ -65,11 +67,15 @@ private:
     LidarRPLidarA2::Ptr _lidar;
     TrajectoryManager::Ptr _trajectoryManager;
     StrategyManager::Ptr _strategyManager;
+    ArmHighLevel::Ptr _armLeft;
+    ArmHighLevel::Ptr _armRight;
+    ArmsManager::Ptr _armsManager;
     Monitoring::Ptr _monitoring;
     GameThread::Ptr _game;
     Vl6180x _distanceSensor;
     Experiment _experiment;
     SimTcpServer _simServer;
+    OpponentDetection _opponentDetection;
 };
 
 }

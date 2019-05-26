@@ -372,7 +372,7 @@ bool SystemManagerSimu::init()
 
     _trajectoryManager->init();
 
-    if( ! _strategyManager->init( _trajectoryManager ) )
+    if( ! _strategyManager->init( _odometry, _trajectoryManager ) )
     {
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }

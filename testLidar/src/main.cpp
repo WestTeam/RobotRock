@@ -53,7 +53,7 @@ int main( int argc, char *argv[] )
     QSerialPort serial("/dev/ttyAL12");
     serial.setBaudRate(256000);
     serial.open(QIODevice::ReadWrite);
-    char buf[2] = {0xA5,0x40};
+    char buf[2] = {static_cast<char>(0xA5),0x40};
     serial.write(buf,2);
     serial.flush();
     serial.write(buf,2);

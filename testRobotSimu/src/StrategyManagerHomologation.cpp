@@ -20,7 +20,8 @@ namespace
 }
 
 StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
-    : _trajectoryManager( nullptr )
+    : _odometry( nullptr )
+    , _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
@@ -28,11 +29,14 @@ StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
 {
 }
 
-bool StrategyManagerHomologation::init( const TrajectoryManager::Ptr& trajectoryManager )
+bool StrategyManagerHomologation::init(
+    const Odometry::Ptr& odometry,
+    const TrajectoryManager::Ptr& trajectoryManager )
 {
     if( ! _init )
     {
         _trajectoryManager = trajectoryManager;
+        _odometry = odometry;
         _init = true;
     }
     else
@@ -45,6 +49,7 @@ bool StrategyManagerHomologation::init( const TrajectoryManager::Ptr& trajectory
 
 void StrategyManagerHomologation::deinit()
 {
+    _odometry = nullptr;
     _trajectoryManager = nullptr;
     _init = false;
 }
@@ -93,7 +98,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
 
 void StrategyManagerHomologation::doStrat( const Color& color )
 {
-	// Build the strat for selected color
+    // Build the strat for selected color
     buildStrat( color );
 
     tDebug( LOG ) << "Do strat for color:" << color;
@@ -128,12 +133,12 @@ void StrategyManagerHomologation::hardStop()
     _actions.clear();
 }
 
-void StrategyManagerHomologation::obstacleToClose( bool avoid )
+void StrategyManagerHomologation::obstacleAt( double xStart, double yStart, double xEnd, double yEnd )
 {
-    _obstacleToClose = avoid;
+    /*_obstacleToClose = avoid;
 
     if( _obstacleToClose )
     {
         _trajectoryManager->setAbort( true );
-    }
+    }*/
 }

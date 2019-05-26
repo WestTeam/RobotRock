@@ -106,18 +106,16 @@ SystemManagerHw::SystemManagerHw(
             }
         } );
 
-    static bool toggleAvoid = false;
-
     // TODO: remove this.
     // Test the avoidance
     connect(
-        & _opponentTimer,
-        & QTimer::timeout,
+        & _opponentDetection,
+        & OpponentDetection::opponentDetected,
         this,
-        [ this ]()
+        [ this ]( double x, double y )
         {
-            toggleAvoid = ! toggleAvoid;
-            _strategyManager->obstacleToClose( toggleAvoid );
+            // TODO: calc obstacle shape from center position ???
+            _strategyManager->obstacleAt(x, y, x, y );
         } );
 
     // we need to provide sw control on this motor
@@ -132,9 +130,6 @@ SystemManagerHw::SystemManagerHw(
         tCritical( LOG ) << "Failed to init/check health of lidar module";
         return;
     }
-
-    _opponentTimer.setSingleShot( false );
-    _opponentTimer.setInterval( 4000 );
 
     _hal->_colorEnable.write( 0 );
 
@@ -216,12 +211,27 @@ bool SystemManagerHw::init()
 
     _trajectoryManager->init();
 
-    if( ! _strategyManager->init( _trajectoryManager ) )
+    if( ! _strategyManager->init( _odometry, _trajectoryManager ) )
     {
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
-    _monitoring.reset( new Monitoring( _hal, _odometry ) );
+    _armLeft.reset( new ArmHighLevel() );
+
+    // TODO: init armLeft
+
+    _armRight.reset( new ArmHighLevel() );
+
+    // TODO: init armLeft
+
+    _armsManager.reset( new ArmsManager() );
+
+    if( ! _armsManager->init( _odometry, _armLeft, _armRight ) )
+    {
+        tFatal( LOG ) << "Unable to init arms manager. Abort";
+    }
+
+    _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     _monitoring->start();
     _monitoring->setRefreshRate( 250 );
@@ -260,13 +270,13 @@ void SystemManagerHw::start()
 
     blinkColorLed();
 
+    _armsManager->setColor( _color == Color::Blue ? true : false );
+
     _gameTimer.start( GAME_DURATION );
     _gameTimer.setSingleShot( true );
 
     _game.reset( new GameThread( _strategyManager, _color ) );
     _game->start();
-
-    _opponentTimer.start();
 
     _experiment.start();
 }
@@ -301,6 +311,9 @@ void SystemManagerHw::reset()
 
     _hal->_colorEnable.write( 1 );
 
+    _armsManager = nullptr;
+    _armLeft = nullptr;
+    _armRight = nullptr;
     _odometry = nullptr;
     _trajectoryManager = nullptr;
     _recalage = nullptr;

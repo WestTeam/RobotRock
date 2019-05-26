@@ -8,6 +8,7 @@
 #include <QObject>
 
 #include "Common.hpp"
+#include "Odometry.hpp"
 #include "TrajectoryManager.hpp"
 
 namespace WestBot {
@@ -23,7 +24,7 @@ public:
 
     virtual ~StrategyManager() override = default;
 
-    virtual bool init( const TrajectoryManager::Ptr& trajectoryManager ) = 0;
+    virtual bool init( const Odometry::Ptr& odometry, const TrajectoryManager::Ptr& trajectoryManager ) = 0;
     virtual void deinit() = 0;
     virtual void stop() = 0;
 
@@ -33,7 +34,7 @@ public:
 
     virtual void hardStop() = 0;
 
-    virtual void obstacleToClose( bool avoid ) = 0;
+    virtual void obstacleAt( double xStart, double yStart, double xEnd, double zEnd ) = 0;
 };
 
 }

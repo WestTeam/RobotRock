@@ -3,7 +3,6 @@
 #include <cmath>
 
 #include <QThread>
-#include <WestBot/HumanAfterAll/Category.hpp>
 
 #include <WestBot/RobotRock/ArmsManager.hpp>
 

@@ -20,7 +20,8 @@ namespace
 }
 
 StrategyManagerV1::StrategyManagerV1( QObject* parent )
-    : _trajectoryManager( nullptr )
+    : _odometry( nullptr )
+    , _trajectoryManager( nullptr )
     , _astar( _trajectoryManager, 1.0, 67, 100 )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
@@ -68,10 +69,13 @@ StrategyManagerV1::StrategyManagerV1( QObject* parent )
     _astarTimer.start();
 }
 
-bool StrategyManagerV1::init( const TrajectoryManager::Ptr& trajectoryManager )
+bool StrategyManagerV1::init(
+    const Odometry::Ptr& odometry,
+    const TrajectoryManager::Ptr& trajectoryManager )
 {
     if ( ! _init )
     {
+        _odometry = odometry;
         _trajectoryManager = trajectoryManager;
         _init = true;
     }
@@ -86,6 +90,7 @@ bool StrategyManagerV1::init( const TrajectoryManager::Ptr& trajectoryManager )
 void StrategyManagerV1::deinit()
 {
     _trajectoryManager = nullptr;
+    _odometry = nullptr;
     _init = false;
 }
 
@@ -207,12 +212,12 @@ void StrategyManagerV1::hardStop()
     _avoidList.clear();
 }
 
-void StrategyManagerV1::obstacleToClose( bool avoid )
+void StrategyManagerV1::obstacleAt( double xStart, double yStart, double xEnd, double yEnd )
 {
-    _obstacleToClose = avoid;
+    /*_obstacleToClose = avoid;
 
     if( _obstacleToClose )
     {
         _trajectoryManager->setAbort( true );
-    }
+    }*/
 }

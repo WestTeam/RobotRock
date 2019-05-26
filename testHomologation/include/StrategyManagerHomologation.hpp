@@ -21,7 +21,9 @@ public:
 
     ~StrategyManagerHomologation() override = default;
 
-    bool init( const TrajectoryManager::Ptr& trajectoryManager ) override;
+    bool init(
+        const Odometry::Ptr& odometry,
+        const TrajectoryManager::Ptr& trajectoryManager ) override;
 
     void deinit() override;
 
@@ -33,9 +35,10 @@ public:
 
     void hardStop() override;
 
-    void obstacleToClose( bool avoid ) override;
+    void obstacleAt( double xStart, double yStart, double xEnd, double yEnd ) override;
 
 private:
+    Odometry::Ptr _odometry;
     TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
 
     QList< Action::Ptr > _actions;
