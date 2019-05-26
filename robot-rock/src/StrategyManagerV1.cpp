@@ -21,6 +21,9 @@ namespace
 
 StrategyManagerV1::StrategyManagerV1( QObject* parent )
     : _odometry( nullptr )
+    , _recalage( nullptr )
+    , _armsManager( nullptr )
+    , _opponentDetection( nullptr )
     , _trajectoryManager( nullptr )
     , _astar( _trajectoryManager, 1.0, 67, 100 )
     , _currentAction( nullptr )
@@ -70,8 +73,32 @@ StrategyManagerV1::StrategyManagerV1( QObject* parent )
 }
 
 bool StrategyManagerV1::init(
-    const Odometry::Ptr& odometry,
-    const TrajectoryManager::Ptr& trajectoryManager )
+        const Odometry::Ptr& odometry,
+        const Recalage::Ptr& recalage,
+        const ArmsManager::Ptr& armsManager,
+        const OpponentDetection::Ptr opponentDetection,
+        const TrajectoryManager::Ptr& trajectoryManager )
+{
+    if ( ! _init )
+    {
+        _odometry = odometry;
+        _recalage = recalage;
+        _armsManager = armsManager;
+        _opponentDetection = opponentDetection;
+        _trajectoryManager = trajectoryManager;
+        _init = true;
+    }
+    else
+    {
+        tDebug( LOG ) << "StrategyManagerV1 already initialized";
+    }
+
+    return true;
+}
+
+bool StrategyManagerV1::init(
+        const Odometry::Ptr& odometry,
+        const TrajectoryManager::Ptr& trajectoryManager )
 {
     if ( ! _init )
     {
@@ -90,6 +117,9 @@ bool StrategyManagerV1::init(
 void StrategyManagerV1::deinit()
 {
     _trajectoryManager = nullptr;
+    _opponentDetection = nullptr;
+    _armsManager = nullptr;
+    _recalage = nullptr;
     _odometry = nullptr;
     _init = false;
 }

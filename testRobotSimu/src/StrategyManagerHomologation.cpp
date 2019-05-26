@@ -21,6 +21,9 @@ namespace
 
 StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
     : _odometry( nullptr )
+    , _recalage( nullptr )
+    , _armsManager( nullptr )
+    , _opponentDetection( nullptr )
     , _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
@@ -31,12 +34,36 @@ StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
 
 bool StrategyManagerHomologation::init(
     const Odometry::Ptr& odometry,
+    const Recalage::Ptr& recalage,
+    const ArmsManager::Ptr& armsManager,
+    const OpponentDetection::Ptr opponentDetection,
     const TrajectoryManager::Ptr& trajectoryManager )
 {
     if( ! _init )
     {
-        _trajectoryManager = trajectoryManager;
         _odometry = odometry;
+        _recalage = recalage;
+        _armsManager = armsManager;
+        _opponentDetection = opponentDetection;
+        _trajectoryManager = trajectoryManager;
+        _init = true;
+    }
+    else
+    {
+        tDebug( LOG ) << "Already initialized";
+    }
+
+    return true;
+}
+
+bool StrategyManagerHomologation::init(
+    const Odometry::Ptr& odometry,
+    const TrajectoryManager::Ptr& trajectoryManager )
+{
+    if( ! _init )
+    {
+        _odometry = odometry;
+        _trajectoryManager = trajectoryManager;
         _init = true;
     }
     else
@@ -49,8 +76,11 @@ bool StrategyManagerHomologation::init(
 
 void StrategyManagerHomologation::deinit()
 {
-    _odometry = nullptr;
     _trajectoryManager = nullptr;
+    _opponentDetection = nullptr;
+    _armsManager = nullptr;
+    _recalage = nullptr;
+    _odometry = nullptr;
     _init = false;
 }
 
@@ -132,6 +162,7 @@ void StrategyManagerHomologation::hardStop()
     _stratIsRunning = false;
     _actions.clear();
 }
+
 
 void StrategyManagerHomologation::obstacleAt( double xStart, double yStart, double xEnd, double yEnd )
 {

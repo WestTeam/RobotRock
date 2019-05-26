@@ -3,6 +3,8 @@
 #ifndef WESTBOT_ROBOTROCK_OPPONENTDETECTION_HPP_
 #define WESTBOT_ROBOTROCK_OPPONENTDETECTION_HPP_
 
+#include <memory>
+
 #include <QObject>
 
 namespace WestBot {
@@ -13,6 +15,8 @@ class OpponentDetection : public QObject
     Q_OBJECT
 
 public:
+    using Ptr = std::shared_ptr< OpponentDetection >;
+
     OpponentDetection();
     ~OpponentDetection() override = default;
 

@@ -35,22 +35,26 @@ SystemManagerHw::SystemManagerHw(
     : SystemManager( parent )
     , _hal( hal )
     , _systemMode( SystemManagerHw::SystemMode::Full )
+
     , _odometry( nullptr )
     , _recalage( nullptr )
     , _lidarTop( nullptr )
     , _lidarFront( nullptr )
     , _lidarRear( nullptr )
     , _trajectoryManager( nullptr )
-    , _strategyManager( strategyManager )
+    , _distanceSensorLeft( "/dev/ttyAL8" )
+    , _distanceSensorRight( "/dev/ttyAL13" )
     , _armLeftLow( nullptr )
     , _armRightLow( nullptr )
     , _armLeft( nullptr )
     , _armRight( nullptr )
     , _armsManager( nullptr )
+    , _opponentDetection( nullptr )
+
     , _monitoring( nullptr )
     , _game( nullptr )
-    , _distanceSensorLeft( "/dev/ttyAL8" )
-    , _distanceSensorRight( "/dev/ttyAL13" )
+
+    , _strategyManager( strategyManager )
 {
     _startButton.reset(
           new InputHw(
@@ -118,7 +122,7 @@ SystemManagerHw::SystemManagerHw(
         } );
 
     connect(
-        & _opponentDetection,
+        _opponentDetection.get(),
         & OpponentDetection::opponentDetected,
         this,
         [ this ]( double x, double y )
@@ -191,6 +195,7 @@ bool SystemManagerHw::init()
 {
     tInfo( LOG ) << "System manager initializing...";
 
+    // For arms
     _hal->_motor4Override.write( 1 );
     _hal->_motor5Override.write( 1 );
 
@@ -243,11 +248,6 @@ bool SystemManagerHw::init()
         new TrajectoryManagerHw( _hal ) );
 
     _trajectoryManager->init();
-
-    if( ! _strategyManager->init( _odometry, _trajectoryManager ) )
-    {
-        tFatal( LOG ) << "Unable to init strategy manager. Abort";
-    }
 
     _armLeftLow.reset( new ArmLowLevel() );
 
@@ -320,6 +320,18 @@ bool SystemManagerHw::init()
     if( ! _armsManager->init( _odometry, _armLeft, _armRight ) )
     {
         tFatal( LOG ) << "Unable to init arms manager. Abort";
+    }
+
+    _opponentDetection.reset( new OpponentDetection() );
+
+    if( ! _strategyManager->init(
+        _odometry,
+        _recalage,
+        _armsManager,
+        _opponentDetection,
+        _trajectoryManager ) )
+    {
+        tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
     _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
@@ -400,15 +412,18 @@ void SystemManagerHw::reset()
 
     _hal->_colorEnable.write( 1 );
 
-    _armsManager = nullptr;
-    _armLeft = nullptr;
-    _armRight = nullptr;
-    _odometry = nullptr;
-    _trajectoryManager = nullptr;
-    _recalage = nullptr;
-
     _monitoring->terminate();
     _monitoring = nullptr;
+
+    _opponentDetection = nullptr;
+    _armsManager = nullptr;
+    _armRight = nullptr;
+    _armLeft = nullptr;
+    _armRightLow = nullptr;
+    _armLeftLow = nullptr;
+    _trajectoryManager = nullptr;
+    _recalage = nullptr;
+    _odometry = nullptr;
 
     tInfo( LOG ) << "System was reset";
 

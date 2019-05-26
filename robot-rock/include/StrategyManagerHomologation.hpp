@@ -22,6 +22,13 @@ public:
     ~StrategyManagerHomologation() override = default;
 
     bool init(
+            const Odometry::Ptr& odometry,
+            const Recalage::Ptr& recalage,
+            const ArmsManager::Ptr& armsManager,
+            const OpponentDetection::Ptr opponentDetection,
+            const TrajectoryManager::Ptr& trajectoryManager ) override;
+
+    bool init(
         const Odometry::Ptr& odometry,
         const TrajectoryManager::Ptr& trajectoryManager ) override;
 
@@ -39,6 +46,9 @@ public:
 
 private:
     Odometry::Ptr _odometry;
+    Recalage::Ptr _recalage;
+    ArmsManager::Ptr _armsManager;
+    OpponentDetection::Ptr _opponentDetection;
     TrajectoryManager::Ptr _trajectoryManager; // Here we use a ref not a copy very important
 
     QList< Action::Ptr > _actions;

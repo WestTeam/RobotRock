@@ -7,8 +7,11 @@
 
 #include <QObject>
 
+#include "ArmsManager.hpp"
 #include "Common.hpp"
 #include "Odometry.hpp"
+#include "OpponentDetection.hpp"
+#include "Recalage.hpp"
 #include "TrajectoryManager.hpp"
 
 namespace WestBot {
@@ -24,7 +27,17 @@ public:
 
     virtual ~StrategyManager() override = default;
 
-    virtual bool init( const Odometry::Ptr& odometry, const TrajectoryManager::Ptr& trajectoryManager ) = 0;
+    virtual bool init(
+        const Odometry::Ptr& odometry,
+        const Recalage::Ptr& recalage,
+        const ArmsManager::Ptr& armsManager,
+        const OpponentDetection::Ptr opponentDetection,
+        const TrajectoryManager::Ptr& trajectoryManager ) = 0;
+
+    virtual bool init(
+        const Odometry::Ptr& odometry,
+        const TrajectoryManager::Ptr& trajectoryManager ) = 0;
+
     virtual void deinit() = 0;
     virtual void stop() = 0;
 

@@ -448,8 +448,8 @@ void SystemManagerSimu::stop()
 
 void SystemManagerSimu::reset()
 {
-    _odometry = nullptr;
     _trajectoryManager = nullptr;
+    _odometry = nullptr;
     //_recalage = nullptr;
 
     //_monitoring->terminate();

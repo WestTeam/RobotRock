@@ -68,19 +68,21 @@ private:
     LidarRPLidarA2::Ptr _lidarFront;
     LidarRPLidarA2::Ptr _lidarRear;
     TrajectoryManager::Ptr _trajectoryManager;
-    StrategyManager::Ptr _strategyManager;
+    Vl6180x _distanceSensorLeft;
+    Vl6180x _distanceSensorRight;
     ArmLowLevel::Ptr _armLeftLow;
     ArmLowLevel::Ptr _armRightLow;
     ArmHighLevel::Ptr _armLeft;
     ArmHighLevel::Ptr _armRight;
     ArmsManager::Ptr _armsManager;
+    OpponentDetection::Ptr _opponentDetection;
     Monitoring::Ptr _monitoring;
     GameThread::Ptr _game;
-    Vl6180x _distanceSensorLeft;
-    Vl6180x _distanceSensorRight;
     Experiment _experiment;
     SimTcpServer _simServer;
-    OpponentDetection _opponentDetection;
+
+    // Last
+    StrategyManager::Ptr _strategyManager;
 };
 
 }

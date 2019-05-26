@@ -21,12 +21,39 @@ namespace
 
 StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
     : _odometry( nullptr )
+    , _recalage( nullptr )
+    , _armsManager( nullptr )
+    , _opponentDetection( nullptr )
     , _trajectoryManager( nullptr )
     , _currentAction( nullptr )
     , _stratIsRunning( false )
     , _obstacleToClose( false )
     , _init( false )
 {
+}
+
+bool StrategyManagerHomologation::init(
+    const Odometry::Ptr& odometry,
+    const Recalage::Ptr& recalage,
+    const ArmsManager::Ptr& armsManager,
+    const OpponentDetection::Ptr opponentDetection,
+    const TrajectoryManager::Ptr& trajectoryManager )
+{
+    if( ! _init )
+    {
+        _odometry = odometry;
+        _recalage = recalage;
+        _armsManager = armsManager;
+        _opponentDetection = opponentDetection;
+        _trajectoryManager = trajectoryManager;
+        _init = true;
+    }
+    else
+    {
+        tDebug( LOG ) << "Already initialized";
+    }
+
+    return true;
 }
 
 bool StrategyManagerHomologation::init(
@@ -50,6 +77,9 @@ bool StrategyManagerHomologation::init(
 void StrategyManagerHomologation::deinit()
 {
     _trajectoryManager = nullptr;
+    _opponentDetection = nullptr;
+    _armsManager = nullptr;
+    _recalage = nullptr;
     _odometry = nullptr;
     _init = false;
 }
