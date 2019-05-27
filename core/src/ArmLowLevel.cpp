@@ -20,6 +20,7 @@ ArmLowLevel::ArmLowLevel()
 {
     _refInverted = 1;
     _vaccumEnabled = false;
+    _pid = nullptr;
 }
 
 ArmLowLevel::~ArmLowLevel()
@@ -41,8 +42,8 @@ ArmLowLevel::~ArmLowLevel()
             }
         }
 
-        delete _pid;
-
+        //if (_pid)
+        //    delete _pid;
     }
 
 }
@@ -143,7 +144,7 @@ bool ArmLowLevel::init(
                 _smartServo[i]->setPositionAndSpeed(false,false,1024/2,400);
             }
 
-            QThread::msleep(500);
+            //QThread::msleep(500);
 
         } catch (...)
         {
@@ -153,10 +154,10 @@ bool ArmLowLevel::init(
         }
     }
 
-    _pid = new Pid(pidFirstReg->_layer,pidFirstReg->offset());
 
 
 #ifndef Z_DISABLED
+    _pid = new Pid(pidFirstReg->_layer,pidFirstReg->offset());
 
     // we now have to init the Z axe
     // first step: INIT the PID module

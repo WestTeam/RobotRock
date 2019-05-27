@@ -51,6 +51,15 @@ typedef struct
     double z; // mm
 } Pos3D;
 
+#define WRIST_AND_SUCTION_LENGTH 35.0
+#define ARM_UPPER_LENGTH 70.0
+#define ARM_LOWER_LENGTH 70.0
+#define DISTRI_HEIGHT 100.0
+#define PUCK_DIAMETER 76.0
+#define GOLD_CHECKPOINT_Z (165.0+PUCK_DIAMETER/2)
+#define PUCK_WIDTH 25.0
+
+
 class ArmHighLevel
 {
 public:

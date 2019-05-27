@@ -256,7 +256,6 @@ bool ArmHighLevel::moveArmAbs(double xMm, double yMm)
     return moveArmRel(xRel,yRel);
 }
 
-#define WRIST_AND_SUCTION_LENGTH 35.0
 
 // move Arm to relative position from robot center
 bool ArmHighLevel::moveArmRel(double xMm, double yMm)
@@ -279,11 +278,11 @@ int circle_circle_intersection(double x0, double y0, double r0,
 
     x0 = _armPos.x;
     y0 = _armPos.y;
-    r0 = 70.0;
+    r0 = ARM_UPPER_LENGTH;
 
     x1 = xMm;
     y1 = yMm;
-    r1 = 70.0;
+    r1 = ARM_LOWER_LENGTH;
 
     if (_mode == ARM_HL_MODE_VERTICAL)
         r1 += WRIST_AND_SUCTION_LENGTH;
@@ -459,13 +458,13 @@ void ArmHighLevel::getObjectPos(double &xMm, double &yMm, double &zMm)
 
     double armX1,armY1;
 
-    armX1 = armX0 + 70.0*cos(rpos.theta+RAD(angle1));
-    armY1 = armY0 + 70.0*sin(rpos.theta+RAD(angle1));
+    armX1 = armX0 + ARM_UPPER_LENGTH*cos(rpos.theta+RAD(angle1));
+    armY1 = armY0 + ARM_UPPER_LENGTH*sin(rpos.theta+RAD(angle1));
 
     double armX2,armY2;
 
-    armX2 = armX1 + 70.0*cos(rpos.theta+RAD(angle1+angle2));
-    armY2 = armY1 + 70.0*sin(rpos.theta+RAD(angle1+angle2));
+    armX2 = armX1 + ARM_LOWER_LENGTH*cos(rpos.theta+RAD(angle1+angle2));
+    armY2 = armY1 + ARM_LOWER_LENGTH*sin(rpos.theta+RAD(angle1+angle2));
     double curZ = _armLL->getZ();
 
     double armX3,armY3;
@@ -556,7 +555,6 @@ bool ArmHighLevel::actionGroundPuckCollection(double xMm, double yMm)
         return false;
     }
 
-#define PUCK_WIDTH 25.0
     setVacuum(true);
 
     moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
@@ -594,8 +592,7 @@ bool ArmHighLevel::actionDistributorPuckCollection(double xMm, double yMm)
     setVacuum(true);
 
     setMode(ARM_HL_MODE_VERTICAL);
-#define DISTRI_HEIGHT 100.0
-#define PUCK_DIAMETER 76.0
+
     moveZ(DISTRI_HEIGHT+PUCK_DIAMETER/2);
 
     // only work because orientation of the robot is the same for all distributors
@@ -636,7 +633,6 @@ bool ArmHighLevel::actionCheckGoldDoorOpen(double xMm, double yMm)
 {
     setMode(ARM_HL_MODE_VERTICAL);
 
-#define GOLD_CHECKPOINT_Z (165.0+PUCK_DIAMETER/2)
 
     moveZ(GOLD_CHECKPOINT_Z);
 

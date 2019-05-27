@@ -76,10 +76,10 @@ bool StrategyManagerHomologation::init(
 
 void StrategyManagerHomologation::deinit()
 {
-    _trajectoryManager = nullptr;
     _opponentDetection = nullptr;
     _armsManager = nullptr;
     _recalage = nullptr;
+    _trajectoryManager = nullptr;
     _odometry = nullptr;
     _init = false;
 }
@@ -91,6 +91,8 @@ void StrategyManagerHomologation::stop()
     // Stop traj
     _trajectoryManager->hardStop();
     _trajectoryManager->disable();
+
+    deinit();
 }
 
 // Private methods

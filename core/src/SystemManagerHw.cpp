@@ -56,9 +56,10 @@ SystemManagerHw::SystemManagerHw(
 
     , _strategyManager( strategyManager )
 {
+
     _startButton.reset(
           new InputHw(
-              std::make_shared< ItemRegister >( _hal->_input0 ),
+              std::make_shared< ItemRegister >( _hal->_input2 ),
              "Tirette" ) );
 
     _colorButton.reset(
@@ -68,17 +69,17 @@ SystemManagerHw::SystemManagerHw(
 
     _hardstopButton.reset(
           new InputHw(
-              std::make_shared< ItemRegister >( _hal->_input2 ),
+              std::make_shared< ItemRegister >( _hal->_input0 ),
               "AU" ) );
 
     _ledYellow.reset(
           new OutputHw(
-              std::make_shared< ItemRegister >( _hal->_output0 ),
+              std::make_shared< ItemRegister >( _hal->_output3 ),
               "Yellow" ) );
 
     _ledBlue.reset(
           new OutputHw(
-              std::make_shared< ItemRegister >( _hal->_output2 ),
+              std::make_shared< ItemRegister >( _hal->_output0 ),
               "Blue" ) );
 
     connect(
@@ -131,38 +132,71 @@ SystemManagerHw::SystemManagerHw(
             _strategyManager->obstacleAt(x, y, x, y );
         } );
 
-    // we need to provide sw control on this motor
-    _hal->_motor5Override.write( 1 );
+    char buf[2] = {static_cast<char>(0xA5),0x40};
+
+    /*
+    QSerialPort serial1(LIDAR_TOP_TTY);
+    serial1.setBaudRate(LIDAR_BAUDRATE);
+    serial1.open(QIODevice::ReadWrite);
+    serial1.write(buf,2);
+    serial1.flush();
+    serial1.write(buf,2);
+    serial1.flush();
+    serial1.close();
+*/
 
     _lidarTop.reset( new LidarRPLidarA2(
         LIDAR_TOP_TTY,
         LIDAR_BAUDRATE,
-        std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
+        std::make_shared< ItemRegister >( _hal->_pwmCustom0Value ) ) );
     if( ! _lidarTop->init() )
     {
         tCritical( LOG ) << "Failed to init/check health of lidar top module";
         return;
     }
 
+    /*
+    QSerialPort serial2(LIDAR_FRONT_TTY);
+    serial2.setBaudRate(LIDAR_BAUDRATE);
+    serial2.open(QIODevice::ReadWrite);
+    serial2.write(buf,2);
+    serial2.flush();
+    serial2.write(buf,2);
+    serial2.flush();
+    serial2.close();
+*/
+
     _lidarFront.reset( new LidarRPLidarA2(
         LIDAR_FRONT_TTY,
         LIDAR_BAUDRATE,
-        std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
+        std::make_shared< ItemRegister >( _hal->_pwmCustom1Value ) ) );
     if( ! _lidarFront->init() )
     {
         tCritical( LOG ) << "Failed to init/check health of lidar front module";
         return;
     }
 
+/*
+    QSerialPort serial3(LIDAR_REAR_TTY);
+    serial3.setBaudRate(LIDAR_BAUDRATE);
+    serial3.open(QIODevice::ReadWrite);
+    serial3.write(buf,2);
+    serial3.flush();
+    serial3.write(buf,2);
+    serial3.flush();
+    serial3.close();
+*/
+
     _lidarRear.reset( new LidarRPLidarA2(
         LIDAR_REAR_TTY,
         LIDAR_BAUDRATE,
-        std::make_shared< ItemRegister >( _hal->_motor5Value ) ) );
+        std::make_shared< ItemRegister >( _hal->_pwmCustom2Value ) ) );
     if( ! _lidarRear->init() )
     {
         tCritical( LOG ) << "Failed to init/check health of lidar rear module";
         return;
     }
+
 
     _hal->_colorEnable.write( 0 );
 
@@ -180,6 +214,7 @@ SystemManagerHw::SystemManagerHw(
            << "Unable to start the server:"
            << _simServer.errorString();
     }
+
 }
 
 SystemManagerHw::~SystemManagerHw()
@@ -236,24 +271,28 @@ bool SystemManagerHw::init()
 
     _odometry.reset( new OdometryHw( _hal ) );
 
+
     _recalage.reset( new Recalage() );
 
-    if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidarFront ) )
+    if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidarRear) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
     }
+
 
     _trajectoryManager.reset(
         new TrajectoryManagerHw( _hal ) );
 
     _trajectoryManager->init();
 
+
     _armLeftLow.reset( new ArmLowLevel() );
 
-    ItemRegister::Ptr pidfirstregL = std::make_shared< ItemRegister >( _hal->_pidCustom1FreqHz );
-    ItemRegister::Ptr pumpL = std::make_shared< ItemRegister >( _hal->_motor4Value );
-    ItemRegister::Ptr valveL = std::make_shared< ItemRegister >( _hal->_output2 );
+
+    static ItemRegister::Ptr pidfirstregL = std::make_shared< ItemRegister >( _hal->_pidCustom1FreqHz );
+    static ItemRegister::Ptr pumpL = std::make_shared< ItemRegister >( _hal->_motor4Value );
+    static ItemRegister::Ptr valveL = std::make_shared< ItemRegister >( _hal->_output2 );
 
     if( ! _armLeftLow->init(
         _hal,
@@ -275,13 +314,14 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arm left low level. Abort";
     }
 
+
     _armRightLow.reset( new ArmLowLevel() );
 
-    ItemRegister::Ptr pidfirstregR = std::make_shared< ItemRegister >( _hal->_pidCustom2FreqHz );
-    ItemRegister::Ptr pumpR = std::make_shared< ItemRegister >( _hal->_motor5Value );
-    ItemRegister::Ptr valveR = std::make_shared< ItemRegister >( _hal->_output1 );
+    static ItemRegister::Ptr pumpR = std::make_shared< ItemRegister >( _hal->_motor5Value );
+    static ItemRegister::Ptr pidfirstregR = std::make_shared< ItemRegister >( _hal->_pidCustom2FreqHz );
+    static ItemRegister::Ptr valveR = std::make_shared< ItemRegister >( _hal->_output1 );
 
-    if( ! _armLeftLow->init(
+    if( ! _armRightLow->init(
         _hal,
         pidfirstregR,
         true,
@@ -301,6 +341,7 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arm left low level. Abort";
     }
 
+
     _armLeft.reset( new ArmHighLevel() );
 
     if( ! _armLeft->init( _odometry, _armLeftLow, true ) )
@@ -310,10 +351,12 @@ bool SystemManagerHw::init()
 
     _armRight.reset( new ArmHighLevel() );
 
-    if( ! _armLeft->init( _odometry, _armRightLow, false ) )
+    if( ! _armRight->init( _odometry, _armRightLow, false ) )
     {
         tFatal( LOG ) << "Unable to init arm right high level. Abort";
     }
+
+
 
     _armsManager.reset( new ArmsManager() );
 
@@ -322,7 +365,9 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arms manager. Abort";
     }
 
+
     _opponentDetection.reset( new OpponentDetection() );
+
 
     if( ! _strategyManager->init(
         _odometry,
@@ -336,7 +381,7 @@ bool SystemManagerHw::init()
 
     _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
-    _monitoring->start();
+    //_monitoring->start();
     _monitoring->setRefreshRate( 250 );
 
     // Override output registers
@@ -387,7 +432,6 @@ void SystemManagerHw::stop()
     SystemManager::stop();
 
     _gameTimer.stop();
-
     if( nullptr != _game && _game->isRunning() )
     {
         _game->terminate();
@@ -412,7 +456,7 @@ void SystemManagerHw::reset()
 
     _hal->_colorEnable.write( 1 );
 
-    _monitoring->terminate();
+    //_monitoring->terminate();
     _monitoring = nullptr;
 
     _opponentDetection = nullptr;
@@ -494,5 +538,6 @@ void SystemManagerHw::displayColor( const DigitalValue& value )
         _experiment.setColorYellow();
     }
 
-    _monitoring->updateColor( _color );
+    if (_monitoring)
+        _monitoring->updateColor( _color );
 }

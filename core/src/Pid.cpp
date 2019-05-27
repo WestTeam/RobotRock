@@ -63,7 +63,7 @@ Pid::~Pid()
 
     tDebug( LOG ) << "Pid destructor engaged";
 
-    setEnable(false);
+    //setEnable(false);
 }
 
 

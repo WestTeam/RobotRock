@@ -93,7 +93,8 @@ SystemManager::SystemManager( QObject* parent )
 
 void SystemManager::stop()
 {
-    _alive->stop();
+    if (_alive)
+        _alive->stop();
 }
 
 //

@@ -26,6 +26,8 @@ public:
         const Odometry::Ptr& odometry,
         const ArmsManager::Ptr& armsManager );
 
+    ~Monitoring();
+
     void setRefreshRate( int delayMs );
 
     void updateColor( Color color );
@@ -42,6 +44,7 @@ private:
     Nextion _screen;
     int _delayMs;
     Color _color;
+    bool _stop;
 };
 
 }

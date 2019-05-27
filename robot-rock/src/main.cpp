@@ -8,7 +8,7 @@
 
 //#define DEBUG
 //#define SIMU
-#define USE_SIMULATOR
+//#define USE_SIMULATOR
 
 #ifdef USE_SIMULATOR
 #include <WestBot/RobotRock/SystemManagerSimu.hpp>
@@ -17,7 +17,7 @@
 #include <WestBot/RobotRock/SystemManagerHw.hpp>
 #endif
 
-//#include "StrategyManagerHomologation.hpp"
+#include "StrategyManagerHomologation.hpp"
 #include "StrategyManagerV1.hpp"
 
 using namespace WestBot;
@@ -42,13 +42,14 @@ int main( int argc, char *argv[] )
     handler.setEnableDebugLevel( true );
 #endif
 
-    //StrategyManagerHomologation::Ptr strategyHomologation =
-    //    std::make_shared< StrategyManagerHomologation >();
 
-    StrategyManagerV1::Ptr strategyV1 =
-        std::make_shared< StrategyManagerV1 >();
+
+    //StrategyManagerV1::Ptr strategyV1 =
+    //    std::make_shared< StrategyManagerV1 >();
 
 #ifndef USE_SIMULATOR
+    StrategyManagerHomologation::Ptr strategyHomologation =
+        std::make_shared< StrategyManagerHomologation >();
     Hal::Ptr hal = std::make_shared< Hal >();
     SystemManagerHw system( hal, strategyHomologation );
 
@@ -80,6 +81,12 @@ int main( int argc, char *argv[] )
 #endif
 
     tInfo( LOG ) << "==== System ready ! ==== ";
+
+    /*
+    while(1)
+    {
+        app.processEvents();
+    }*/
 
     return app.exec();
 }

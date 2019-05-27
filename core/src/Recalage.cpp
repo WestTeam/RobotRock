@@ -35,6 +35,8 @@ Recalage::Recalage()
     : _odometry( nullptr )
     , _lidar( nullptr )
 {
+    tDebug( LOG ) << "Recalage constructor engaged";
+
     _initDone = false;
     _continuousMode = false;
     _trigger = false;
@@ -47,15 +49,19 @@ Recalage::Recalage()
 
 Recalage::~Recalage()
 {
+    tDebug( LOG ) << "Recalage destructor called...";
+
     if( _attached )
     {
         _finishing = true;
 
-        this->QThread::wait(4000);
+        this->QThread::wait(2000);
 
         _lidar->stopScan();
         _lidar->stopMotor();
     }
+    tDebug( LOG ) << "Recalage thread stopped";
+
 }
 
 bool Recalage::init( const Odometry::Ptr& odometry, const LidarBase::Ptr& lidar )
@@ -309,7 +315,7 @@ bool Recalage::calibrate(
 
     if( mesureLen < 50 )
     {
-        tDebug( LOG ) << "No object found";
+        //tDebug( LOG ) << "No object found";
         return false;
     }
 
@@ -561,7 +567,6 @@ void Recalage::run()
                 }
             }
         }
-
 /*
         bool ok;
         ok = _lidar->get360ScanData(data,dataCount);

@@ -21,6 +21,7 @@ ArmsManager::ArmsManager()
     _arm[0] = nullptr;
     _arm[1] = nullptr;
 
+    _score = 0;
 }
 
 ArmsManager::~ArmsManager()
@@ -50,6 +51,8 @@ bool ArmsManager::init(
     _odometry = odometry;
     _arm[0] = armLeft;
     _arm[1] = armRight;
+
+
 
     return ret;
 }
@@ -164,7 +167,97 @@ bool ArmsManager::isAttached() const
 
 bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight, RobotPos &pos)
 {
+    bool ret = false;
 
+    double arml_pos_x,arml_pos_y;
+    double armr_pos_x,armr_pos_y;
+
+    double arml_abs_x,arml_abs_y;
+    double armr_abs_x,armr_abs_y;
+
+    _arm[0]->getArmPos(arml_pos_x,arml_pos_y);
+    _arm[1]->getArmPos(armr_pos_x,armr_pos_y);
+
+    RobotPos rpos = _odometry->getPosition();
+
+    arml_abs_x = rpos.x+arml_pos_x*cos(rpos.theta);
+    arml_abs_y = rpos.y+arml_pos_y*sin(rpos.theta);
+
+    armr_abs_x = rpos.x+armr_pos_x*cos(rpos.theta);
+    armr_abs_y = rpos.y+armr_pos_y*sin(rpos.theta);
+
+    double x,y;
+
+
+    if (listLeft.size() == 1 && listRight.size() == 1)
+    {
+        if (listLeft.front().isOnGround == false)
+        {
+
+            double diff_arm_puck_y = listLeft.front().y-arml_pos_y;
+
+            y = listLeft.front().y+(listRight.front().y-listLeft.front().y)/2;
+            x = listLeft.front().x
+              - (ARM_LOWER_LENGTH+WRIST_AND_SUCTION_LENGTH)
+              - sqrt(ARM_UPPER_LENGTH*ARM_UPPER_LENGTH+diff_arm_puck_y*diff_arm_puck_y)
+              - arml_pos_x;
+
+            pos.theta = listLeft.front().theta-M_PI;
+            pos.x = x;
+            pos.y = y;
+
+            ret = true;
+        } else {
+            // not yet handled
+        }
+    }
+    if (listLeft.size() == 1 && listRight.size() == 0 || listLeft.size() == 0 && listRight.size() == 1)
+    {
+        double inv=1.0;
+        PuckPos puck = listRight.front();
+
+        if (listLeft.size() == 1 && listRight.size() == 0)
+        {
+            inv = -1.0;
+            puck = listLeft.front();
+        }
+
+        if (puck.isOnGround == true)
+        {
+            double d,theta;
+
+            d = hypot(puck.x-rpos.x,puck.y-rpos.y);
+            theta = atan2(puck.y-rpos.y,puck.x-rpos.x);
+
+            //theta-=rpos.theta;
+            d -= arml_abs_x-70.0;
+
+
+            x = rpos.x+d*cos(theta);
+            y = rpos.y+d*sin(theta);
+
+            rpos.x = x;
+            rpos.y = y;
+            rpos.theta = theta+RAD(45.0)*inv;
+
+            ret = true;
+        } else {
+
+
+            x = puck.x + (WRIST_AND_SUCTION_LENGTH + ARM_UPPER_LENGTH + ARM_LOWER_LENGTH + arml_pos_x)*cos(puck.theta);
+            y = puck.y + arml_pos_y*inv*cos(puck.theta)*-1.0;
+
+            rpos.x = x;
+            rpos.y = y;
+            rpos.theta = puck.theta-M_PI;
+
+            ret = true;
+        }
+
+
+    }
+
+    return ret;
 }
 
 

@@ -34,7 +34,7 @@ typedef struct
     double x;
     double y;
     double z;
-    double theta;
+    double theta; // used when isOnGround = true
     enum PuckType type;
     bool isOnGround;
 } PuckPos;

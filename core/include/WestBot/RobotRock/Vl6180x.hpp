@@ -65,6 +65,7 @@ private:
 
 private:
     QSerialPort* _serial;
+    QString _tty;
     uint32_t _distance[ VL6180X_MAX_SENSOR_COUNT ];
     uint8_t  _status[ VL6180X_MAX_SENSOR_COUNT ];
     uint64_t _ts[ VL6180X_MAX_SENSOR_COUNT ];//std::atomic<uint64_t> _ts[ VL6180X_MAX_SENSOR_COUNT ];

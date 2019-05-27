@@ -1,9 +1,18 @@
 // Copyright (c) 2019 All Rights Reserved WestBot
 
+#include <WestBot/HumanAfterAll/Category.hpp>
+
+
 #include <WestBot/RobotRock/Monitoring.hpp>
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
+
+namespace
+{
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Monitoring" )
+}
+
 
 Monitoring::Monitoring(
     const Hal::Ptr& hal,
@@ -11,13 +20,27 @@ Monitoring::Monitoring(
     const ArmsManager::Ptr& armsManager )
     : _hal( hal )
     , _odo( odo )
+    , _armsManager( armsManager )
     , _screen( "/dev/ttyAL0" )
     , _delayMs( 1000 )
     , _color( Color::Unknown )
 {
     // Set name once at boot time
     _screen.send( "tTeam", "WestTeam" );
+
+    _screen.setColor( "tVoltage2", "2016" );
+
+
+    _stop = false;
+    start();
 }
+
+Monitoring::~Monitoring()
+{
+    _stop = true;
+    QThread::msleep( 1000 );
+}
+
 
 void Monitoring::setRefreshRate( int delayMs )
 {
@@ -34,7 +57,7 @@ void Monitoring::updateColor( Color color )
 //
 void Monitoring::run()
 {
-    while( 1 )
+    while( !_stop )
     {
         dump();
         QThread::msleep( _delayMs );
@@ -71,15 +94,67 @@ void Monitoring::dump()
     _screen.send( "tPosOdo", odoStr.toLatin1() );
     _screen.send( "tPosLidar", "" );
 
-    uint32_t v0 = _hal->_voltage12V.read< uint32_t >();
-    uint32_t v1 = _hal->_voltage24V.read< uint32_t >();
-    uint32_t v2 = _hal->_voltageA5V.read< uint32_t >();
-    uint32_t v3 = _hal->_voltageA12V.read< uint32_t >();
+    int32_t v0 = _hal->_voltage12V.read< int32_t >();
+    int32_t v1 = _hal->_voltage24V.read< int32_t >();
+    int32_t v2 = _hal->_voltageA5V.read< int32_t >();
+    int32_t v3 = _hal->_voltageA12V.read< int32_t >();
 
-    _screen.send( "tVoltage0", QString::number( v0 ).toLatin1() );
-    _screen.send( "tVoltage1", QString::number( v1 ).toLatin1() );
-    _screen.send( "tVoltage2", QString::number( v2 ).toLatin1() );
-    _screen.send( "tVoltage3", QString::number( v3 ).toLatin1() );
+
+
+
+/*    tDebug(LOG) << "v0" << v0 << 12.0 + ((double)v0-580000.0)/800000.0;
+    tDebug(LOG) << "v1" << v1 << 24.0 + ((double)v1-(-1113000.0))/280000.0;
+    tDebug(LOG) << "v2" << v2 << 12.0 + ((double)v2-580000.0)/800000.0;
+    tDebug(LOG) << "v3" << v3 << 12.0 + ((double)v3-580000.0)/800000.0;
+*/
+
+    double dv0 = 12.0 + ((double)v0-580000.0)/800000.0;
+    double dv1 = 24.0 + ((double)v1-(-1113000.0))/280000.0;
+    double dv2 = 12.0 + ((double)v2-580000.0)/800000.0;
+    double dv3 = 12.0 + ((double)v3-580000.0)/800000.0;
+
+    if (dv0 > 11.0)
+    {
+        _screen.setColor( "tVoltage0", "2016" );
+    } else if (dv0 > 9.0)
+    {
+        _screen.setColor( "tVoltage0", "65057" );
+
+    } else {
+        _screen.setColor( "tVoltage0", "63488" );
+
+    }
+
+    if (dv1 > 11.0*2.0)
+    {
+        _screen.setColor( "tVoltage1", "2016" );
+    } else if (dv1 > 9.0*2.0)
+    {
+        _screen.setColor( "tVoltage1", "65057" );
+
+    } else {
+        _screen.setColor( "tVoltage1", "63488" );
+    }
+
+
+    if (dv3 > 11.0)
+    {
+        _screen.setColor( "tVoltage3", "2016" );
+    } else if (dv3 > 9.0)
+    {
+        _screen.setColor( "tVoltage3", "65057" );
+
+    } else {
+        _screen.setColor( "tVoltage3", "63488" );
+
+    }
+
+
+
+    _screen.send( "tVoltage0", QString::number( dv0 ).toLatin1() );
+    _screen.send( "tVoltage1", QString::number( dv1 ).toLatin1() );
+    _screen.send( "tVoltage2", QString::number( dv2 ).toLatin1() );
+    _screen.send( "tVoltage3", QString::number( dv3 ).toLatin1() );
 
     _screen.send( "tStatus0", "OFF" );
     _screen.send( "tStatus1", "OFF" );

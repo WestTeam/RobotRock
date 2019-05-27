@@ -48,9 +48,8 @@ typedef struct
 Trame trame;
 
 Vl6180x::Vl6180x( const QString& tty )
-    : _serial( new QSerialPort( tty, this ) )
 {
-   init();
+    _tty = tty;
    start();
 }
 
@@ -107,9 +106,17 @@ uint64_t Vl6180x::samplingPeriod( int sensorId )
 //
 void Vl6180x::readData()
 {
-    _serial->waitForReadyRead(10);
+    _serial->waitForReadyRead(1);
+
+    /*
+    if (_serial->bytesAvailable() >= 9)
+    {
+        char buffer[10];
+        _serial->read( ( char* ) buffer, 9 );
+    }*/
 
     while( _serial->bytesAvailable() >= 9 )
+//    if (0)
     {
         _serial->read( ( char* ) & trame.header.fanion, 1 );
         if( trame.header.fanion == 0xA5 )
@@ -122,9 +129,13 @@ void Vl6180x::readData()
 
             if( crc != trame.header.crc )
             {
-                tWarning( LOG ) << "Trame not valid: CRC error" << crc << trame.header.crc;
+                //tWarning( LOG ) << _tty << "Trame not valid: CRC error" << crc << trame.header.crc;
                 return;
             }
+            /*else {
+                tInfo( LOG ) << _tty << "OK";
+
+            }*/
 
             if (trame.header.id < VL6180X_MAX_SENSOR_COUNT)
             {
@@ -145,10 +156,10 @@ void Vl6180x::readData()
 
                 if (!(trame.status == 0 || trame.status >= 5))
                 {
-                    tWarning( LOG ) << "Sensor status hardware error: dropping data" << trame.status << trame.header.id;
+                    tWarning( LOG ) << _tty << "Sensor status hardware error: dropping data" << trame.status << trame.header.id;
                 }
             } else {
-                tWarning( LOG ) << "Sensor Id cannot be hanlded: dropping data" << trame.status << trame.header.id;
+                tWarning( LOG ) << _tty << "Sensor Id cannot be hanlded: dropping data" << trame.status << trame.header.id;
             }
         }
     }
@@ -192,6 +203,10 @@ void Vl6180x::init()
 
 void Vl6180x::run()
 {
+    _serial = new QSerialPort( _tty );
+    _serial->moveToThread(this);
+    init();
+
     while (1)
     {
         readData();
