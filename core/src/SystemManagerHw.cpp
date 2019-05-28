@@ -49,6 +49,7 @@ SystemManagerHw::SystemManagerHw(
     , _armLeft( nullptr )
     , _armRight( nullptr )
     , _armsManager( nullptr )
+    , _puckDetection( nullptr )
     , _opponentDetection( nullptr )
 
     , _monitoring( nullptr )
@@ -74,12 +75,12 @@ SystemManagerHw::SystemManagerHw(
 
     _ledYellow.reset(
           new OutputHw(
-              std::make_shared< ItemRegister >( _hal->_output3 ),
+              std::make_shared< ItemRegister >( _hal->_output0 ),
               "Yellow" ) );
 
     _ledBlue.reset(
           new OutputHw(
-              std::make_shared< ItemRegister >( _hal->_output0 ),
+              std::make_shared< ItemRegister >( _hal->_output3 ),
               "Blue" ) );
 
     connect(
@@ -132,18 +133,50 @@ SystemManagerHw::SystemManagerHw(
             _strategyManager->obstacleAt(x, y, x, y );
         } );
 
-    char buf[2] = {static_cast<char>(0xA5),0x40};
+    char buf[2] = {0xA5,0x40};
 
-    /*
-    QSerialPort serial1(LIDAR_TOP_TTY);
-    serial1.setBaudRate(LIDAR_BAUDRATE);
-    serial1.open(QIODevice::ReadWrite);
+
+    QSerialPort* serial1 = new QSerialPort(LIDAR_FRONT_TTY,this);
+    tInfo( LOG ) << "1";
+    serial1->setBaudRate(LIDAR_BAUDRATE);
+    tInfo( LOG ) << "2";
+    serial1->open(QIODevice::ReadWrite);
+    tInfo( LOG ) << "3";
+    serial1->write(buf,2);
+    tInfo( LOG ) << "4";
+    serial1->flush();
+    /*tInfo( LOG ) << "5";
     serial1.write(buf,2);
+    tInfo( LOG ) << "6";
     serial1.flush();
+    tInfo( LOG ) << "7";*/
+
+    serial1->close();
+    delete serial1;
+
+    serial1 = new QSerialPort(LIDAR_REAR_TTY,this);
+    tInfo( LOG ) << "1";
+    serial1->setBaudRate(LIDAR_BAUDRATE);
+    tInfo( LOG ) << "2";
+    serial1->open(QIODevice::ReadWrite);
+    tInfo( LOG ) << "3";
+    serial1->write(buf,2);
+    tInfo( LOG ) << "4";
+    serial1->flush();
+    /*tInfo( LOG ) << "5";
     serial1.write(buf,2);
+    tInfo( LOG ) << "6";
     serial1.flush();
-    serial1.close();
-*/
+    tInfo( LOG ) << "7";*/
+
+    serial1->close();
+    delete serial1;
+
+
+    tInfo( LOG ) << "8";
+
+    QThread::msleep(500);
+
 
     _lidarTop.reset( new LidarRPLidarA2(
         LIDAR_TOP_TTY,
@@ -154,6 +187,8 @@ SystemManagerHw::SystemManagerHw(
         tCritical( LOG ) << "Failed to init/check health of lidar top module";
         return;
     }
+    _lidarTop->startMotor(0.0);
+
 
     /*
     QSerialPort serial2(LIDAR_FRONT_TTY);
@@ -175,6 +210,8 @@ SystemManagerHw::SystemManagerHw(
         tCritical( LOG ) << "Failed to init/check health of lidar front module";
         return;
     }
+    _lidarFront->startMotor(50.0);
+
 
 /*
     QSerialPort serial3(LIDAR_REAR_TTY);
@@ -196,6 +233,8 @@ SystemManagerHw::SystemManagerHw(
         tCritical( LOG ) << "Failed to init/check health of lidar rear module";
         return;
     }
+    _lidarRear->startMotor(0.0);
+
 
 
     _hal->_colorEnable.write( 0 );
@@ -271,15 +310,29 @@ bool SystemManagerHw::init()
 
     _odometry.reset( new OdometryHw( _hal ) );
 
+    double ms_wheel_axe_mm = 262.0l;
+    double ms_wheel_mm_per_tick_l = 1.08l*96.0*M_PI/(1024.0*728.0/45.0);
+    double ms_wheel_mm_per_tick_r = 1.08l*96.0*M_PI/(1024.0*728.0/45.0);
+
+    double cs_wheel_axe_mm = 188.0l;
+    double cs_wheel_mm_per_tick_l = 32.0l*M_PI/(1024.0);
+    double cs_wheel_mm_per_tick_r = 32.0l*M_PI/(1024.0);
+
+    _hal->_odometryCodingMotorAxeMm.write((float)ms_wheel_axe_mm);
+
+    _hal->_odometryCodingMotorMmPerTickLeft.write((float)ms_wheel_mm_per_tick_l);
+    _hal->_odometryCodingMotorMmPerTickRight.write((float)ms_wheel_mm_per_tick_r);
+
 
     _recalage.reset( new Recalage() );
 
+    /*
     if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidarRear) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
     }
-
+    */
 
     _trajectoryManager.reset(
         new TrajectoryManagerHw( _hal ) );
@@ -365,6 +418,14 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arms manager. Abort";
     }
 
+    _puckDetection.reset( new PuckDetection() );
+
+    _puckDetection->setTargetSpeedHz(4.0);
+
+    if (!_puckDetection->init(_odometry,_lidarFront))
+    {
+        tFatal( LOG ) << "Unable to init Puck Detection. Abort";
+    }
 
     _opponentDetection.reset( new OpponentDetection() );
 
@@ -441,7 +502,7 @@ void SystemManagerHw::stop()
 
     tInfo( LOG ) << "System stopped";
 
-    reset();
+    //reset();
 }
 
 void SystemManagerHw::reset()
@@ -459,6 +520,7 @@ void SystemManagerHw::reset()
     //_monitoring->terminate();
     _monitoring = nullptr;
 
+    _puckDetection = nullptr;
     _opponentDetection = nullptr;
     _armsManager = nullptr;
     _armRight = nullptr;
@@ -523,7 +585,7 @@ void SystemManagerHw::initRecalage()
 
 void SystemManagerHw::displayColor( const DigitalValue& value )
 {
-    if( value == DigitalValue::OFF )
+    if( value == DigitalValue::ON )
     {
         _color = Color::Blue;
         _ledBlue->digitalWrite( DigitalValue::ON );

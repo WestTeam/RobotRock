@@ -116,12 +116,15 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
     }
 
     _actions.push_back( wait500Ms() );
+    /*
     _actions.push_back( moveToCenterZone( _trajectoryManager, inv ) );
     _actions.push_back( turnToCenterZone( _trajectoryManager, inv ) );
     _actions.push_back( moveALittleForward( _trajectoryManager, inv ) );
     _actions.push_back( moveALittleForward2( _trajectoryManager, inv ) );
     _actions.push_back( moveToStartZone( _trajectoryManager, inv ) );
     _actions.push_back( orientationZoneDepose( _trajectoryManager, inv ) );
+    _actions.push_back( moveALittleForward3( _trajectoryManager, inv ) );
+*/
     _actions.push_back( moveALittleForward3( _trajectoryManager, inv ) );
 
     _stratIsRunning = true;

@@ -11,6 +11,7 @@
 #include "Monitoring.hpp"
 #include "OpponentDetection.hpp"
 #include "Recalage.hpp"
+#include "PuckDetection.hpp"
 #include "SimTcpServer.hpp"
 #include "StrategyManager.hpp"
 #include "SystemManager.hpp"
@@ -75,6 +76,7 @@ private:
     ArmHighLevel::Ptr _armLeft;
     ArmHighLevel::Ptr _armRight;
     ArmsManager::Ptr _armsManager;
+    PuckDetection::Ptr _puckDetection;
     OpponentDetection::Ptr _opponentDetection;
     Monitoring::Ptr _monitoring;
     GameThread::Ptr _game;
