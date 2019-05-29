@@ -27,7 +27,7 @@ class Odometry
 public:
     using Ptr = std::shared_ptr< Odometry >;
 
-    virtual ~Odometry();
+    virtual ~Odometry() = default;
 
     virtual RobotPos getPosition() = 0;
     virtual void setPosition( RobotPos pos ) = 0;
