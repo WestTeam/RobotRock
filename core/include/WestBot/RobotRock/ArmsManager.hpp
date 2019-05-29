@@ -57,6 +57,8 @@ public:
 
     bool isAttached() const;
 
+
+
     // general
     void disable();
     void enable();
@@ -65,10 +67,10 @@ public:
     int getScore();
 
     // get ideal position
-    bool getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight, RobotPos &pos);
+    bool getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2, RobotPos &pos);
     // get a list of pucks for each arm and store each of them (if the last one cannot be stored (full), we keep it outside)
-    bool getPucksAndStore(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight);
-    void getPucksAndStoreSingle(bool isRight, std::list<PuckPos> *list, bool *ret);
+    bool getPucksAndStore(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2);
+    void getPucksAndStoreSingle(bool isRight, PuckPos* puck1, PuckPos* puck2, bool *ret);
 
 
     // if null, no one to take
@@ -80,6 +82,7 @@ public:
 
     // release all stored pucks into the accelerator
     bool releasePucksAcceletator();
+    void releasePucksAcceletatorSingle(bool isRight, bool *ret);
 
     void getReleaseScalePosition(RobotPos &pos);
 
@@ -101,6 +104,8 @@ private:
     int _score;
     bool _isPurple;
 
+    PuckPos* _pucksAttached[2]; // currently attached pucks
+    QList<PuckPos*> _pucksStored[2];
 };
 
 }

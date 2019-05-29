@@ -6,19 +6,20 @@ QT -= gui
 CONFIG += c++11
 
 TEMPLATE = subdirs
-SUBDIRS = core robot-rock test1 \
+SUBDIRS = core robot-rock \
+    #test1 \
     testLidar \
-    SmartServoTesting testOdometry testEcran \
-    testRecalage \
-    testRecalageLive \
-    testHomologation \
-    TestVl6180x \
-    testArmLowLevel \
-    testArmHighLevel \
-    testSimServer \
-    testRobotSimu \
-    testAStarHighLevel \
-    testArmHighLevelHw
+    #SmartServoTesting testOdometry testEcran \
+    #testRecalage \
+    #testRecalageLive \
+    #testHomologation \
+    #TestVl6180x \
+    #testArmLowLevel \
+    #testArmHighLevel \
+    #testSimServer \
+    #testRobotSimu \
+    #testAStarHighLevel \
+    #testArmHighLevelHw
 
 robot-rock.depedends = core
 test1.depends = core

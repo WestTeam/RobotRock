@@ -165,7 +165,14 @@ bool ArmsManager::isAttached() const
 
     */
 
-bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight, RobotPos &pos)
+bool getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2, RobotPos &pos);
+// get a list of pucks for each arm and store each of them (if the last one cannot be stored (full), we keep it outside)
+bool getPucksAndStore(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2);
+void getPucksAndStoreSingle(bool isRight, PuckPos* puck1, PuckPos* puck2, bool *ret);
+
+
+
+bool ArmsManager::getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2, RobotPos &pos)
 {
     bool ret = false;
 
@@ -188,21 +195,24 @@ bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckP
 
     double x,y;
 
+    int leftCount = (left1!=nullptr) + (left2!=nullptr);
+    int rightCount = (right1!=nullptr) + (right2!=nullptr);
 
-    if (listLeft.size() == 1 && listRight.size() == 1)
+
+    if (leftCount == 1 && rightCount == 1)
     {
-        if (listLeft.front().isOnGround == false)
+        if (left1->isOnGround == false)
         {
 
-            double diff_arm_puck_y = listLeft.front().y-arml_pos_y;
+            double diff_arm_puck_y = left1->y-arml_pos_y;
 
-            y = listLeft.front().y+(listRight.front().y-listLeft.front().y)/2;
-            x = listLeft.front().x
+            y = left1->y+(left1->y-left1->y)/2;
+            x = left1->x
               - (ARM_LOWER_LENGTH+WRIST_AND_SUCTION_LENGTH)
               - sqrt(ARM_UPPER_LENGTH*ARM_UPPER_LENGTH+diff_arm_puck_y*diff_arm_puck_y)
               - arml_pos_x;
 
-            pos.theta = listLeft.front().theta-M_PI;
+            pos.theta = left1->theta-M_PI;
             pos.x = x;
             pos.y = y;
 
@@ -211,23 +221,23 @@ bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckP
             // not yet handled
         }
     }
-    if (listLeft.size() == 1 && listRight.size() == 0 || listLeft.size() == 0 && listRight.size() == 1)
+    if ((leftCount == 1 && rightCount == 0) || (leftCount == 0 && rightCount == 1))
     {
         double inv=1.0;
-        PuckPos puck = listRight.front();
+        PuckPos *puck = right1;
 
-        if (listLeft.size() == 1 && listRight.size() == 0)
+        if (leftCount == 1 && rightCount == 0)
         {
             inv = -1.0;
-            puck = listLeft.front();
+            puck = left1;
         }
 
-        if (puck.isOnGround == true)
+        if (puck->isOnGround == true)
         {
             double d,theta;
 
-            d = hypot(puck.x-rpos.x,puck.y-rpos.y);
-            theta = atan2(puck.y-rpos.y,puck.x-rpos.x);
+            d = hypot(puck->x-rpos.x,puck->y-rpos.y);
+            theta = atan2(puck->y-rpos.y,puck->x-rpos.x);
 
             //theta-=rpos.theta;
             d -= arml_abs_x-70.0;
@@ -238,18 +248,17 @@ bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckP
 
             rpos.x = x;
             rpos.y = y;
-            rpos.theta = theta+RAD(45.0)*inv;
+            rpos.theta = theta;
 
             ret = true;
         } else {
 
-
-            x = puck.x + (WRIST_AND_SUCTION_LENGTH + ARM_UPPER_LENGTH + ARM_LOWER_LENGTH + arml_pos_x)*cos(puck.theta);
-            y = puck.y + arml_pos_y*inv*cos(puck.theta)*-1.0;
+            x = puck->x + (WRIST_AND_SUCTION_LENGTH + ARM_UPPER_LENGTH + ARM_LOWER_LENGTH + arml_pos_x)*cos(puck->theta);
+            y = puck->y + arml_pos_y*inv*cos(puck->theta)*-1.0;
 
             rpos.x = x;
             rpos.y = y;
-            rpos.theta = puck.theta-M_PI;
+            rpos.theta = puck->theta-M_PI;
 
             ret = true;
         }
@@ -261,12 +270,12 @@ bool ArmsManager::getCatchPosition(std::list<PuckPos> &listLeft, std::list<PuckP
 }
 
 
-bool ArmsManager::getPucksAndStore(std::list<PuckPos> &listLeft, std::list<PuckPos> &listRight)
+bool ArmsManager::getPucksAndStore(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2)
 {
     bool rleft,rright;
 
-    std::thread tl(&ArmsManager::getPucksAndStoreSingle,this,false,&listLeft,&rleft);
-    std::thread tr(&ArmsManager::getPucksAndStoreSingle,this,true,&listRight,&rright);
+    std::thread tl(&ArmsManager::getPucksAndStoreSingle,this,false,left1,left2,&rleft);
+    std::thread tr(&ArmsManager::getPucksAndStoreSingle,this,true,right1,right2,&rright);
 
     tl.join();
     tr.join();
@@ -274,20 +283,31 @@ bool ArmsManager::getPucksAndStore(std::list<PuckPos> &listLeft, std::list<PuckP
     return rleft && rright;
 }
 
-void ArmsManager::getPucksAndStoreSingle(bool isRight, std::list<PuckPos> *list, bool *ret)
+void ArmsManager::getPucksAndStoreSingle(bool isRight, PuckPos* puck1, PuckPos* puck2, bool *ret)
 {
     *ret = true;
     bool actionOk;
 
-    for (std::list<PuckPos>::iterator it = list->begin(); it != list->end(); ++it){
-        if (it->isOnGround)
+
+
+    QList<PuckPos*> list;
+    if (puck1)
+        list << puck1;
+    if (puck2)
+        list << puck2;
+
+    for (QList<PuckPos*>::iterator it = list.begin(); it != list.end(); ++it){
+        if ((*it)->isOnGround)
         {
-            actionOk = _arm[isRight]->actionGroundPuckCollection(it->x,it->y);
+            actionOk = _arm[isRight]->actionGroundPuckCollection((*it)->x,(*it)->y);
 
             *ret &= actionOk;
             if (actionOk)
             {
                 actionOk = _arm[isRight]->actionPuckStore();
+
+                if (actionOk)
+                    _pucksStored[isRight] << (*it);
                 *ret &= actionOk;
             }
         }
@@ -316,6 +336,17 @@ void ArmsManager::getPuck(bool isRight, PuckPos *puck, bool *ret)
         {
             bool actionOk = _arm[isRight]->actionGroundPuckCollection(puck->x,puck->y);
 
+            if (actionOk)
+                _pucksAttached[isRight] = puck;
+
+            double safeX = 270.0;
+            double safeY = 50.0;
+
+            if (isRight)
+                safeY*=-1.0;
+
+            _arm[isRight]->moveArmRel(safeX,safeY);
+
             *ret = actionOk;
         }
     } else {
@@ -331,8 +362,51 @@ void ArmsManager::getReleaseAcceleratorPosition(RobotPos &pos)
 
 bool ArmsManager::releasePucksAcceletator()
 {
+    bool rleft,rright;
+
+    std::thread tl(&ArmsManager::releasePucksAcceletatorSingle,this,false,&rleft);
+    std::thread tr(&ArmsManager::releasePucksAcceletatorSingle,this,true,&rright);
+
+    return rleft && rright;
 
 }
+
+
+void ArmsManager::releasePucksAcceletatorSingle(bool isRight, bool *ret)
+{
+    *ret = true;
+    bool actionOk;
+
+    if (_pucksAttached[isRight])
+    {
+        _arm[isRight]->moveZ(180.0);
+        _arm[isRight]->setMode(ARM_HL_MODE_VERTICAL);
+        _arm[isRight]->moveArmRel(340.0,115.0);
+        _arm[isRight]->setVacuum(false);
+        _score+=10;
+    }
+
+    _pucksAttached[isRight] = nullptr;
+/*
+    for (QList<PuckPos*>::iterator it = list.begin(); it != list.end(); ++it){
+        if ((*it)->isOnGround)
+        {
+            actionOk = _arm[isRight]->actionGroundPuckCollection((*it)->x,(*it)->y);
+
+            *ret &= actionOk;
+            if (actionOk)
+            {
+                actionOk = _arm[isRight]->actionPuckStore();
+
+                if (actionOk)
+                    _pucksStored[isRight] << (*it);
+                *ret &= actionOk;
+            }
+        }
+    }
+    */
+}
+
 
 void ArmsManager::getReleaseScalePosition(RobotPos &pos)
 {
@@ -343,6 +417,8 @@ bool ArmsManager::releasePucksScale()
 {
 
 
+    _pucksAttached[false] = nullptr;
+    _pucksAttached[true] = nullptr;
 }
 
 void ArmsManager::getReleaseGroundPosition(RobotPos &pos)
@@ -353,6 +429,8 @@ void ArmsManager::getReleaseGroundPosition(RobotPos &pos)
 bool ArmsManager::releasePucksGround()
 {
 
+    _pucksAttached[false] = nullptr;
+    _pucksAttached[true] = nullptr;
 }
 /*
 bool ArmsManager::actionPuckRelease(double xMm, double yMm, double zMm)

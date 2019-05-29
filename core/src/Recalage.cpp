@@ -64,10 +64,11 @@ Recalage::~Recalage()
 
 }
 
-bool Recalage::init( const Odometry::Ptr& odometry, const LidarBase::Ptr& lidar )
+bool Recalage::init( const Hal::Ptr& hal, const Odometry::Ptr& odometry, const LidarBase::Ptr& lidar )
 {
     if( ! _attached )
     {
+        _hal = hal;
         _odometry = odometry;
         _lidar = lidar;
 
@@ -397,6 +398,67 @@ bool Recalage::calibrate(
     return true;
 }
 
+
+
+QList<LidarCircle::Obstacle> Recalage::locate(
+    LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
+    uint32_t dataCount)
+{
+    QVector<float> d;
+    QVector<float> a;
+    QVector<float> q;
+
+    for (int i = 0; i < dataCount; i++)
+    {
+        d << data[i].r;
+        a << data[i].theta;
+        q << data[i].quality;
+    }
+
+    LidarCircle _lidarCircle(100.0,_lidarPosX,_lidarPosY,-1.0);
+    QList<LidarCircle::Obstacle> ret;
+
+
+//    QList<LidarCircle::Obstacle> list = _lidarCircle.compute(a,d);
+
+//    QList<LidarCircle::Obstacle> list_rel = list;
+
+//    QList<LidarCircle::Obstacle> list_abs;
+
+//    RobotPos robotPos = data[0].pos;
+
+/*
+    _lidarCircle.transformToRobot(list_rel);
+    list_abs = list_rel;
+    _lidarCircle.transformToAbs(list_abs,robotPos.x,robotPos.y,robotPos.theta);
+
+    _lidarCircle.associate(list_abs);
+*/
+/*
+
+    for (int i = 0; i < list.size(); i++)
+    {//( QList<LidarCircle::Obstacle>::iterator it = list.begin(); it != list.end(); ++it){
+
+        //pos.Q = it->Q;
+        //pos.X = robotPos.x+(_lidarPosX+it->X)*cos(robotPos.theta)+(_lidarPosY+it->Y)*sin(robotPos.theta);
+        //pos.Y = robotPos.y+(_lidarPosY+it->Y)*cos(robotPos.theta)-(_lidarPosX+it->X)*sin(robotPos.theta);
+
+        float dist = hypot(list_rel[i].X,list_rel[i].Y);
+
+        if (list_rel[i].Q >= 1.0 && dist <= 1000.0 && list_abs[i].type == LidarCircle::Obstacle::Type::ROBOT)
+        {
+
+            ret << list_abs[i];
+
+            tInfo( LOG ) << "Robot Detection:Abs:" << dist << list_abs[i].X << list_abs[i].Y << list_abs[i].Q;
+            tInfo( LOG ) << "Robot Detection:Rel:" << dist << list_rel[i].X << list_rel[i].Y << list_rel[i].Q;
+        }
+    }
+*/
+    return ret;
+}
+
+
 void Recalage::run()
 {
     tDebug( LOG ) << "Recalage: Run";
@@ -523,9 +585,34 @@ void Recalage::run()
 
                     // first calibration in order to correct theta first
                     if (ok)
-                        ok = calibrate(data,dataCount,currentError,absPos,0.0);
+                    {
+                        //ok = calibrate(data,dataCount,currentError,absPos,0.0);
 
-                    if (ok)
+                        QList<LidarCircle::Obstacle> list = locate(data,dataCount);
+
+                        uint8_t speed_reductor = 0;
+
+                        for (int i = 0; i < list.length(); i++)
+                        {
+                            float dist = hypot(list[i].X-data[0].pos.x, list[i].Y-data[0].pos.y);
+
+                            if (dist < 1000)
+                                speed_reductor = 100-75;
+                            if (dist < 750)
+                                speed_reductor = 100-50;
+                            if (dist < 400)
+                                speed_reductor = 100-10;
+                            if (dist < 300)
+                                speed_reductor = 100-0;
+                        }
+
+                        _hal->_pidDistanceSpeedReductor.write(speed_reductor);
+                        _hal->_pidAngleSpeedReductor.write(speed_reductor);
+                        if (speed_reductor != 0)
+                            tDebug( LOG ) << "Recalage: Speed Reductor to " << speed_reductor << "%";
+                    }
+
+                    if (false)//(ok)
                     {
                         double thetaBias = currentError.theta;
 

@@ -253,6 +253,9 @@ bool ArmHighLevel::moveArmAbs(double xMm, double yMm)
     double xRel = r*cos(thetaRel);
     double yRel = r*sin(thetaRel);
 
+    tDebug(LOG) << "ArmHighLevel: Arm Pos Rel: " << xRel << yRel <<  xMm << yMm << _armPos.x << _armPos.y;
+
+
     return moveArmRel(xRel,yRel);
 }
 
@@ -342,7 +345,7 @@ int circle_circle_intersection(double x0, double y0, double r0,
         double selected_theta1 = theta1;
         double selected_theta2 = theta2;
 
-#define SERVO_UPPER_MAX_ANGLE_DEG 95.0
+#define SERVO_UPPER_MAX_ANGLE_DEG 105.0
 #define SERVO_LOWER_MAX_ANGLE_DEG 150.0
 
 
@@ -551,7 +554,7 @@ bool ArmHighLevel::actionGroundPuckCollection(double xMm, double yMm)
 
     if (!ret)
     {
-        tWarning(LOG) << "ArmHighLevel: actionGroundPuckCollection: cannot reach target" << xMm << yMm;
+        tWarning(LOG) << "ArmHighLevel: actionGroundPuckCollection: cannot reach target" << xMm << yMm << " current RobotPos:" << _odometry->getPosition().x << _odometry->getPosition().y << DEG(_odometry->getPosition().theta);
         return false;
     }
 

@@ -63,12 +63,14 @@ public:
 
     bool get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], uint32_t &count);
 
-private:
 
     // cannot be called while scanning
     QString info();
     // cannot be called while scanning
     bool health();
+private:
+
+
 
     uint8_t _minQuality;
     RPLidar::RPLidar _lidar;

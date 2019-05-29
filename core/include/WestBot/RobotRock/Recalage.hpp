@@ -15,6 +15,8 @@
 #include "ItemRegister.hpp"
 #include "Odometry.hpp"
 #include "Lidar.hpp"
+#include "LidarCircle.hpp"
+
 
 namespace WestBot {
 namespace RobotRock {
@@ -36,7 +38,7 @@ public:
     Recalage();
     ~Recalage();
 
-    bool init( const Odometry::Ptr& odometry, const LidarBase::Ptr& lidar );
+    bool init( const Hal::Ptr& hal, const Odometry::Ptr& odometry, const LidarBase::Ptr& lidar );
 
     bool isInitDone();
 
@@ -59,6 +61,10 @@ public:
 
     //void errorModify( double errX, double errY, double errTheta );
 
+    QList<LidarCircle::Obstacle> locate(
+        LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
+        uint32_t dataCount);
+
     bool calibrate(
         LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
         uint32_t dataCount,
@@ -70,6 +76,7 @@ public:
     //RobotPos sendPos( const RobotPos& robotPos );
 
 private:
+    Hal::Ptr _hal;
 
     bool _attached = false;
 

@@ -135,7 +135,9 @@ SystemManagerHw::SystemManagerHw(
 
     char buf[2] = {0xA5,0x40};
 
-
+    //_experiment.setColorPurple();
+    //_experiment.start();
+    //while(1);
     QSerialPort* serial1 = new QSerialPort(LIDAR_FRONT_TTY,this);
     tInfo( LOG ) << "1";
     serial1->setBaudRate(LIDAR_BAUDRATE);
@@ -326,19 +328,24 @@ bool SystemManagerHw::init()
 
     _recalage.reset( new Recalage() );
 
-    /*
-    if( ! _recalage->init( _odometry, ( LidarBase::Ptr ) _lidarRear) )
+    _recalage->setLidarPosition(100.0,0.0,0.0);
+    _recalage->setTargetSpeedHz(3.0);
+
+    if( ! _recalage->init( _hal, _odometry, ( LidarBase::Ptr ) _lidarTop) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
     }
-    */
+
 
     _trajectoryManager.reset(
         new TrajectoryManagerHw( _hal ) );
 
     _trajectoryManager->init();
 
+#define DISABLE_ARM
+
+#ifndef DISABLE_ARM
 
     _armLeftLow.reset( new ArmLowLevel() );
 
@@ -362,13 +369,13 @@ bool SystemManagerHw::init()
         SMART_SERVO_DYNAMIXEL,
         5,
         true,
-        0.0 ) )
+        3.0 ) )
     {
         tFatal( LOG ) << "Unable to init arm left low level. Abort";
     }
 
-
     _armRightLow.reset( new ArmLowLevel() );
+
 
     static ItemRegister::Ptr pumpR = std::make_shared< ItemRegister >( _hal->_motor5Value );
     static ItemRegister::Ptr pidfirstregR = std::make_shared< ItemRegister >( _hal->_pidCustom2FreqHz );
@@ -394,13 +401,21 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arm left low level. Abort";
     }
 
-
     _armLeft.reset( new ArmHighLevel() );
 
     if( ! _armLeft->init( _odometry, _armLeftLow, true ) )
     {
         tFatal( LOG ) << "Unable to init arm left high level. Abort";
     }
+
+    _armLeft->confArmPos(194.6,-118.5*-1.0);
+    _armLeft->confStorage(155,-55.0*-1.0,150.8);
+
+    _armLeft->setMode(ARM_HL_MODE_HORIZONTAL);
+    _armLeft->moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
+    //_armLeft->moveArmRel(110.0,180.0);
+    _armLeft->moveArmRel(240.0,20.0);
+
 
     _armRight.reset( new ArmHighLevel() );
 
@@ -409,6 +424,13 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arm right high level. Abort";
     }
 
+    _armRight->confArmPos(194.6,-118.5*1.0);
+    _armRight->confStorage(155,-55.0*1.0,150.8);
+
+    _armRight->setMode(ARM_HL_MODE_HORIZONTAL);
+    _armRight->moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
+    //_armRight->moveArmRel(110.0,-180.0);
+    _armRight->moveArmRel(240.0,-20.0);
 
 
     _armsManager.reset( new ArmsManager() );
@@ -417,7 +439,8 @@ bool SystemManagerHw::init()
     {
         tFatal( LOG ) << "Unable to init arms manager. Abort";
     }
-
+#endif;
+/*
     _puckDetection.reset( new PuckDetection() );
 
     _puckDetection->setTargetSpeedHz(4.0);
@@ -426,7 +449,7 @@ bool SystemManagerHw::init()
     {
         tFatal( LOG ) << "Unable to init Puck Detection. Abort";
     }
-
+*/
     _opponentDetection.reset( new OpponentDetection() );
 
 
@@ -500,6 +523,9 @@ void SystemManagerHw::stop()
 
     _strategyManager->stop();
 
+    if (_armsManager)
+        _armsManager->disable();
+
     tInfo( LOG ) << "System stopped";
 
     //reset();
@@ -570,13 +596,18 @@ bool SystemManagerHw::isSafe() const
 //
 void SystemManagerHw::initRecalage()
 {
+
+    RobotPos initPos = {.x = 600.0+75.0, .y = 1500.0-450+52+172.8, .theta = -M_PI/2};
+
     if( _color == Color::Yellow )
     {
-        _odometry->setPosition({.x=0, .y=0, .theta=0});
+        initPos.y *= -1.0;
+        initPos.theta += M_PI;
+        _odometry->setPosition(initPos);
     }
     else
     {
-        _odometry->setPosition({.x=0, .y=0, .theta=0});
+        _odometry->setPosition(initPos);
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x

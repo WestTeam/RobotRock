@@ -1,14 +1,11 @@
-// Copyright (c) 2018-2019 All Rights Reserved WestBot
+#ifndef WESTBOT_ROBOTROCK_LIDARCIRCLE_HPP_
+#define WESTBOT_ROBOTROCK_LIDARCIRCLE_HPP_
 
-#include <iostream>
-#include <math.h>
-
+#include <QCoreApplication>
 #include <QString>
+#include <QFile>
 #include <QVector>
-#include <WestBot/HumanAfterAll/Category.hpp>
-
-using namespace WestBot;
-using namespace WestBot::RobotRock;
+#include <QDebug>
 
 
 class LidarCircle {
@@ -19,28 +16,28 @@ public:
         float			X = 0;
         float			Y = 0;
         float			Q = 0;
+        enum Type {
+            BALISE0,
+            BALISE1,
+            BALISE2,
+            BALISE3,
+            BALISE4,
+            BALISE5,
+            ROBOT,
+            UNKNOWN,
+        }type = UNKNOWN;
     };
 
-    LidarCircle(float diam) :DIAM(diam),DMAX(diam*1.1) {}
+    LidarCircle(float diam,float lidarX,float lidarY,float lidarSign) :DIAM(diam),DMAX(diam*1.1),LIDAR_X(lidarX),LIDAR_Y(lidarY),LIDAR_SIGN(lidarSign) {}
 
     QList<Obstacle> compute( const QVector<float>& a, const QVector<float>& d) {
         QVector<float> x;
         QVector<float> y;
-        for(int i=a.length()/2; i<a.length(); i++) {
+        for(int i=0; i<a.length(); i++) {
             if(d[i]==0)
                 continue;
-            float x1 = d[i]*cosf(a[i]);
-            float y1 = d[i]*sinf(a[i]);
-            if( x1>ROBOT_X0 && x1<ROBOT_X1 && y1>ROBOT_Y0 && y1<ROBOT_Y1)
-                continue;
-            x << x1;
-            y << y1;
-        }
-        for(int i=0; i<a.length()/2; i++) {
-            if(d[i]==0)
-                continue;
-            float x1 = d[i]*cosf(a[i]);
-            float y1 = d[i]*sinf(a[i]);
+            float x1 = d[i]*cosf(LIDAR_SIGN*a[i]);
+            float y1 = d[i]*sinf(LIDAR_SIGN*a[i]);
             if( x1>ROBOT_X0 && x1<ROBOT_X1 && y1>ROBOT_Y0 && y1<ROBOT_Y1)
                 continue;
             x << x1;
@@ -59,6 +56,12 @@ public:
                 }while( i<x.length() && (o.x.last()-x[i])*(o.x.last()-x[i])+(o.y.last()-y[i])*(o.y.last()-y[i]) < DMIN*DMIN );
                 obs << o;
             }while(i<x.length());
+        }
+
+        if((obs.first().x.first()-obs.last().x.last())*(obs.first().x.first()-obs.last().x.last())+(obs.first().y.first()-obs.last().y.last())*(obs.first().y.first()-obs.last().y.last())<DMIN*DMIN) {
+            obs.last().x << obs.first().x;
+            obs.last().y << obs.first().y;
+            obs.removeFirst();
         }
 
         for(int o=0; o<obs.length(); o++) {
@@ -133,12 +136,194 @@ public:
         return obs;
     }
 
+    void transformToRobot( QList<Obstacle>& obs) {
+        for(int o=0; o<obs.length(); o++) {
+            obs[o].X += LIDAR_X;
+            obs[o].Y += LIDAR_Y;
+        }
+    }
+
+    void transformToAbs( QList<Obstacle>& obs, float x, float y, float theta) {
+        for(int o=0; o<obs.length(); o++) {
+            float X = obs[o].X*cosf(theta)-obs[o].Y*sinf(theta)+x;
+            float Y = obs[o].X*sinf(theta)+obs[o].Y*cosf(theta)+y;
+            obs[o].X = X;
+            obs[o].Y = Y;
+        }
+    }
+
+    void associate( QList<Obstacle>& obs) {
+        for(int o=0; o<obs.length(); o++) {
+            float D = 10000;
+            int I = 0;
+            for(int i=0; i<6; i++) {
+                if(sqrtf((obs[o].X-BALISE_X[i])*(obs[o].X-BALISE_X[i])+(obs[o].Y-BALISE_Y[i])*(obs[o].Y-BALISE_Y[i]))<D) {
+                    D = sqrtf((obs[o].X-BALISE_X[i])*(obs[o].X-BALISE_X[i])+(obs[o].Y-BALISE_Y[i])*(obs[o].Y-BALISE_Y[i]));
+                    I = i;
+                }
+            }
+            if(D<BALISE_DMAX) {
+                obs[o].type = Obstacle::Type(I);
+            }
+        }
+        for(int i=0; i<6; i++) {
+            float D = 10000;
+            int O = 0;
+            for(int o=0; o<obs.length(); o++) {
+                if(obs[o].type!=i)
+                    continue;
+                if(sqrtf((obs[o].X-BALISE_X[i])*(obs[o].X-BALISE_X[i])+(obs[o].Y-BALISE_Y[i])*(obs[o].Y-BALISE_Y[i]))<D) {
+                    D = sqrtf((obs[o].X-BALISE_X[i])*(obs[o].X-BALISE_X[i])+(obs[o].Y-BALISE_Y[i])*(obs[o].Y-BALISE_Y[i]));
+                    O = o;
+                }
+            }
+            for(int o=0; o<obs.length(); o++) {
+                if(obs[o].type==i&&o!=O)
+                    obs[o].type = Obstacle::UNKNOWN;
+            }
+        }
+        for(int o=0; o<obs.length(); o++) {
+            if(obs[o].type != Obstacle::UNKNOWN)
+                continue;
+            if(obs[o].X>TABLE_X0&&obs[o].X<TABLE_X1&&obs[o].Y>TABLE_Y0&&obs[o].Y<TABLE_Y1)
+                obs[o].type = Obstacle::ROBOT;
+        }
+    }
+
+    float locate( QList<Obstacle>& obs, float* x, float* y, float* a) {
+        float Xc = 0;
+        float Yc = 0;
+        float Xr = 0;
+        float Yr = 0;
+        float N = 0;
+        for(int o=0; o<obs.length(); o++) {
+            if(obs[o].type >= 6)
+                continue;
+            Xc += obs[o].X;
+            Yc += obs[o].Y;
+            Xr += BALISE_X[obs[o].type];
+            Yr += BALISE_Y[obs[o].type];
+            N += 1;
+        }
+        Xc /= N;
+        Yc /= N;
+        Xr /= N;
+        Yr /= N;
+        if(N<2)
+            return 1e9;
+
+        float A = 0;
+        for(int o=0; o<obs.length(); o++) {
+            if(obs[o].type >= 6)
+                continue;
+            A += asinf(
+                    ( (obs[o].X-Xc)*(BALISE_Y[obs[o].type]-Yr)-(BALISE_X[obs[o].type]-Xr)*(obs[o].Y-Yc) )
+                    / sqrtf((obs[o].X-Xc)*(obs[o].X-Xc)+(obs[o].Y-Yc)*(obs[o].Y-Yc))
+                    / sqrtf((BALISE_X[obs[o].type]-Xr)*(BALISE_X[obs[o].type]-Xr)+(BALISE_Y[obs[o].type]-Yr)*(BALISE_Y[obs[o].type]-Yr))
+                    );
+        }
+        A /= N;
+        transformToAbs(obs,0,0,A);
+
+        float X = 0;
+        float Y = 0;
+        for(int o=0; o<obs.length(); o++) {
+            if(obs[o].type >= 6)
+                continue;
+            X += obs[o].X-BALISE_X[obs[o].type];
+            Y += obs[o].Y-BALISE_Y[obs[o].type];
+        }
+        X /= -N;
+        Y /= -N;
+        transformToAbs(obs,X,Y,0);
+
+        float Q = 0;
+        for(int o=0; o<obs.length(); o++) {
+            if(obs[o].type >= 6)
+                continue;
+            Q += (obs[o].X-BALISE_X[obs[o].type])*(obs[o].X-BALISE_X[obs[o].type])+(obs[o].Y-BALISE_Y[obs[o].type])*(obs[o].Y-BALISE_Y[obs[o].type]);
+        }
+        Q /= N;
+
+        *x = X;
+        *y = Y;
+        *a = A;
+        return Q;
+    }
+
+
+    const float BALISE_X[6] = {50,1000,1950,1950,1000,50};
+    const float BALISE_Y[6] = {-1594,-1594,-1594,1594,1594,1594};
 private:
     const float DIAM;
     const float DMAX;
     const float DMIN = 30;
-    const float ROBOT_X0 = -1000;
-    const float ROBOT_Y0 = -1000;
+    const float ROBOT_X0 = -300;
+    const float ROBOT_Y0 = -160;
     const float ROBOT_X1 = 20;
-    const float ROBOT_Y1 = 1000;
+    const float ROBOT_Y1 = 160;
+    const float TABLE_X0 = 0+100;
+    const float TABLE_Y0 = -1500+100;
+    const float TABLE_X1 = 1578-100;
+    const float TABLE_Y1 = 1500-100;
+
+    const float LIDAR_X;
+    const float LIDAR_Y;
+    const float LIDAR_SIGN = 1;
+
+    const float BALISE_DMAX = 300;
 };
+/*
+int main(int argc, char *argv[])
+{
+    QCoreApplication app(argc, argv);
+
+    QString file = "setup0-lidardata0.txt";
+    //QString file = "setup3-lidardata0.txt";
+    QFile f("../"+file);
+    f.open(QIODevice::ReadOnly);
+    QVector<float> d;
+    QVector<float> a;
+    QVector<float> q;
+    while(!f.atEnd()) {
+        QString data = f.readLine();
+        QStringList dataList = data.split(';');
+        d << dataList[0].toDouble();
+        a << dataList[1].toDouble();
+        q << dataList[2].toDouble();
+    }
+    f.close();
+
+    LidarCircle circle(75,100,0,-1);
+    QList<LidarCircle::Obstacle> obs = circle.compute(a,d);
+    circle.transformToRobot(obs);
+    circle.transformToAbs(obs,675,-1500+450-52-172.8,M_PI/2);
+
+    /*for(int i=0; i<2; i++) {
+        LidarCircle::Obstacle o;
+        o.X = circle.BALISE_X[i];
+        o.Y = circle.BALISE_Y[i];
+        obs << o;
+    }
+    circle.transformToAbs(obs,50,-40,0);
+    circle.transformToAbs(obs,0,0,.05);
+
+    circle.associate(obs);
+
+
+    for(int o=0; o<obs.length(); o++)
+        if(obs[o].Q!=0)
+            qDebug() << o << obs[o].x.length() << obs[o].X << obs[o].Y << obs[o].Q << obs[o].type;
+
+    {
+        float x,y,a;
+        float q = circle.locate(obs,&x,&y,&a);
+        qDebug() << "";
+        qDebug() << x << y << a << q;
+    }
+    return app.exec();
+}
+}*/
+
+
+#endif

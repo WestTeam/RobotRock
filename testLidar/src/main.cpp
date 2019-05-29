@@ -2,6 +2,7 @@
 
 #include <QCoreApplication>
 #include <QSerialPort>
+#include <QFile>
 
 #include <WestBot/HumanAfterAll/Category.hpp>
 #include <WestBot/HumanAfterAll/ConsoleAppender.hpp>
@@ -49,8 +50,8 @@ int main( int argc, char *argv[] )
 
     // init position
     odometry.setPosition({.x=0.0,.y=0.0,.theta=RAD(0.0)});
-
-    QSerialPort serial("/dev/ttyAL12");
+/*
+    QSerialPort serial("/dev/ttyAL11");
     serial.setBaudRate(256000);
     serial.open(QIODevice::ReadWrite);
     char buf[2] = {static_cast<char>(0xA5),0x40};
@@ -59,8 +60,20 @@ int main( int argc, char *argv[] )
     serial.write(buf,2);
     serial.flush();
     serial.close();
+*/
+    hal->_pwmCustom0Value.write(0);
+    hal->_pwmCustom1Value.write(0);
+    hal->_pwmCustom2Value.write(0);
 
-    LidarRPLidarA2 lidar( QString("/dev/ttyAL12"), 256000, std::make_shared< ItemRegister >( hal->_pwmCustom2Value ));
+    hal->_motor0Value.write(8000);
+    hal->_motor0Override.write(0);
+
+
+    hal->_motor1Value.write(8000);
+    hal->_motor1Override.write(0);
+   // while(1);
+
+    LidarRPLidarA2 lidar( QString("/dev/ttyAL6"), 256000, std::make_shared< ItemRegister >( hal->_pwmCustom0Value ));
 
     bool ret = lidar.init();
 
@@ -75,12 +88,35 @@ int main( int argc, char *argv[] )
 
     //exit(0);
 
+    int i = 0;
     LidarData data[LIDAR_MAX_SCAN_POINTS];
     uint32_t count;
     bool ok;
 
-    ok = lidar.get360ScanData(data,count);
+    while (1)
+    {
+        ok = lidar.get360ScanData(data,count);
+        tDebug(LOG) << ok << count;
+        if (count < 10)
+        {
+            tDebug(LOG) << "error" << lidar.health() << lidar.info();
 
+            lidar.stopScan();
+
+            lidar.startScan();
+        } else {
+
+            QString file = "setup0-lidardata" + QString::number(i) + ".txt";
+            i++;
+            QFile f("/tmp/" + file);
+            f.open(QIODevice::WriteOnly);
+            for (int i = 0; i< count; i++)
+            {
+                f.write(QString("%1;%2;%3\n").arg(data[i].r).arg(data[i].theta).arg(data[i].quality).toStdString().c_str());
+            }
+            f.close();
+        }
+    }
     if (!ok || count == 0)
         tFatal(LOG) << "Lidar is not getting any data";
 

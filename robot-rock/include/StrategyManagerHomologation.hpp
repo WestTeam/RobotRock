@@ -56,6 +56,9 @@ private:
     bool _stratIsRunning;
     bool _obstacleToClose;
     bool _init;
+    bool _invArms;
+
+    QList< PuckPos* > _puckList;
 };
 
 }

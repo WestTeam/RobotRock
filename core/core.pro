@@ -47,7 +47,9 @@ SOURCES += \
     src/ArmLowLevel.cpp \
     src/ArmHighLevel.cpp \
     src/Pid.cpp \
-    src/ArmsManager.cpp
+    src/ArmsManager.cpp \
+    src/PuckDetection.cpp \
+    src/ArmsManagerAction.cpp
 
 HEADERS += \
     include/Macros.hpp \
@@ -92,7 +94,10 @@ HEADERS += \
     include/WestBot/RobotRock/ArmLowLevel.hpp \
     include/WestBot/RobotRock/ArmHighLevel.hpp \
     include/WestBot/RobotRock/Pid.hpp \
-    include/WestBot/RobotRock/ArmsManager.hpp
+    include/WestBot/RobotRock/ArmsManager.hpp \
+    include/WestBot/RobotRock/LidarCircle.hpp \
+    include/WestBot/RobotRock/PuckDetection.hpp \
+    include/WestBot/RobotRock/ArmsManagerAction.hpp
 
 INCLUDEPATH += \
     ../3rdparty/HumanAfterAll/include/ \

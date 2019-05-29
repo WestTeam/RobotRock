@@ -19,6 +19,65 @@ namespace
         "WestBot.RobotRock.StrategyManagerHomologation" )
 }
 
+/*
+typedef struct
+{
+    double x;
+    double y;
+    double z;
+    double theta; // used when isOnGround = true
+    enum PuckType type;
+    bool isOnGround;
+} PuckPos;
+*/
+// enum PuckType { PUCK_UNKNOWN, PUCK_RED, PUCK_GREEN, PUCK_BLUE, PUCK_GOLD};
+
+
+PuckPos GndStart1 = {.x = 450, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_UNKNOWN, .isOnGround = true};
+PuckPos GndStart2 = {.x = 750, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_UNKNOWN, .isOnGround = true};
+PuckPos GndStart3 = {.x = 1050, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_UNKNOWN, .isOnGround = true};
+
+PuckPos MainDistri1Red      = {.x = 1543, .y = (2550-1500-50-100*0), .z = 100+28.5, .theta = M_PI, .type = PUCK_RED, .isOnGround = false};
+PuckPos MainDistri2Green    = {.x = 1543, .y = (2550-1500-50-100*1), .z = 100+28.5, .theta = M_PI, .type = PUCK_GREEN, .isOnGround = false};
+PuckPos MainDistri3Red      = {.x = 1543, .y = (2550-1500-50-100*2), .z = 100+28.5, .theta = M_PI, .type = PUCK_RED, .isOnGround = false};
+PuckPos MainDistri4Blue     = {.x = 1543, .y = (2550-1500-50-100*3), .z = 100+28.5, .theta = M_PI, .type = PUCK_BLUE, .isOnGround = false};
+PuckPos MainDistri5Red      = {.x = 1543, .y = (2550-1500-50-100*4), .z = 100+28.5, .theta = M_PI, .type = PUCK_RED, .isOnGround = false};
+PuckPos MainDistri6Green    = {.x = 1543, .y = (2550-1500-50-100*5), .z = 100+28.5, .theta = M_PI, .type = PUCK_GREEN, .isOnGround = false};
+
+
+PuckPos SmallDistr1Blue  = {.x = 2000, .y = (2925-1500-50-100*0), .z = 70+30+28.5, .theta = M_PI, .type = PUCK_BLUE, .isOnGround = false};
+PuckPos SmallDistr2Green = {.x = 2000, .y = (2925-1500-50-100*1), .z = 70+30+28.5, .theta = M_PI, .type = PUCK_GREEN, .isOnGround = false};
+PuckPos SmallDistr3Red   = {.x = 2000, .y = (2925-1500-50-100*2), .z = 70+30+28.5, .theta = M_PI, .type = PUCK_RED, .isOnGround = false};
+
+PuckPos AccBlue = {25, (210), 150+28.5, .theta = 0.0, .type = PUCK_BLUE, .isOnGround = false};
+
+PuckPos AccGold = {50, (685+80/2), 165+28.5, .theta = M_PI, .type = PUCK_GOLD, .isOnGround = false};
+
+
+/*
+Violet = Normal
+Jaune = Inverted
+
+GroundRed1 {450, (2500-1500)*inv, 25)};
+GroundRed2 {750, (2500-1500)*inv, 25)};
+GroundGreen {1050, (2500-1500)*inv, 25)};
+
+MainDistri1Red  {1543, (2550-1500-50-100*0)*inv, 100+28.5)};
+MainDistri2Green  {1543, (2550-1500-50-100*1)*inv, 100+28.5)};
+MainDistri3Red  {1543, (2550-1500-50-100*2)*inv, 100+28.5)};
+MainDistri4Blue {1543, (2550-1500-50-100*3)*inv, 100+28.5)};
+MainDistri5Red {1543, (2550-1500-50-100*4)*inv, 100+28.5)};
+MainDistri6Green {1543, (2550-1500-50-100*5)*inv, 100+28.5)};
+
+SmallDistr1Blue  {2000, (2925-1500-50-100*0)*inv, 70+30+28.5)};
+SmallDistr2Green  {2000, (2925-1500-50-100*1)*inv, 70+30+28.5)};
+SmallDistr3Red  {2000, (2925-1500-50-100*2)*inv, 70+30+28.5)};
+
+AccBlue  {25, (210)*inv, 150+28.5)};
+
+AccGold  {50, (685+80/2)*inv, 165+28.5)};
+*/
+
 StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
     : _odometry( nullptr )
     , _recalage( nullptr )
@@ -30,6 +89,27 @@ StrategyManagerHomologation::StrategyManagerHomologation( QObject* parent )
     , _obstacleToClose( false )
     , _init( false )
 {
+
+    _invArms = false;
+
+    _puckList << &GndStart1;
+    _puckList << &GndStart2;
+    _puckList << &GndStart3;
+
+    _puckList << &MainDistri1Red;
+    _puckList << &MainDistri2Green;
+    _puckList << &MainDistri3Red;
+    _puckList << &MainDistri4Blue;
+    _puckList << &MainDistri5Red;
+    _puckList << &MainDistri6Green;
+
+    _puckList << &SmallDistr1Blue;
+    _puckList << &SmallDistr2Green;
+    _puckList << &SmallDistr3Red;
+
+    _puckList << &AccBlue;
+    _puckList << &AccGold;
+
 }
 
 bool StrategyManagerHomologation::init(
@@ -102,20 +182,98 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
     float shift = 0.0;
     float offset = 0.0;
 
+    //RobotPos initPos = {.x = 600.0, .y = 1270.0, .theta = -M_PI/2};
+
+
     if( color == Color::Yellow )
     {
         inv = -1.0;
         shift = 0.0;
         offset = 0.0;
+        _invArms = true;
     }
     else
     {
         inv = 1.0;
         shift = 0.0;
         offset = 0.0;
+        _invArms = false;
+
+    }
+
+    /*
+    if (inv == -1.0)
+    {
+        initPos.y *= inv;
+        initPos.theta+=M_PI;
+    }*/
+
+    for (int i = 0; i < _puckList.size(); i++)
+    {
+        if (inv == -1.0 && _puckList[i]->y >= 0.0)
+            _puckList[i]->y *= -1.0;
+
+        if (inv == 1.0 && _puckList[i]->y < 0.0)
+            _puckList[i]->y *= -1.0;
     }
 
     _actions.push_back( wait500Ms() );
+
+/*
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::GET_PUCKS,
+                &GndStart2,
+                nullptr,
+                &GndStart1,
+                nullptr,
+                _invArms
+                ));
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            600,
+                            -500*inv,
+                            true ));
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            400,
+                            -500*inv,
+                            true ));
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+                            180.0,
+                            0.0,
+                            400,
+                            -500*inv,
+                            true ));
+
+
+
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::RELEASE_ALL_PUCKS_ACCELERATOR,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                false
+                ));
+*/
+
+    //_actions.push_back( wait500Ms() );
     /*
     _actions.push_back( moveToCenterZone( _trajectoryManager, inv ) );
     _actions.push_back( turnToCenterZone( _trajectoryManager, inv ) );
@@ -125,7 +283,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
     _actions.push_back( orientationZoneDepose( _trajectoryManager, inv ) );
     _actions.push_back( moveALittleForward3( _trajectoryManager, inv ) );
 */
-    _actions.push_back( moveALittleForward3( _trajectoryManager, inv ) );
+    //_actions.push_back( moveALittleForward3( _trajectoryManager, inv ) );
 
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );

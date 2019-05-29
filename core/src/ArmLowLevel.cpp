@@ -104,7 +104,7 @@ bool ArmLowLevel::init(
 
         for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,120);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,100);
             _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,0);
 
             _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,512);
@@ -200,7 +200,7 @@ bool ArmLowLevel::init(
 
     // second step: find the Z reference (UP)
 #define CALIBRATION_Z_FAKE_REF 666666
-#define CALIBRATION_Z_STEP 300
+#define CALIBRATION_Z_STEP 600
 #define CALIBRATION_Z_TIMEOUT 1000
 #define CALIBRATION_Z_TIMEOUT_STEP 100
 
@@ -222,7 +222,7 @@ bool ArmLowLevel::init(
             //_hal->_pidCustomTarget.write( targetPos );
             _pid->setTarget(targetPos);
 
-            tDebug(LOG) << "Loop 2" << currentPos << targetPos << _hal->_pidCustom1Enable.read<uint8_t>() << _hal->_pidCustom1Output.read<int32_t>() << _pid->getOutput();
+            //tDebug(LOG) << "Loop 2" << currentPos << targetPos << _hal->_pidCustom1Enable.read<uint8_t>() << _hal->_pidCustom1Output.read<int32_t>() << _pid->getOutput();
 
 
             int32_t timeoutMs = CALIBRATION_Z_TIMEOUT;
@@ -230,7 +230,7 @@ bool ArmLowLevel::init(
                 QThread::msleep( CALIBRATION_Z_TIMEOUT_STEP );
                 timeoutMs -= CALIBRATION_Z_TIMEOUT_STEP;
 
-                tDebug(LOG) << "Loop 3" << _pid->getInput() << targetPos;
+                //tDebug(LOG) << "Loop 3" << _pid->getInput() << targetPos;
 
 
                 // if we have moved more than half of the target
@@ -464,7 +464,7 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 
     try {
         //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
-        uint16_t speed = 400;
+        uint16_t speed = 250;
         if (_vaccumEnabled)
         {
             if (id == ARM_LL_SERVO_UPPER_ARM)

@@ -69,4 +69,19 @@ void Experiment::init()
 void Experiment::write( QByteArray data )
 {
     _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
+    _serial->write( data );
+    _serial->flush();
 }

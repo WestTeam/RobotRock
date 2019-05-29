@@ -114,6 +114,15 @@ public:
     ItemRegister _motor5Inverted;
 	ItemRegister _motor5Value;
 
+
+    ItemRegister _motor0Current;
+    ItemRegister _motor1Current;
+    ItemRegister _motor2Current;
+    ItemRegister _motor3Current;
+    ItemRegister _motor4Current;
+    ItemRegister _motor5Current;
+
+
     ItemRegister _qei0Override;
     ItemRegister _qei0RefValue;
     ItemRegister _qei0CntValue;
@@ -210,6 +219,7 @@ public:
     ItemRegister _pidDistanceEnable;
     ItemRegister _pidDistanceOverride;
     ItemRegister _pidDistanceInverted;
+    ItemRegister _pidDistanceSpeedReductor;
     ItemRegister _pidDistanceKp;
     ItemRegister _pidDistanceKi;
     ItemRegister _pidDistanceKd;
@@ -226,6 +236,7 @@ public:
     ItemRegister _pidAngleEnable;
     ItemRegister _pidAngleOverride;
     ItemRegister _pidAngleInverted;
+    ItemRegister _pidAngleSpeedReductor;
     ItemRegister _pidAngleKp;
     ItemRegister _pidAngleKi;
     ItemRegister _pidAngleKd;

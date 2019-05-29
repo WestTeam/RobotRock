@@ -18,7 +18,7 @@ using namespace WestBot::RobotRock;
 
 PuckDetection::PuckDetection()
     : _odometry( nullptr )
-    , _lidarCircle(75)
+    , _lidarCircle(75,0,0,1.0)
     , _lidar( nullptr )
 {
     tDebug( LOG ) << "PuckDetection constructor engaged";
@@ -63,7 +63,7 @@ bool PuckDetection::init( const Odometry::Ptr& odometry, const LidarBase::Ptr& l
         _lidar = lidar;
 
         // launch data thread
-        this->start();
+        //this->start();
     }
 
     _attached = true;
@@ -86,6 +86,8 @@ void PuckDetection::setLidarPosition(double x, double y, double theta0)
 
     _lidarTheta = atan2( _lidarPosY, _lidarPosX );
     _lidarR = sqrt( _lidarPosX * _lidarPosX + _lidarPosY * _lidarPosY );
+
+    //_lidarCircle.setLidarPosition(x,y);
 
 }
 
@@ -125,29 +127,45 @@ QList<PuckLidarPos> PuckDetection::locate(
 
     QList<LidarCircle::Obstacle> list = _lidarCircle.compute(a,d);
 
-    QList<PuckLidarPos> ret;
+    QList<LidarCircle::Obstacle> list_abs;
 
     RobotPos robotPos = data[0].pos;
 
-    for ( QList<LidarCircle::Obstacle>::iterator it = list.begin(); it != list.end(); ++it){
+
+    _lidarCircle.transformToRobot(list_abs);
+    _lidarCircle.transformToAbs(list_abs,robotPos.x,robotPos.y,robotPos.theta);
+
+
+    QList<PuckLidarPos> ret;
+
+    for (int i = 0; i < list.length(); i++)
+    {//( QList<LidarCircle::Obstacle>::iterator it = list.begin(); it != list.end(); ++it){
         PuckLidarPos pos;
 
-        pos.Q = it->Q;
-        pos.X = robotPos.x+(_lidarPosX+it->X)*cos(robotPos.theta)+(_lidarPosY+it->Y)*sin(robotPos.theta);
-        pos.Y = robotPos.y+(_lidarPosY+it->Y)*cos(robotPos.theta)-(_lidarPosX+it->X)*sin(robotPos.theta);
+        //pos.Q = it->Q;
+        //pos.X = robotPos.x+(_lidarPosX+it->X)*cos(robotPos.theta)+(_lidarPosY+it->Y)*sin(robotPos.theta);
+        //pos.Y = robotPos.y+(_lidarPosY+it->Y)*cos(robotPos.theta)-(_lidarPosX+it->X)*sin(robotPos.theta);
 
-        if (pos.Q >= 1.0 && hypot(pos.X,pos.Y) <= 500.0)
+        if (list[i].Q >= 1.0 && hypot(list[i].X,list[i].Y) <= 500.0)
         {
+            pos.X = list_abs[i].X;
+            pos.Y = list_abs[i].Y;
+            pos.Q = list_abs[i].Q;
+
             ret << pos;
 
-            tInfo( LOG ) << "PuckDetection: Abs:" << pos.X << pos.Y << pos.Q;
-            tInfo( LOG ) << "PuckDetection: Rel:" << it->X << it->Y;
-
-
+            tInfo( LOG ) << "PuckDetection: Abs:" << list_abs[i].X << list_abs[i].Y << list_abs[i].Q;
+            //tInfo( LOG ) << "PuckDetection: Rel:" << it->X << it->Y;
         }
     }
 
     return ret;
+}
+
+QList<PuckLidarPos> PuckDetection::getPucks()
+{
+    QMutexLocker locker( &_lock );
+    return _pucksList;
 }
 
 void PuckDetection::run()
@@ -296,9 +314,9 @@ void PuckDetection::run()
                         QList<PuckLidarPos> list = locate(data,dataCount);
 
 
-                        if (list.size() > 0)
+                        if (list.length() > 0)
                         {
-                            tDebug( LOG ) << "Found pucks count: " << list.size();
+                            tDebug( LOG ) << "Found pucks count: " << list.length();
                             // we lock the update of internal data that gets outputed outside
                             QMutexLocker locker( &_lock );
 

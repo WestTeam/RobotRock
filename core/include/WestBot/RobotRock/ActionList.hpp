@@ -6,6 +6,7 @@
 #include <WestBot/RobotRock/MoveAction.hpp>
 #include <WestBot/RobotRock/TrajectoryManager.hpp>
 #include <WestBot/RobotRock/WaitAction.hpp>
+#include <WestBot/RobotRock/ArmsManagerAction.hpp>
 
 namespace WestBot {
 namespace RobotRock {
