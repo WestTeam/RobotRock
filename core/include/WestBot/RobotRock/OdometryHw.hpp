@@ -15,7 +15,7 @@ class OdometryHw : public Odometry
 {
 public:
     OdometryHw( const Hal::Ptr& hal );
-    ~OdometryHw() = default;
+    ~OdometryHw() override = default;
 
     RobotPos getPosition() override;
     void setPosition( RobotPos pos ) override;
