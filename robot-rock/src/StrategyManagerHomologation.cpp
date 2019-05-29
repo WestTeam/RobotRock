@@ -219,7 +219,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
 
     _actions.push_back( wait500Ms() );
 
-/*
+
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,
@@ -231,13 +231,14 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
                 _invArms
                 ));
 
+
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
                             0.0,
                             0.0,
                             600,
-                            -500*inv,
+                            500*inv,
                             true ));
 
     _actions.push_back( std::make_shared< MoveAction >(
@@ -245,10 +246,10 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
                             0.0,
                             0.0,
-                            400,
-                            -500*inv,
+                            600,
+                            1000*inv,
                             true ));
-
+/*
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
@@ -258,7 +259,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
                             -500*inv,
                             true ));
 
-
+*/
 
 
     _actions.push_back(
@@ -271,7 +272,7 @@ void StrategyManagerHomologation::buildStrat( const Color& color )
                 nullptr,
                 false
                 ));
-*/
+
 
     //_actions.push_back( wait500Ms() );
     /*

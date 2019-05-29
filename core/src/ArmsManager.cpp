@@ -21,6 +21,10 @@ ArmsManager::ArmsManager()
     _arm[0] = nullptr;
     _arm[1] = nullptr;
 
+    _pucksAttached[0] = nullptr;
+    _pucksAttached[1] = nullptr;
+
+
     _score = 0;
 }
 
@@ -377,16 +381,20 @@ void ArmsManager::releasePucksAcceletatorSingle(bool isRight, bool *ret)
     *ret = true;
     bool actionOk;
 
+    _arm[isRight]->setVacuum(false);
+
+    /*
     if (_pucksAttached[isRight])
     {
         _arm[isRight]->moveZ(180.0);
-        _arm[isRight]->setMode(ARM_HL_MODE_VERTICAL);
+        _arm[isRight]->setMode(ARM_HL_MODE_HORIZONTAL);
         _arm[isRight]->moveArmRel(340.0,115.0);
         _arm[isRight]->setVacuum(false);
         _score+=10;
     }
 
     _pucksAttached[isRight] = nullptr;
+*/
 /*
     for (QList<PuckPos*>::iterator it = list.begin(); it != list.end(); ++it){
         if ((*it)->isOnGround)

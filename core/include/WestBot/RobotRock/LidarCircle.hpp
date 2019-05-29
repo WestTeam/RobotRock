@@ -6,6 +6,7 @@
 #include <QFile>
 #include <QVector>
 #include <QDebug>
+#include <math.h>
 
 
 class LidarCircle {

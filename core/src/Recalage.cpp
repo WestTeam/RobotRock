@@ -419,22 +419,24 @@ QList<LidarCircle::Obstacle> Recalage::locate(
     QList<LidarCircle::Obstacle> ret;
 
 
-//    QList<LidarCircle::Obstacle> list = _lidarCircle.compute(a,d);
+    QList<LidarCircle::Obstacle> list = _lidarCircle.compute(a,d);
 
-//    QList<LidarCircle::Obstacle> list_rel = list;
+    QList<LidarCircle::Obstacle> list_rel = list;
 
-//    QList<LidarCircle::Obstacle> list_abs;
+    QList<LidarCircle::Obstacle> list_abs;
 
-//    RobotPos robotPos = data[0].pos;
+    RobotPos robotPos = data[0].pos;
 
-/*
+
     _lidarCircle.transformToRobot(list_rel);
     list_abs = list_rel;
     _lidarCircle.transformToAbs(list_abs,robotPos.x,robotPos.y,robotPos.theta);
-
     _lidarCircle.associate(list_abs);
-*/
-/*
+    tInfo( LOG ) << "lidarcicle count" << list.count();
+
+    //
+
+
 
     for (int i = 0; i < list.size(); i++)
     {//( QList<LidarCircle::Obstacle>::iterator it = list.begin(); it != list.end(); ++it){
@@ -445,7 +447,7 @@ QList<LidarCircle::Obstacle> Recalage::locate(
 
         float dist = hypot(list_rel[i].X,list_rel[i].Y);
 
-        if (list_rel[i].Q >= 1.0 && dist <= 1000.0 && list_abs[i].type == LidarCircle::Obstacle::Type::ROBOT)
+        if (list_rel[i].Q >= 0.3 && dist <= 1000.0 && list_abs[i].type == LidarCircle::Obstacle::Type::ROBOT)
         {
 
             ret << list_abs[i];
@@ -454,7 +456,7 @@ QList<LidarCircle::Obstacle> Recalage::locate(
             tInfo( LOG ) << "Robot Detection:Rel:" << dist << list_rel[i].X << list_rel[i].Y << list_rel[i].Q;
         }
     }
-*/
+
     return ret;
 }
 
@@ -463,7 +465,7 @@ void Recalage::run()
 {
     tDebug( LOG ) << "Recalage: Run";
 
-#define PERCENTAGE_START 12.5
+#define PERCENTAGE_START 20.0
 #define PERCENTAGE_STEP 2.5
 #define RETRY_COUNT 5
 #define STABLE_COUNT ((uint32_t)(1.0/(1.0/_speedTargetHz)))
@@ -597,12 +599,12 @@ void Recalage::run()
                             float dist = hypot(list[i].X-data[0].pos.x, list[i].Y-data[0].pos.y);
 
                             if (dist < 1000)
-                                speed_reductor = 100-75;
-                            if (dist < 750)
                                 speed_reductor = 100-50;
+                            if (dist < 800)
+                                speed_reductor = 100-0;
+                            if (dist < 500)
+                                speed_reductor = 100-0;
                             if (dist < 400)
-                                speed_reductor = 100-10;
-                            if (dist < 300)
                                 speed_reductor = 100-0;
                         }
 

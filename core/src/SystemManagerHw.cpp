@@ -343,7 +343,7 @@ bool SystemManagerHw::init()
 
     _trajectoryManager->init();
 
-#define DISABLE_ARM
+//#define DISABLE_ARM
 
 #ifndef DISABLE_ARM
 
@@ -463,10 +463,10 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
-    _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
+    //_monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
-    _monitoring->setRefreshRate( 250 );
+    //_monitoring->setRefreshRate( 250 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );
@@ -500,7 +500,8 @@ void SystemManagerHw::start()
 
     blinkColorLed();
 
-    _armsManager->setColor( _color == Color::Blue ? true : false );
+    if (_armsManager)
+        _armsManager->setColor( _color == Color::Blue ? true : false );
 
     _gameTimer.start( GAME_DURATION );
     _gameTimer.setSingleShot( true );
