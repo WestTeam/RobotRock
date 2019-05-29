@@ -133,7 +133,7 @@ SystemManagerHw::SystemManagerHw(
             _strategyManager->obstacleAt(x, y, x, y );
         } );
 
-    char buf[2] = {0xA5,0x40};
+    char buf[2] = {static_cast< char >( 0xA5 ),0x40};
 
     //_experiment.setColorPurple();
     //_experiment.start();
