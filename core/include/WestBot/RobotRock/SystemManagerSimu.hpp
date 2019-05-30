@@ -3,6 +3,10 @@
 #ifndef WESTBOT_ROBOTROCK_SYSTEMMANAGERSIMU_HPP_
 #define WESTBOT_ROBOTROCK_SYSTEMMANAGERSIMU_HPP_
 
+#include "ArmLowLevelSimu.hpp"
+#include "ArmHighLevel.hpp"
+#include "ArmsManager.hpp"
+
 #include "GameThread.hpp"
 #include "Odometry.hpp"
 //#include "Lidar.hpp"
@@ -48,6 +52,13 @@ private:
     //Recalage::Ptr _recalage;
     //LidarRPLidarA2::Ptr _lidar;
     TrajectoryManager::Ptr _trajectoryManager;
+
+    ArmLowLevelTest::Ptr _armLeftLow;
+    ArmLowLevelTest::Ptr _armRightLow;
+    ArmHighLevel::Ptr _armLeft;
+    ArmHighLevel::Ptr _armRight;
+    ArmsManager::Ptr _armsManager;
+
     StrategyManager::Ptr _strategyManager;
     //Monitoring::Ptr _monitoring;
     GameThread::Ptr _game;

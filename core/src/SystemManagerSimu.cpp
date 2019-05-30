@@ -372,7 +372,40 @@ bool SystemManagerSimu::init()
 
     _trajectoryManager->init();
 
-    if( ! _strategyManager->init( _odometry, _trajectoryManager ) )
+    RobotPos armPos;
+
+    armPos.x = 0.0;
+    armPos.y = 0.0;
+
+    _armLeftLow.reset( new ArmLowLevelTest( _odometry, armPos ) );
+    _armRightLow.reset( new ArmLowLevelTest( _odometry, armPos ) );
+
+    _armLeft.reset( new ArmHighLevel() );
+    _armRight.reset( new ArmHighLevel() );
+
+    if( ! _armLeft->init( _odometry, _armLeftLow, true ) )
+    {
+
+    }
+
+    if( ! _armRight->init( _odometry, _armLeftLow, true ) )
+    {
+
+    }
+
+    _armsManager.reset( new ArmsManager() );
+
+    if( ! _armsManager->init( _odometry, _armLeft, _armRight ) )
+    {
+        tFatal( LOG ) << "Unable to init arms manager. Abort";
+    }
+
+    if( ! _strategyManager->init(
+        _odometry,
+        nullptr,
+        _armsManager,
+        nullptr,
+        _trajectoryManager ) )
     {
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }

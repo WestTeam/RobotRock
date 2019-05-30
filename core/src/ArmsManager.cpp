@@ -371,6 +371,9 @@ bool ArmsManager::releasePucksAcceletator()
     std::thread tl(&ArmsManager::releasePucksAcceletatorSingle,this,false,&rleft);
     std::thread tr(&ArmsManager::releasePucksAcceletatorSingle,this,true,&rright);
 
+    tl.join();
+    tr.join();
+
     return rleft && rright;
 
 }
