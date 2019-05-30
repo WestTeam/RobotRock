@@ -503,7 +503,37 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
 
 
 
-/*
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)900.0,
+                            (float)900.0*inv,
+                            true ));
+
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
+                            0.0,
+                            0.0,
+                            (float)900.0,
+                            (float)1000.0*inv,
+                            true ));
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP2,
+                left,
+                nullptr,
+                right,
+                nullptr,
+                _invArms
+                ));
+
+    /*
     PuckPos fakePuckLine1;
     PuckPos fakePuckLine2;
     fakePuckLine1.isOnGround = false;

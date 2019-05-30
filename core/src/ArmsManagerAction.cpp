@@ -71,10 +71,26 @@ void ArmsManagerAction::execute()
         break;
 
     case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP2:
-        _armsManager->_arm[0]->disable();
-        _armsManager->_arm[1]->disable();
-        _armsManager->_arm[0]->setVacuum(true);
-        _armsManager->_arm[1]->setVacuum(true);
+        _armsManager->_arm[0]->enable();
+        _armsManager->_arm[1]->enable();
+
+        _armsManager->_arm[0]->setMode(ARM_HL_MODE_HORIZONTAL);
+        _armsManager->_arm[1]->setMode(ARM_HL_MODE_HORIZONTAL);
+
+        _armsManager->_arm[0]->moveArmRel(320.0,-100);
+        _armsManager->_arm[1]->moveArmRel(320.0,100);
+
+        _armsManager->_arm[1]->moveZ(85);
+
+        _armsManager->_arm[0]->setVacuum(false);
+        _armsManager->_arm[1]->setVacuum(false);
+
+         //320.0
+        // -100.0
+
+        //_armsManager->_arm[0]->_armLL[]
+
+
         break;
 
     case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP3:
