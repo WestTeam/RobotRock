@@ -115,6 +115,8 @@ public:
     bool actionPuckUnstore();
     bool actionPuckRelease(double xMm, double yMm, double zMm);
 
+    ArmLowLevelBase::Ptr _armLL;
+
 private:
     bool _attached;
     //bool _initOk;
@@ -124,7 +126,6 @@ private:
     ArmHighLevelMode _mode;
 
     Odometry::Ptr _odometry;
-    ArmLowLevelBase::Ptr _armLL;
 
     RobotPos _armPos;
     Pos3D _storagePos;

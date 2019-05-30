@@ -64,6 +64,18 @@ void ArmsManagerAction::execute()
         break;
 
     case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP1:
+        _armsManager->_arm[0]->setMode(ARM_HL_MODE_VERTICAL);
+        _armsManager->_arm[1]->setMode(ARM_HL_MODE_VERTICAL);
+
+        _armsManager->_arm[0]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,-22.0);
+        _armsManager->_arm[0]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,+22.0);
+        _armsManager->_arm[1]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,22.0);
+        _armsManager->_arm[1]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-22.0);
+
+        _armsManager->_arm[0]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[1]->_armLL->waitServosTargetOk(1000);
+
+
         _armsManager->_arm[0]->disable();
         _armsManager->_arm[1]->disable();
         _armsManager->_arm[0]->setVacuum(true);
@@ -80,6 +92,7 @@ void ArmsManagerAction::execute()
         _armsManager->_arm[0]->moveArmRel(320.0,-100);
         _armsManager->_arm[1]->moveArmRel(320.0,100);
 
+        _armsManager->_arm[0]->moveZ(85);
         _armsManager->_arm[1]->moveZ(85);
 
         _armsManager->_arm[0]->setVacuum(false);

@@ -297,7 +297,7 @@ bool SystemManagerHw::init()
     _hal->_pidAngleEnable.write( 0 );
     _hal->_pidAngleOverride.write( 0 );
     _hal->_pidAngleInverted.write( 1 );
-    _hal->_pidAngleKp.write( ( float ) 500000.0 );
+    _hal->_pidAngleKp.write( ( float ) 600000.0 );
     _hal->_pidAngleKi.write( ( float ) 0.0 );
     _hal->_pidAngleKd.write( ( float ) 0.0 );
 
