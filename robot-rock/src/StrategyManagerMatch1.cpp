@@ -300,7 +300,7 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                 _invArms
                 ));
 
-    RobotPos posBeforeDepose = {.x = 900.0,.y = 225.0*inv, .theta = 0.0};
+    RobotPos posBeforeDepose = {.x = 900.0,.y = (1500-450.0/2.0)*inv, .theta = 0.0};
 
 
     _actions.push_back( std::make_shared< MoveAction >(
