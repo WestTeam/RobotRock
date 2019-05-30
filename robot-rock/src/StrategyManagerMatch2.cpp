@@ -402,7 +402,7 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
 
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
                             DEG((float)distriPos.theta),
                             0.0,
                             0,
@@ -494,7 +494,7 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
 
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
                             0.0,
                             0.0,
                             (float)distriPos.x-100.0,
