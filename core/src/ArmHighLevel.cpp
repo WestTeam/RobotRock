@@ -600,12 +600,13 @@ bool ArmHighLevel::actionGroundPuckCollection(double xMm, double yMm)
 
 bool ArmHighLevel::actionDistributorPuckCollection(double xMm, double yMm)
 {
+    double dist;
     setVacuum(true);
 
     setMode(ARM_HL_MODE_VERTICAL);
 
     moveZ(DISTRI_HEIGHT+PUCK_DIAMETER/2);
-
+/*
     // only work because orientation of the robot is the same for all distributors
     moveArmAbs(xMm-SUCTION_CUP_LENGTH,yMm);
 
@@ -616,10 +617,11 @@ bool ArmHighLevel::actionDistributorPuckCollection(double xMm, double yMm)
         setVacuum(false);
         return false;
     }
+  */
     moveArmAbs(xMm,yMm);
 
     dist = getObjectDistance();
-    if (dist >= 10)
+    if (dist >= 20)
     {
         tWarning(LOG) << "ArmHighLevel: actionGroundPuckCollection: Do no see puck " << dist;
         setVacuum(false);

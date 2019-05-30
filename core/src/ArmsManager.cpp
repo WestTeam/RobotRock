@@ -334,6 +334,18 @@ void ArmsManager::getPucksAndStoreSingle(bool isRight, PuckPos* puck1, PuckPos* 
                     _pucksStored[isRight] << (*it);
                 *ret &= actionOk;
             }
+        } else {
+            actionOk = _arm[isRight]->actionDistributorPuckCollection((*it)->x,(*it)->y);
+
+            *ret &= actionOk;
+            if (actionOk)
+            {
+                actionOk = _arm[isRight]->actionPuckStore();
+
+                if (actionOk)
+                    _pucksStored[isRight] << (*it);
+                *ret &= actionOk;
+            }
         }
     }
 }

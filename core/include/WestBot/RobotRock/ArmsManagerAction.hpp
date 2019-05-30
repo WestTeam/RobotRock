@@ -22,6 +22,9 @@ public:
         INIT_POSITION, // (startup safe position)
         GET_PUCKS, // Grab without Storage (only left1 & left2 possible)
         GET_PUCKS_AND_STORE, // Grab and Store
+        GET_PUCKS_ON_DISTRI_STEP1,
+        GET_PUCKS_ON_DISTRI_STEP2,
+        GET_PUCKS_ON_DISTRI_STEP3,
         RELEASE_ALL_PUCKS_ACCELERATOR, // release one by one all pucks into accelerator
         RELEASE_ALL_PUCKS_SCALE, // release one by one all pucks into scale
         RELEASE_ALL_PUCKS_GROUND // release one by one all pucks on the ground

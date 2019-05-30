@@ -63,6 +63,24 @@ void ArmsManagerAction::execute()
         _armsManager->getPucksAndStore(_left1,_left2,_right1,_right2);
         break;
 
+    case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP1:
+        _armsManager->_arm[0]->disable();
+        _armsManager->_arm[1]->disable();
+        _armsManager->_arm[0]->setVacuum(true);
+        _armsManager->_arm[1]->setVacuum(true);
+        break;
+
+    case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP2:
+        _armsManager->_arm[0]->disable();
+        _armsManager->_arm[1]->disable();
+        _armsManager->_arm[0]->setVacuum(true);
+        _armsManager->_arm[1]->setVacuum(true);
+        break;
+
+    case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP3:
+        _armsManager->getPucksAndStore(_left1,_left2,_right1,_right2);
+        break;
+
     case ArmsManagerAction::Type::RELEASE_ALL_PUCKS_ACCELERATOR:
         _armsManager->releasePucksAcceletator();
 
