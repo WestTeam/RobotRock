@@ -816,7 +816,7 @@ bool ArmHighLevel::actionPuckUnstore()
         else
         {
             _storagePuckCount--;
-
+            tInfo(LOG) << "ArmHighLevel: actionPuckUnstore one puck, now remaining" << _storagePuckCount;
             return true;
         }
 

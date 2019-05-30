@@ -466,7 +466,7 @@ bool SystemManagerHw::init()
     _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
-    _monitoring->setRefreshRate( 250 );
+    //_monitoring->setRefreshRate( 250 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );

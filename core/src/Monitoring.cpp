@@ -30,9 +30,11 @@ Monitoring::Monitoring(
 
     _screen.setColor( "tVoltage2", "2016" );
 
+    _screen.send( "tScore", QString::number( 40+18 ).toLatin1() );
+
 
     _stop = false;
-    start();
+    //start();
 }
 
 Monitoring::~Monitoring()

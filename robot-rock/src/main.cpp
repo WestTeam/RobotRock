@@ -8,7 +8,7 @@
 
 //#define DEBUG
 //#define SIMU
-#define USE_SIMULATOR
+//#define USE_SIMULATOR
 
 #ifdef USE_SIMULATOR
 #include <WestBot/RobotRock/SystemManagerSimu.hpp>
@@ -55,7 +55,7 @@ int main( int argc, char *argv[] )
 #ifndef USE_SIMULATOR
 
     Hal::Ptr hal = std::make_shared< Hal >();
-    SystemManagerHw system( hal, strategy );
+    SystemManagerHw system( hal, strategyManagerMatch1 );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 

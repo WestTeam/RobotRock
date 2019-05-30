@@ -343,6 +343,16 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                             true ));
 
 
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
+                            0.0,
+                            0.0,
+                            (float)fakePuckLine.x,
+                            (float)fakePuckLine.y,
+                            true ));
+
+
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,

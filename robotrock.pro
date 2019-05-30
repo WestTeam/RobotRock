@@ -15,7 +15,7 @@ SUBDIRS = core robot-rock \
     #testHomologation \
     #TestVl6180x \
     #testArmLowLevel \
-    #testArmHighLevel \
+    testArmHighLevel \
     #testSimServer \
     #testRobotSimu \
     #testAStarHighLevel \

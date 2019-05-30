@@ -545,11 +545,12 @@ bool ArmsManager::releasePucksGround()
 
     for (int i = 0; i < 2; i++)
     {
-        if (i = 0)
+        if (i == 0)
             inv = 1.0;
         else
             inv = -1.0;
 
+        tDebug(LOG) << "releasePucksGround" << i << _pucksStored[i].length() << 100*inv;
         //for (int i = 0; i < _pucksStored[id_first].length(); i++)
         while (_pucksStored[i].length() > 0)
         {
@@ -560,7 +561,8 @@ bool ArmsManager::releasePucksGround()
 
             if (actionOk)
             {
-                actionOk = _arm[i]->moveArmRel(210.0,70.0*inv);
+
+                actionOk = _arm[i]->moveArmRel(290.0,100.0*inv);
 
                 if (actionOk)
                 {
