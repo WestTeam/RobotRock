@@ -208,13 +208,17 @@ bool ArmsManager::getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* righ
         if (left1->isOnGround == false)
         {
 
-            double diff_arm_puck_y = left1->y-arml_pos_y;
+            double diff_arm_puck_y = (fabs(left1->y-right1->y)-(arml_pos_y-armr_pos_y))/2.0;
 
-            y = left1->y+(left1->y-left1->y)/2;
-            x = left1->x
+            y = (left1->y+right1->y)/2;
+            x = left1->x + (
               - (ARM_LOWER_LENGTH+WRIST_AND_SUCTION_LENGTH)
-              - sqrt(ARM_UPPER_LENGTH*ARM_UPPER_LENGTH+diff_arm_puck_y*diff_arm_puck_y)
-              - arml_pos_x;
+              - sqrt(ARM_UPPER_LENGTH*ARM_UPPER_LENGTH-diff_arm_puck_y*diff_arm_puck_y)
+              - arml_pos_x)*cos(left1->theta-M_PI);
+
+            tDebug(LOG) << "getCatchPosition Distri1: " << left1->x << left1->y << right1->x << right1->y;
+            tDebug(LOG) << "getCatchPosition Distri2: " << x << y << diff_arm_puck_y << arml_pos_x << arml_pos_y;
+
 
             pos.theta = left1->theta-M_PI;
             pos.x = x;

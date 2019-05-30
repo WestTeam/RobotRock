@@ -7,12 +7,14 @@ SOURCES =  \
     src/StrategyManagerHomologation.cpp \
     src/StrategyManagerV1.cpp \
     src/StrategyManagerMatch1.cpp \
+    src/StrategyManagerMatch2.cpp \
     src/main.cpp
 
 HEADERS += \
     include/StrategyManagerHomologation.hpp \
     include/StrategyManagerV1.hpp \
-    include/StrategyManagerMatch1.hpp
+    include/StrategyManagerMatch1.hpp \
+    include/StrategyManagerMatch2.hpp
 
 
 INCLUDEPATH += \

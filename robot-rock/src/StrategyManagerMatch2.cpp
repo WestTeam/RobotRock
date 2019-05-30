@@ -371,7 +371,7 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
                             0.0,
                             0.0,
                             (float)1360.0,
-                            (float)posDepose.y*inv,
+                            (float)posDepose.y,
                             true ));
 
 
@@ -423,9 +423,6 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
                 ));
 
 
-
-
-
     PuckPos fakePuckLine1;
     PuckPos fakePuckLine2;
     fakePuckLine1.isOnGround = false;
@@ -440,7 +437,6 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
 
     _armsManager->getCatchPosition(&fakePuckLine1,nullptr,&fakePuckLine2,nullptr,distriPos);
 
-
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
@@ -449,8 +445,6 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
                             (float)distriPos.x,
                             (float)distriPos.y,
                             true ));
-
-
 
 
     _actions.push_back( std::make_shared< MoveAction >(
@@ -472,7 +466,10 @@ void StrategyManagerMatch2::buildStrat( const Color& color )
                 nullptr,
                 false
                 ));
-    /*
+
+
+
+/*
 
 
     _actions.push_back( std::make_shared< MoveAction >(
