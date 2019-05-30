@@ -93,13 +93,13 @@ public:
     bool releasePucksGround();
 
 
+    ArmHighLevel::Ptr _arm[2];
 
 private:
 
     bool _attached;
 
     Odometry::Ptr _odometry;
-    ArmHighLevel::Ptr _arm[2];
 
     int _score;
     bool _isPurple;

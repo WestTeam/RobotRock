@@ -384,7 +384,7 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                             0.0,
                             0.0,
                             (float)1360.0,
-                            (float)posDepose.y*inv,
+                            (float)posDepose.y,
                             true ));
 
     _actions.push_back( std::make_shared< MoveAction >(

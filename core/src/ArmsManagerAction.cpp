@@ -51,6 +51,8 @@ void ArmsManagerAction::execute()
         break;
 
     case ArmsManagerAction::Type::INIT_POSITION:
+        _armsManager->_arm[0]->moveZ(150.0);
+        _armsManager->_arm[1]->moveZ(150.0);
         break;
 
     case ArmsManagerAction::Type::GET_PUCKS:
