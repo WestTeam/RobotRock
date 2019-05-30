@@ -80,6 +80,42 @@ int main( int argc, char *argv[] )
 
     hal->_pwmCustom2Value.write(1000);
 
+
+    hal->_motor4Value.write(0);
+    while (1)
+    {
+        hal->_output2.write(0);
+
+        double delay = 5000;
+        do {
+            delay-=1000;
+            QThread::msleep(1000);
+            tInfo(LOG) << "motorcurrent ON"
+                       << hal->_motor0Current.read<int32_t>()
+                       << hal->_motor1Current.read<int32_t>()
+                       << hal->_motor2Current.read<int32_t>()
+                       << hal->_motor3Current.read<int32_t>()
+                       << hal->_motor4Current.read<int32_t>()
+                       << hal->_motor5Current.read<int32_t>()
+                          ;
+        } while (delay >= 0);
+        hal->_output2.write(1);
+        delay = 5000;
+        do {
+            delay-=1000;
+            QThread::msleep(1000);
+
+            tInfo(LOG) << "motorcurrent OFF"
+                       << hal->_motor0Current.read<int32_t>()
+                       << hal->_motor1Current.read<int32_t>()
+                       << hal->_motor2Current.read<int32_t>()
+                       << hal->_motor3Current.read<int32_t>()
+                       << hal->_motor4Current.read<int32_t>()
+                       << hal->_motor5Current.read<int32_t>()
+                          ;
+        } while (delay >= 0);
+    }
+
     //while(1);
 /*
     hal->_motor2Override.write(1);
