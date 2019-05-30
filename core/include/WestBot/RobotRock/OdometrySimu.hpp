@@ -14,7 +14,7 @@ class OdometrySimu : public Odometry
 {
 public:
     OdometrySimu();
-    ~OdometrySimu() override = default;
+    //~OdometrySimu() override = default;
 
     RobotPos getPosition() override;
     void setPosition( RobotPos pos ) override;

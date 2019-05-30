@@ -69,7 +69,7 @@ void Nextion::write( QByteArray data )
     ack[ 1 ] = 0xFF;
     ack[ 2 ] = 0xFF;
 
-    QMutexLocker locker( _lock );
+    //QMutexLocker locker( _lock );
 
     _serial.write( data );
     _serial.write( ack );

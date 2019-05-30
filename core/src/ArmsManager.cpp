@@ -536,6 +536,50 @@ void ArmsManager::getReleaseGroundPosition(RobotPos &pos)
 bool ArmsManager::releasePucksGround()
 {
 
+    uint8_t id_first = true; // right for Purple
+    uint8_t id_second = false; // left second for Purple
+    double inv = 1.0;
+
+
+    bool actionOk;
+
+    for (int i = 0; i < 2; i++)
+    {
+        if (i = 0)
+            inv = 1.0;
+        else
+            inv = -1.0;
+
+        //for (int i = 0; i < _pucksStored[id_first].length(); i++)
+        while (_pucksStored[i].length() > 0)
+        {
+            PuckPos *puck = _pucksStored[i].last();
+            _pucksStored[i].removeLast();
+
+            actionOk = _arm[i]->actionPuckUnstore();
+
+            if (actionOk)
+            {
+                actionOk = _arm[i]->moveArmRel(210.0,70.0*inv);
+
+                if (actionOk)
+                {
+                    _arm[i]->moveZ(60.0);
+                    _arm[i]->setVacuum(false);
+                    if (puck->type == PUCK_RED)
+                        _score += 5;
+                    if (puck->type == PUCK_GREEN)
+                        _score += 5;
+                    if (puck->type == PUCK_BLUE)
+                        _score += 5;
+
+                    tDebug(LOG) << "New Score" << _score;
+
+                }
+            }
+
+        }
+    }
     _pucksAttached[false] = nullptr;
     _pucksAttached[true] = nullptr;
 }

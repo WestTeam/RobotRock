@@ -76,6 +76,8 @@ void MoveAction::execute()
         break;
 
     case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_A_ABS:
+        tDebug( LOG ) << "Move Only ABS" << _theta;
+
         _trajectoryManager->turnOnlyAAbs( _theta, _correction, _doNotBlock );
         break;
 
@@ -88,6 +90,7 @@ void MoveAction::execute()
         break;
 
     case TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY:
+        tDebug( LOG ) << "Turn To XY" << _x << _y;
         _trajectoryManager->turnToXY( _x, _y, _doNotBlock );
         break;
 
@@ -96,10 +99,12 @@ void MoveAction::execute()
         break;
 
     case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_XY_ABS:
+        tDebug( LOG ) << "Move XY ABS" << _x << _y;
         _trajectoryManager->moveToXYAbs( _theta, _x, _y, _doNotBlock );
         break;
 
     case TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS:
+        tDebug( LOG ) << "Move FORWARD XY ABS" << _x << _y;
         _trajectoryManager->moveForwardToXYAbs( _theta, _x, _y, _doNotBlock );
         break;
 

@@ -63,6 +63,7 @@ void ArmsManagerAction::execute()
 
     case ArmsManagerAction::Type::RELEASE_ALL_PUCKS_ACCELERATOR:
         _armsManager->releasePucksAcceletator();
+
         break;
 
     case ArmsManagerAction::Type::RELEASE_ALL_PUCKS_SCALE:
@@ -71,6 +72,7 @@ void ArmsManagerAction::execute()
 
     case ArmsManagerAction::Type::RELEASE_ALL_PUCKS_GROUND:
         _armsManager->releasePucksGround();
+
         break;
 
     default:

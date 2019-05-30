@@ -432,7 +432,7 @@ QList<LidarCircle::Obstacle> Recalage::locate(
     list_abs = list_rel;
     _lidarCircle.transformToAbs(list_abs,robotPos.x,robotPos.y,robotPos.theta);
     _lidarCircle.associate(list_abs);
-    tInfo( LOG ) << "lidarcicle count" << list.count();
+    //tInfo( LOG ) << "lidarcicle count" << list.count();
 
     //
 
@@ -453,7 +453,7 @@ QList<LidarCircle::Obstacle> Recalage::locate(
             ret << list_abs[i];
 
             tInfo( LOG ) << "Robot Detection:Abs:" << dist << list_abs[i].X << list_abs[i].Y << list_abs[i].Q;
-            tInfo( LOG ) << "Robot Detection:Rel:" << dist << list_rel[i].X << list_rel[i].Y << list_rel[i].Q;
+            //tInfo( LOG ) << "Robot Detection:Rel:" << dist << list_rel[i].X << list_rel[i].Y << list_rel[i].Q;
         }
     }
 

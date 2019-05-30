@@ -212,7 +212,7 @@ SystemManagerHw::SystemManagerHw(
         tCritical( LOG ) << "Failed to init/check health of lidar front module";
         return;
     }
-    _lidarFront->startMotor(50.0);
+    _lidarFront->startMotor(0.0);
 
 
 /*
@@ -413,8 +413,8 @@ bool SystemManagerHw::init()
 
     _armLeft->setMode(ARM_HL_MODE_HORIZONTAL);
     _armLeft->moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
-    //_armLeft->moveArmRel(110.0,180.0);
-    _armLeft->moveArmRel(240.0,20.0);
+    _armLeft->moveArmRel(110.0,180.0);
+    //_armLeft->moveArmRel(240.0,20.0);
 
 
     _armRight.reset( new ArmHighLevel() );
@@ -429,8 +429,8 @@ bool SystemManagerHw::init()
 
     _armRight->setMode(ARM_HL_MODE_HORIZONTAL);
     _armRight->moveZ(PUCK_WIDTH+PUCK_WIDTH*2);
-    //_armRight->moveArmRel(110.0,-180.0);
-    _armRight->moveArmRel(240.0,-20.0);
+    _armRight->moveArmRel(110.0,-180.0);
+    //_armRight->moveArmRel(240.0,-20.0);
 
 
     _armsManager.reset( new ArmsManager() );
@@ -463,10 +463,10 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
-    //_monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
+    _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
-    //_monitoring->setRefreshRate( 250 );
+    _monitoring->setRefreshRate( 250 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );

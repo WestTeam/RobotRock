@@ -247,11 +247,6 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
 
     _armsManager->getReleaseScalePosition(posScale);
 
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back( wait500Ms() );
-
-
 //    _stratIsRunning = true;
 //    _trajectoryManager->setAbort( false );
 
@@ -305,8 +300,75 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                 _invArms
                 ));
 
-    tDebug( LOG ) << ">>>>" << posScale.x << posCatchGndPuck3.y;
+    RobotPos posBeforeDepose = {.x = 900.0,.y = 225.0*inv, .theta = 0.0};
 
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)posBeforeDepose.x,
+                            (float)posBeforeDepose.y,
+                            true ));
+
+    RobotPos posDepose = posBeforeDepose;
+
+    PuckPos fakePuckLine;
+    fakePuckLine.isOnGround = true;
+    fakePuckLine.x = 600;
+    fakePuckLine.y = (1500-450.0/2.0)*inv;
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
+                            0.0,
+                            0.0,
+                            (float)fakePuckLine.x,
+                            (float)fakePuckLine.y,
+                            true ));
+
+
+
+    _armsManager->getCatchPosition(&fakePuckLine,nullptr,nullptr,nullptr,posDepose);
+
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)posDepose.x,
+                            (float)posDepose.y,
+                            true ));
+
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::RELEASE_ALL_PUCKS_GROUND,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                false
+                ));
+
+/*
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+                            DEG((float)posCatchGndPuck3.theta),
+                            0.0,
+                            0,
+                            0,
+                            true ));
+
+
+
+
+    //tDebug( LOG ) << ">>>>" << posScale.x << posCatchGndPuck3.y;
+/*
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
@@ -316,9 +378,9 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                             (float)posCatchGndPuck3.y,
                             true ));
 
-
+*/
     tDebug( LOG ) << ">>>>" << posScale.x << posScale.y;
-
+/*
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
@@ -326,6 +388,17 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                             0.0,
                             (float)posScale.x,
                             (float)posScale.y,
+                            true ));*/
+/*
+    // 1100 180.0*inv
+    // 1310 180.0*inv
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1100,
+                            (float)180.0*inv,
                             true ));
 
     _actions.push_back( std::make_shared< MoveAction >(
@@ -336,7 +409,25 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                             0,
                             0,
                             true ));
-/*
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1310,
+                            (float)180.0*inv,
+                            true ));
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+                            DEG((float)posScale.theta),
+                            0.0,
+                            0,
+                            0,
+                            true ));
+
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,

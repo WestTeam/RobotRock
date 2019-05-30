@@ -130,6 +130,8 @@ private:
     Pos3D _storagePos;
     uint8_t _storagePuckCount;
 
+    bool _vaccumEnalbed;
+
 
 };
 

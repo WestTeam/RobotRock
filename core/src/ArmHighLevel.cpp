@@ -440,7 +440,15 @@ void ArmHighLevel::setMode(enum ArmHighLevelMode mode)
 void ArmHighLevel::setVacuum(bool enable)
 {
     _armLL->setVacuumPower(enable?100.0:0.0);
-    _armLL->setVacuumValve(!enable);
+
+    if (_vaccumEnalbed && !enable)
+    {
+        _armLL->setVacuumValve(!enable);
+        QThread::msleep(50);
+    }
+    _armLL->setVacuumValve(false);
+
+    _vaccumEnalbed = enable;
 }
 
 // absolute value of detected object
