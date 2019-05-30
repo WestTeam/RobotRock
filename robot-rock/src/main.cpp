@@ -49,16 +49,11 @@ int main( int argc, char *argv[] )
     //StrategyManagerV1::Ptr strategyV1 =
     //    std::make_shared< StrategyManagerV1 >();
 
-<<<<<<< Updated upstream
-    StrategyManagerHomologation::Ptr strategyHomologation =
-        std::make_shared< StrategyManagerHomologation >();
+    StrategyManagerHomologation::Ptr strategyManagerMatch1 =
+        std::make_shared< StrategyManagerMatch1 >();
 
 #ifndef USE_SIMULATOR
-=======
-#ifndef USE_SIMULATOR
-    StrategyManagerMatch1::Ptr strategy =
-        std::make_shared< StrategyManagerMatch1 >();
->>>>>>> Stashed changes
+
     Hal::Ptr hal = std::make_shared< Hal >();
     SystemManagerHw system( hal, strategy );
 
@@ -78,7 +73,7 @@ int main( int argc, char *argv[] )
   #endif
 #else
 
-    SystemManagerSimu system( strategyHomologation );
+    SystemManagerSimu system( strategyManagerMatch1 );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 

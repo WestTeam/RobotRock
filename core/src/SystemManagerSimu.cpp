@@ -372,16 +372,25 @@ bool SystemManagerSimu::init()
 
     _trajectoryManager->init();
 
-    RobotPos armPos;
+    RobotPos armPosLeft;
+    RobotPos armPosRight;
 
-    armPos.x = 0.0;
-    armPos.y = 0.0;
+    armPosLeft.x = 194.6;
+    armPosLeft.y = 118.5;
 
-    _armLeftLow.reset( new ArmLowLevelTest( _odometry, armPos ) );
-    _armRightLow.reset( new ArmLowLevelTest( _odometry, armPos ) );
+    armPosRight.x = 194.6;
+    armPosRight.y = -118.5;
+
+
+    _armLeftLow.reset( new ArmLowLevelTest( _odometry, armPosLeft ) );
+    _armRightLow.reset( new ArmLowLevelTest( _odometry, armPosRight ) );
 
     _armLeft.reset( new ArmHighLevel() );
     _armRight.reset( new ArmHighLevel() );
+
+    _armLeft->confArmPos(194.6,118.5);
+    _armRight->confArmPos(194.6,-118.5);
+
 
     if( ! _armLeft->init( _odometry, _armLeftLow, true ) )
     {
@@ -517,13 +526,18 @@ bool SystemManagerSimu::isSafe() const
 //
 void SystemManagerSimu::initRecalage()
 {
+
+    RobotPos initPos = {.x = 600.0+75.0, .y = 1500.0-450+52+172.8, .theta = -M_PI/2};
+
     if( _color == Color::Yellow )
     {
-        _odometry->setPosition({.x=600, .y=-1180, .theta=RAD(90)});
+        initPos.y *= -1.0;
+        initPos.theta += M_PI;
+        _odometry->setPosition(initPos);
     }
     else
     {
-        _odometry->setPosition({.x=600, .y=1180, .theta=RAD(-90)});
+        _odometry->setPosition(initPos);
     }
 
     tInfo( LOG ) << "Odometry initialized for color:" << _color << _odometry->getPosition().x

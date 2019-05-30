@@ -260,14 +260,15 @@ bool ArmsManager::getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* righ
 
             tDebug(LOG) << "getCatchPosition d/theta:" << d << theta;
 
-            x += (puck->x-rpos.x)/d*(d-arml_abs_x-70);
-            y += (puck->y-rpos.y)/d*(d-arml_abs_x-70);
+            tDebug( LOG ) << d << arml_abs_x;
+            x += (puck->x-rpos.x)/d*(d-arml_pos_x-70);
+            y += (puck->y-rpos.y)/d*(d-arml_pos_x-70);
 
             tDebug(LOG) << "getCatchPosition Robot Pos to go:" << x << y;
 
-            rpos.x = x;
-            rpos.y = y;
-            rpos.theta = theta;
+            pos.x = x;
+            pos.y = y;
+            pos.theta = theta;
 
             ret = true;
         } else {
@@ -275,9 +276,9 @@ bool ArmsManager::getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* righ
             x = puck->x + (WRIST_AND_SUCTION_LENGTH + ARM_UPPER_LENGTH + ARM_LOWER_LENGTH + arml_pos_x)*cos(puck->theta);
             y = puck->y + arml_pos_y*inv*cos(puck->theta)*-1.0;
 
-            rpos.x = x;
-            rpos.y = y;
-            rpos.theta = puck->theta-M_PI;
+            pos.x = x;
+            pos.y = y;
+            pos.theta = puck->theta-M_PI;
 
             ret = true;
         }
