@@ -189,7 +189,7 @@ bool ArmsManager::getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* righ
     _arm[0]->getArmPos(arml_pos_x,arml_pos_y);
     _arm[1]->getArmPos(armr_pos_x,armr_pos_y);
 
-    RobotPos rpos = _odometry->getPosition();
+    RobotPos rpos = pos;//_odometry->getPosition();
 
     arml_abs_x = rpos.x+arml_pos_x*cos(rpos.theta);
     arml_abs_y = rpos.y+arml_pos_y*sin(rpos.theta);
@@ -240,15 +240,30 @@ bool ArmsManager::getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* righ
         {
             double d,theta;
 
-            d = hypot(puck->x-rpos.x,puck->y-rpos.y);
+            tDebug(LOG) << "getCatchPosition PuckPos:" << puck->x << puck->y;
+            tDebug(LOG) << "getCatchPosition Robot Pos:" << rpos.x << rpos.y;
+
+
+            //d = hypot(puck->x-rpos.x,puck->y-rpos.y);
             theta = atan2(puck->y-rpos.y,puck->x-rpos.x);
 
-            //theta-=rpos.theta;
-            d -= arml_abs_x-70.0;
 
+//            d -= arml_abs_x-70.0;
 
-            x = rpos.x+d*cos(theta);
-            y = rpos.y+d*sin(theta);
+//            x = rpos.x+d*cos(theta);
+//            y = rpos.y+d*sin(theta);
+
+            x = rpos.x;
+            y = rpos.y;
+
+            d = hypot(puck->x-rpos.x,puck->y-rpos.y);
+
+            tDebug(LOG) << "getCatchPosition d/theta:" << d << theta;
+
+            x += (puck->x-rpos.x)/d*(d-arml_abs_x-70);
+            y += (puck->y-rpos.y)/d*(d-arml_abs_x-70);
+
+            tDebug(LOG) << "getCatchPosition Robot Pos to go:" << x << y;
 
             rpos.x = x;
             rpos.y = y;
@@ -386,6 +401,7 @@ void ArmsManager::releasePucksAcceletatorSingle(bool isRight, bool *ret)
 
     _arm[isRight]->setVacuum(false);
 
+
     /*
     if (_pucksAttached[isRight])
     {
@@ -421,11 +437,88 @@ void ArmsManager::releasePucksAcceletatorSingle(bool isRight, bool *ret)
 
 void ArmsManager::getReleaseScalePosition(RobotPos &pos)
 {
+    pos.x = 1350;
+    pos.y = 151;
 
+    if (!_isPurple)
+        pos.y *= -1.0;
+    pos.theta = 0.0;
 }
 
 bool ArmsManager::releasePucksScale()
 {
+    uint8_t id_first = true; // right for Purple
+    uint8_t id_second = false; // left second for Purple
+    double inv = 1.0;
+
+    if (!_isPurple)
+    {
+        inv = -1.0;
+        id_first = ! id_first;
+        id_second = ! id_second;
+    }
+
+    bool actionOk;
+
+    _pucksStored[id_first].removeLast();
+
+    //{}
+
+    //for (int i = 0; i < _pucksStored[id_first].length(); i++)
+    while (_pucksStored[id_first].length() > 0)
+    {
+        PuckPos *puck = _pucksStored[id_first].last();
+        _pucksStored[id_first].removeLast();
+
+        actionOk = _arm[id_first]->actionPuckUnstore();
+
+        if (actionOk)
+        {
+            actionOk = _arm[id_first]->moveArmRel(210.0,-70.0*inv);
+
+            if (actionOk)
+            {
+                _arm[id_first]->setVacuum(false);
+                if (puck->type == PUCK_RED)
+                    _score += 4;
+                if (puck->type == PUCK_GREEN)
+                    _score += 8;
+                if (puck->type == PUCK_BLUE)
+                    _score += 12;
+
+                tDebug(LOG) << "New Score" << _score;
+
+            }
+        }
+
+    }
+
+    //for (int i = 0; i < _arm[id_second]->getPuckCount(); i++)
+    while (_pucksStored[id_second].length() > 0)
+    {
+        PuckPos *puck = _pucksStored[id_second].last();
+        _pucksStored[id_second].removeLast();
+
+        actionOk = _arm[id_second]->actionPuckUnstore();
+
+        if (actionOk)
+        {
+            actionOk = _arm[id_second]->moveArmRel(210.0,50.0*inv);
+
+            if (actionOk)
+            {
+                _arm[id_second]->setVacuum(false);
+                if (puck->type == PUCK_RED)
+                    _score += 4;
+                if (puck->type == PUCK_GREEN)
+                    _score += 8;
+                if (puck->type == PUCK_BLUE)
+                    _score += 12;
+
+                tDebug(LOG) << "New Score" << _score;
+            }
+        }
+    }
 
 
     _pucksAttached[false] = nullptr;
@@ -434,6 +527,8 @@ bool ArmsManager::releasePucksScale()
 
 void ArmsManager::getReleaseGroundPosition(RobotPos &pos)
 {
+
+
 
 }
 

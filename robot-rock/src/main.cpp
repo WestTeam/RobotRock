@@ -19,6 +19,8 @@
 
 #include "StrategyManagerHomologation.hpp"
 #include "StrategyManagerV1.hpp"
+#include "StrategyManagerMatch1.hpp"
+
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -47,12 +49,18 @@ int main( int argc, char *argv[] )
     //StrategyManagerV1::Ptr strategyV1 =
     //    std::make_shared< StrategyManagerV1 >();
 
+<<<<<<< Updated upstream
     StrategyManagerHomologation::Ptr strategyHomologation =
         std::make_shared< StrategyManagerHomologation >();
 
 #ifndef USE_SIMULATOR
+=======
+#ifndef USE_SIMULATOR
+    StrategyManagerMatch1::Ptr strategy =
+        std::make_shared< StrategyManagerMatch1 >();
+>>>>>>> Stashed changes
     Hal::Ptr hal = std::make_shared< Hal >();
-    SystemManagerHw system( hal, strategyHomologation );
+    SystemManagerHw system( hal, strategy );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 
