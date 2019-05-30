@@ -45,6 +45,7 @@ SOURCES += \
     src/WaitAction.cpp \
     src/SmartServo.cpp \
     src/ArmLowLevel.cpp \
+    src/ArmLowLevelSimu.cpp \
     src/ArmHighLevel.cpp \
     src/Pid.cpp \
     src/ArmsManager.cpp \
@@ -92,6 +93,7 @@ HEADERS += \
     include/WestBot/RobotRock/WaitAction.hpp \
     include/WestBot/RobotRock/SmartServo.hpp \
     include/WestBot/RobotRock/ArmLowLevel.hpp \
+    include/WestBot/RobotRock/ArmLowLevelSimu.hpp \
     include/WestBot/RobotRock/ArmHighLevel.hpp \
     include/WestBot/RobotRock/Pid.hpp \
     include/WestBot/RobotRock/ArmsManager.hpp \
