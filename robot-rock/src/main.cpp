@@ -8,7 +8,7 @@
 
 //#define DEBUG
 //#define SIMU
-#define USE_SIMULATOR
+//#define USE_SIMULATOR
 
 #ifdef USE_SIMULATOR
 #include <WestBot/RobotRock/SystemManagerSimu.hpp>
@@ -20,7 +20,7 @@
 #include "StrategyManagerHomologation.hpp"
 #include "StrategyManagerV1.hpp"
 #include "StrategyManagerMatch2.hpp"
-
+#include "StrategyManagerMatch3.hpp"
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -49,13 +49,13 @@ int main( int argc, char *argv[] )
     //StrategyManagerV1::Ptr strategyV1 =
     //    std::make_shared< StrategyManagerV1 >();
 
-    StrategyManagerHomologation::Ptr strategyManagerMatch2 =
-        std::make_shared< StrategyManagerMatch2 >();
+    StrategyManagerHomologation::Ptr strategyManagerMatch3 =
+        std::make_shared< StrategyManagerMatch3 >();
 
 #ifndef USE_SIMULATOR
 
     Hal::Ptr hal = std::make_shared< Hal >();
-    SystemManagerHw system( hal, strategyManagerMatch2 );
+    SystemManagerHw system( hal, strategyManagerMatch3 );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 
@@ -73,7 +73,7 @@ int main( int argc, char *argv[] )
   #endif
 #else
 
-    SystemManagerSimu system( strategyManagerMatch2 );
+    SystemManagerSimu system( strategyManagerMatch3 );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 
@@ -85,12 +85,6 @@ int main( int argc, char *argv[] )
 #endif
 
     tInfo( LOG ) << "==== System ready ! ==== ";
-
-    /*
-    while(1)
-    {
-        app.processEvents();
-    }*/
 
     return app.exec();
 }
