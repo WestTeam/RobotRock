@@ -364,6 +364,70 @@ void StrategyManagerMatch1::buildStrat( const Color& color )
                 false
                 ));
 
+
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::INIT_POSITION,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                false
+                ));
+
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1360.0,
+                            (float)posDepose.y*inv,
+                            true ));
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1360.0,
+                            (float)1000.0*inv,
+                            true ));
+
+
+/*
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1360.0,
+                            (float)posDepose.y*inv,
+                            true ));
+
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1360.0,
+                            (float)posDepose.y*inv,
+                            true ));
+
+    _actions.push_back( std::make_shared< MoveAction >(
+                            _trajectoryManager,
+                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                            0.0,
+                            0.0,
+                            (float)1360.0,
+                            (float)(1500.0-1000.0)*inv,
+                            true ));
+*/
+
+
 /*
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,

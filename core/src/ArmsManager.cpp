@@ -400,21 +400,54 @@ void ArmsManager::releasePucksAcceletatorSingle(bool isRight, bool *ret)
     *ret = true;
     bool actionOk;
 
-    _arm[isRight]->setVacuum(false);
 
-
-    /*
     if (_pucksAttached[isRight])
     {
         _arm[isRight]->moveZ(180.0);
-        _arm[isRight]->setMode(ARM_HL_MODE_HORIZONTAL);
-        _arm[isRight]->moveArmRel(340.0,115.0);
+        _arm[isRight]->setMode(ARM_HL_MODE_VERTICAL);
+        if (isRight)
+            _arm[isRight]->moveArmRel(340.0,115.0);
+        else
+            _arm[isRight]->moveArmRel(340.0,-115.0);
+
         _arm[isRight]->setVacuum(false);
         _score+=10;
     }
 
+    double inv;
+    int i;
+    //tDebug(LOG) << "releasePucksAcc" << i << _pucksStored[i].length() << 100*inv;
+    while (_pucksStored[i].length() > 0)
+    {
+        PuckPos *puck = _pucksStored[i].last();
+        _pucksStored[i].removeLast();
+
+        actionOk = _arm[i]->actionPuckUnstore();
+
+        if (actionOk)
+        {
+            _arm[isRight]->moveZ(180.0);
+            _arm[isRight]->setMode(ARM_HL_MODE_VERTICAL);
+
+            if (isRight)
+                actionOk = _arm[isRight]->moveArmRel(340.0,115.0);
+            else
+                actionOk = _arm[isRight]->moveArmRel(340.0,-115.0);
+
+            if (actionOk)
+            {
+                tDebug(LOG) << "New Puck in accelerator!";
+            }
+        }
+
+    }
+    _pucksAttached[false] = nullptr;
+    _pucksAttached[true] = nullptr;
+
+
+
+
     _pucksAttached[isRight] = nullptr;
-*/
 /*
     for (QList<PuckPos*>::iterator it = list.begin(); it != list.end(); ++it){
         if ((*it)->isOnGround)
@@ -461,7 +494,6 @@ bool ArmsManager::releasePucksScale()
 
     bool actionOk;
 
-    _pucksStored[id_first].removeLast();
 
     //{}
 

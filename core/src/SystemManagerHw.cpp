@@ -463,7 +463,7 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
-    _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
+    //_monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
     //_monitoring->setRefreshRate( 250 );
