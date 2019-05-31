@@ -601,8 +601,8 @@ void Recalage::run()
                             if (dist < 1000)
                                 speed_reductor = 100-50;
                             if (dist < 800)
-                                speed_reductor = 100-0;
-                            if (dist < 500)
+                                speed_reductor = 100-30;
+                            if (dist < 650)
                                 speed_reductor = 100-0;
                             if (dist < 400)
                                 speed_reductor = 100-0;
