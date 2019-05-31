@@ -465,7 +465,7 @@ void Recalage::run()
 {
     tDebug( LOG ) << "Recalage: Run";
 
-#define PERCENTAGE_START 20.0
+#define PERCENTAGE_START 25.0
 #define PERCENTAGE_STEP 2.5
 #define RETRY_COUNT 5
 #define STABLE_COUNT ((uint32_t)(1.0/(1.0/_speedTargetHz)))

@@ -337,6 +337,12 @@ bool SystemManagerHw::init()
         return false;
     }
 
+    while(!_recalage->isInitDone())
+    {
+        QThread::msleep(1000);
+        tWarning( LOG ) << "Recalage init still in progress";
+    }
+
 
     _trajectoryManager.reset(
         new TrajectoryManagerHw( _hal ) );
