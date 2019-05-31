@@ -469,10 +469,10 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
-    //_monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
+    _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
-    //_monitoring->setRefreshRate( 250 );
+    _monitoring->setRefreshRate( 1000 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );

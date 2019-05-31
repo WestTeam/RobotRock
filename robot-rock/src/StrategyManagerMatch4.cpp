@@ -238,7 +238,76 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
 
     _armsManager->getCatchPosition(left,nullptr,right,nullptr,posCatchGndPuck3);
     _armsManager->getReleaseScalePosition(posScale);
+/*
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_A_REL,
+            0.0,
+            200.0,
+            0,
+            0,
+            true ));
 
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_A_REL,
+            0.0,
+            -200.0,
+            0,
+            0,
+            true ));
+
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_D_A_REL,
+            0.0,
+            200.0,
+            0,
+            0,
+            false ));
+
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_D_A_REL,
+            0.0,
+            -200.0,
+            0,
+            0,
+            false ));
+
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+
+
+    _stratIsRunning = true;
+    _trajectoryManager->setAbort( false );
+    return;
+*/
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,
@@ -423,29 +492,63 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
             0,
             true ));
 
+
     _actions.push_back(
         std::make_shared< MoveAction >(
             _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
             0.0,
-            250.0-96.0/2.0-120.0,
-            0,
-            0,
-            false ));
+            0.0,
+            5.0+96.0/2.0-120.0,
+            inv * (-465.0),
+            true, false ));
+
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            true ));
+
+
 
     // ACTION RECALAGE
     // new pos = x(epaisseur plexi + diametreroue/2) y = on garde, theta = 0.0
 
-        _actions.push_back(
-            std::make_shared< ArmsManagerAction >(
-                    _armsManager,
-                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE,
-                    nullptr,
-                    nullptr,
-                    nullptr,
-                    nullptr,
-                    _invArms
-                    ));
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_ENABLE,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            true ));
+
 
     _actions.push_back(
         std::make_shared< MoveAction >(
@@ -489,7 +592,7 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
             0.0,
             0.0,
             15.0+70.0+237.0/2.0,
-            inv * -1.0*(730.0-37.0-70.0+194.6),
+            inv *(-250.0+37.0+70.0-194.6),
             true ));
 /*
     // ON move a l'accelerateur

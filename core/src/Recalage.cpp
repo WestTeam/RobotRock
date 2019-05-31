@@ -607,8 +607,8 @@ void Recalage::run()
                                 speed_reductor = 100-0;
                         }
 
-                        _hal->_pidDistanceSpeedReductor.write(speed_reductor);
-                        _hal->_pidAngleSpeedReductor.write(speed_reductor);
+                        //_hal->_pidDistanceSpeedReductor.write(speed_reductor);
+                        //_hal->_pidAngleSpeedReductor.write(speed_reductor);
                         if (speed_reductor != 0)
                             tDebug( LOG ) << "Recalage: Speed Reductor to " << speed_reductor << "%";
                     }
