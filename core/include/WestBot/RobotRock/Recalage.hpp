@@ -103,6 +103,7 @@ private:
     // distance between robot center and lidar center
     double _lidarR = 0.0;
 
+    LidarData data[LIDAR_MAX_SCAN_POINTS];
 
 
     #define BORDER_COUNT_MAX 32

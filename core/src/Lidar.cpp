@@ -128,14 +128,15 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
     //int syncBit[ ( int ) count ];
 
     // Fetch exactly one 0-360 degrees' scan
-    if( _lidar.grabScanData(nodes, scan_count) )
+    if( _lidar.grabScanData(nodes, scan_count, 2000) )
     {
         //tDebug( LOG ) << "Grabing scan data: OK" << scan_count;
 
+        /*
         if( ! _lidar.ascendScanData( nodes, scan_count ) )
         {
             return false;
-        }
+        }*/
 
         unsigned int pos = 0;
 
@@ -163,6 +164,8 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
     }
     else
     {
+        stopScan();
+        startScan();
         return false;
     }
 

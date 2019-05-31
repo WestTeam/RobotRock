@@ -476,7 +476,6 @@ void Recalage::run()
     this->QThread::msleep(2000);
     _lidar->startScan();
 
-    LidarData data[LIDAR_MAX_SCAN_POINTS];
     uint32_t dataCount;
     RobotPos currentError;
     RobotPos absPos;
