@@ -573,7 +573,7 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
                 0.0,
                 0.0,
                 12.0+15.0+70.0+237.0/2.0,
-                inv * -1.0*(50.0-37.0-70.0+194.6)+inv*(-100.0),
+                inv * -1.0*(50.0-37.0-70.0+194.6)+inv*(100.0),
                 true ));
 
 
@@ -597,7 +597,7 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
                 0.0,
                 0.0,
                 12.0+15.0+70.0+237.0/2.0,
-                inv *(-250.0+37.0+70.0-194.6)+inv*(-100.0),
+                inv *(-250.0+37.0+70.0-194.6)+inv*(100.0),
                 true , true));
 
         _actions.push_back( wait500Ms() );
