@@ -461,7 +461,7 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
     _actions.push_back(
         std::make_shared< MoveAction >(
             _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
             15.0+70.0+237.0/2.0,
@@ -489,7 +489,7 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
             0.0,
             0.0,
             15.0+70.0+237.0/2.0,
-            inv * -1.0*(-730.0-37.0-70.0+194.6),
+            inv * -1.0*(730.0-37.0-70.0+194.6),
             true ));
 /*
     // ON move a l'accelerateur
