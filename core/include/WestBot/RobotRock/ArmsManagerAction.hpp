@@ -28,6 +28,9 @@ public:
         GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1, // prepare (arm not used safe mode, arm used replié mais pret)
         GET_PUCKS_ON_DISTRI_ON_SIDE_STEP2, // go get (we activate pump and move only UPPER ARM)
         GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3, // go back, and store if dist < 20.0
+        RELEASE_PUCK_ACCELERATOR_STEP1, //
+        RELEASE_PUCK_ACCELERATOR_STEP2, //
+        RELEASE_PUCK_ACCELERATOR_STEP3, //
         RELEASE_ALL_PUCKS_ACCELERATOR, // release one by one all pucks into accelerator
         RELEASE_ALL_PUCKS_SCALE, // release one by one all pucks into scale
         RELEASE_ALL_PUCKS_GROUND // release one by one all pucks on the ground

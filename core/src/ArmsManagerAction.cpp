@@ -175,6 +175,75 @@ void ArmsManagerAction::execute()
         break;
 
 
+
+        // prepare (arm not used safe mode, arm used replié mais pret)
+    case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP1:
+        //violet = droit
+        //jaune = gauche
+
+        _armsManager->_arm[!_invArms]->setMode(ARM_HL_MODE_HORIZONTAL);
+        _armsManager->_arm[_invArms]->setMode(ARM_HL_MODE_HORIZONTAL);
+
+
+        _armsManager->_arm[!_invArms]->moveZ(270.0);
+        _armsManager->_arm[_invArms]->moveZ(270.0);
+
+        _armsManager->_arm[0]->moveArmRel(150.0,50.0);
+        _armsManager->_arm[1]->moveArmRel(150.0,-50.0);
+/*
+        _armsManager->_arm[!_invArms]->setMode(ARM_HL_MODE_VERTICAL);
+
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-45.0*inv);
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,60.0*inv);
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-90.0*inv);
+
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        _armsManager->_arm[_invArms]->moveZ(160.0);
+        _armsManager->_arm[!_invArms]->moveZ(135.0);
+
+
+        //_armsManager->_arm[0]->disable();
+        //_armsManager->_arm[1]->disable();
+
+        _armsManager->_arm[!_invArms]->setVacuum(true);
+        */
+        break;
+
+    case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2:
+
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-110.0*inv);
+
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        _armsManager->_arm[!_invArms]->setMode(ARM_HL_MODE_VERTICAL);
+
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,-90.0*inv);
+
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        _armsManager->_arm[!_invArms]->moveZ(190);
+
+        _armsManager->_arm[!_invArms]->disable();
+
+        QThread::msleep(500);
+
+        break;
+
+
+    case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP3:
+
+        break;
+
+
+
     case ArmsManagerAction::Type::RELEASE_ALL_PUCKS_ACCELERATOR:
         _armsManager->releasePucksAcceletator();
 

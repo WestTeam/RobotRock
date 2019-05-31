@@ -488,11 +488,12 @@ void SystemManagerHw::start()
 
     tInfo( LOG ) << "System starting...";
 
+    /*
     if( ! isSafe() )
     {
         tFatal( LOG )
             << "System not safe to start: Odometry check failed";
-    }
+    }*/
 
     initRecalage();
 

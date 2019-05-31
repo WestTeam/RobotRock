@@ -328,12 +328,26 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
                 false
                 ));
 
+
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP1,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
+
     _actions.push_back( std::make_shared< MoveAction >(
                             _trajectoryManager,
                             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
                             0.0,
                             0.0,
-                            (float)1350.0,
+                            (float)1250.0,
                             (float)posDepose.y,
                             true ));
 
@@ -343,7 +357,7 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
             0.0,
             0.0,
-            (float)1350.0,
+            (float)1250.0,
             inv * 1000.0,
             true ));
 
@@ -353,8 +367,8 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            1350.0,
-            inv * 200.0,
+            1250.0,
+            inv * 350.0,
             true ));
 
     _actions.push_back(
@@ -387,6 +401,11 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             inv * 500,
             true ));
 
+
+    if( color == Color::Blue )
+    {
+
+
     // ON move a l'accelerateur
     _actions.push_back(
         std::make_shared< MoveAction >(
@@ -394,8 +413,8 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (10+70+237/2),
-            inv * (194.6 - 120 ),
+            (10+70+237/2)-60.0,
+            inv * (194.6 - 120 -80.0),
             true ));
 
     _actions.push_back(
@@ -410,6 +429,17 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
 
     // On deploie le bras
 
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
     // On avance a little bit
     _actions.push_back(
         std::make_shared< MoveAction >(
@@ -417,9 +447,59 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (10+70+237/2),
-            inv * (194.6 - 120 - 150 ),
+            (10+70+237/2-80.0),
+            inv * (194.6 - 120 - 80 ),
             true ));
+
+    } else {
+
+
+        // ON move a l'accelerateur
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                0.0,
+                0.0,
+                (10+70+237/2),
+                inv * (194.6 - 120 ),
+                true ));
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+                -90.0 * inv,
+                0.0,
+                0,
+                0,
+                true ));
+
+        // On deploie le bras
+
+        _actions.push_back(
+            std::make_shared< ArmsManagerAction >(
+                    _armsManager,
+                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    _invArms
+                    ));
+
+        // On avance a little bit
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                0.0,
+                0.0,
+                (10+70+237/2),
+                inv * (194.6 - 120 - 80 ),
+                true ));
+
+    }
 
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );
