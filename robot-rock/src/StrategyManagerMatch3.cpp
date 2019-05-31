@@ -448,7 +448,7 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             0.0,
             0.0,
             (10+70+237/2-80.0),
-            inv * (194.6 - 120 - 80 ),
+            inv * (194.6 - 120 -80 -120),
             true ));
 
     } else {
@@ -462,7 +462,7 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
                 0.0,
                 0.0,
                 (10+70+237/2),
-                inv * (194.6 - 120 ),
+                inv * (194.6 - 120),
                 true ));
 
         _actions.push_back(
