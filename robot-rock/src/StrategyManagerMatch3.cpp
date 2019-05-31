@@ -25,7 +25,7 @@ namespace
     PuckPos GndStart2 = {.x = 750, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_RED, .isOnGround = true};
     PuckPos GndStart3 = {.x = 1050, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_GREEN, .isOnGround = true};
 
-#define MAIN_DISTRI_RETREY_OFFSET 0.0
+#define MAIN_DISTRI_RETREY_OFFSET 50.0
 
     PuckPos MainDistri1Red      = {.x = 1543-MAIN_DISTRI_RETREY_OFFSET, .y = (2550-1500-50-100*0), .z = 100+28.5, .theta = M_PI, .type = PUCK_RED, .isOnGround = false};
     PuckPos MainDistri2Green    = {.x = 1543-MAIN_DISTRI_RETREY_OFFSET, .y = (2550-1500-50-100*1), .z = 100+28.5, .theta = M_PI, .type = PUCK_GREEN, .isOnGround = false};
@@ -239,10 +239,6 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
     _armsManager->getCatchPosition(left,nullptr,right,nullptr,posCatchGndPuck3);
     _armsManager->getReleaseScalePosition(posScale);
 
-#define TEST_ONLY_DISTRI_ON_SIDE
-
-#ifndef TEST_ONLY_DISTRI_ON_SIDE
-
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,
@@ -351,10 +347,15 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             inv * 1000.0,
             true ));
 
-#define PUCK_DISTRI_OFFSET_ROBOT_X (230.0)
-#define PUCK_DISTRI_OFFSET_ROBOT_Y (250.0*inv)
-
-    // CHECK PUCK 1
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+            0.0,
+            0.0,
+            1350.0,
+            inv * 200.0,
+            true ));
 
     _actions.push_back(
         std::make_shared< MoveAction >(
@@ -362,81 +363,9 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (float)(MainDistri1Red.x+PUCK_DISTRI_OFFSET_ROBOT_X),
-            (float)(MainDistri1Red.y+PUCK_DISTRI_OFFSET_ROBOT_Y),
+            1100,
+            inv * 100.0,
             true ));
-
-#endif
-
-#ifdef TEST_ONLY_DISTRI_ON_SIDE
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1,
-                &MainDistri1Red,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-#endif
-
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-
-
-    // Get first puck
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP2,
-                &MainDistri1Red,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-
-
-
-
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3,
-                &MainDistri1Red,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1,
-                &MainDistri1Red,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-
-#ifndef TEST_ONLY_DISTRI_ON_SIDE
-
-    // CHECK PUCK 2
 
     _actions.push_back(
         std::make_shared< MoveAction >(
@@ -444,330 +373,53 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (float)1350.0,
-            (2550-1500-50-100*1)*inv,
+            900.0,
+            inv * 1050.0,
             true ));
 
     _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                &MainDistri2Green,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+            0.0,
+            0.0,
+            1000.0,
+            inv * 500,
+            true ));
 
-    // CHECK PUCK 3
-
+    // ON move a l'accelerateur
     _actions.push_back(
         std::make_shared< MoveAction >(
             _trajectoryManager,
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (float)1350.0,
-            (2550-1500-50-100*2)*inv,
+            (10+70+237/2),
+            inv * (194.6 - 120 ),
             true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                &MainDistri3Red,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-
-    // On va depose le tout
-    _actions.push_back( std::make_shared< MoveAction >(
-        _trajectoryManager,
-        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-        0.0,
-        0.0,
-        (float)posBeforeDepose.x,
-        (float)posBeforeDepose.y,
-        true ));
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)posDepose.x,
-                            (float)posDepose.y,
-                            true ));
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
-                            0.0,
-                            0.0,
-                            (float)fakePuckLine.x,
-                            (float)fakePuckLine.y,
-                            true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::RELEASE_ALL_PUCKS_GROUND,
-                nullptr,
-                nullptr,
-                nullptr,
-                nullptr,
-                false
-                ));
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)1350.0,
-                            (float)posDepose.y,
-                            true ));
 
     _actions.push_back(
         std::make_shared< MoveAction >(
             _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+            -90.0 * inv,
             0.0,
-            0.0,
-            (float)1350.0,
-            inv * 1000.0,
+            0,
+            0,
             true ));
 
-    // CHECK PUCK 4
+    // On deploie le bras
 
+    // On avance a little bit
     _actions.push_back(
         std::make_shared< MoveAction >(
             _trajectoryManager,
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (float)1350.0,
-            (2550-1500-50-100*3)*inv,
+            (10+70+237/2),
+            inv * (194.6 - 120 - 150 ),
             true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                &MainDistri4Blue,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-    // CHECK PUCK 5
-
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-            0.0,
-            0.0,
-            (float)1350.0,
-            (2550-1500-50-100*4)*inv,
-            true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                &MainDistri5Red,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-    // CHECK PUCK 6
-
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-            0.0,
-            0.0,
-            (float)1350.0,
-            (2550-1500-50-100*5)*inv,
-            true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                &MainDistri6Green,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-#endif
-
-    // ON DROP DANS LA BALANCE
-    // TODO: XXX
-
-    /*
-    left = &MainDistri2Green;
-    right = &MainDistri4Blue;
-
-    if( color == Color::Yellow )
-    {
-        left = right;
-        right = &MainDistri2Green;
-    }
-
-    RobotPos distriPos;
-
-    _armsManager->getCatchPosition(left,nullptr,right,nullptr,distriPos);
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)distriPos.x,
-                            (float)distriPos.y,
-                            true ));
-
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
-                            DEG((float)distriPos.theta),
-                            0.0,
-                            0,
-                            0,
-                            true ));
-
-
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                left,
-                nullptr,
-                right,
-                nullptr,
-                _invArms
-                ));
-
-
-    left->x+=25.0;
-    right->x+=25.0;
-
-    _armsManager->getCatchPosition(left,nullptr,right,nullptr,distriPos);
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)distriPos.x,
-                            (float)distriPos.y,
-                            true ));
-
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
-                            DEG((float)distriPos.theta),
-                            0.0,
-                            0,
-                            0,
-                            true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
-                left,
-                nullptr,
-                right,
-                nullptr,
-                _invArms
-                ));
-
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP1,
-                left,
-                nullptr,
-                right,
-                nullptr,
-                _invArms
-                ));
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)distriPos.x+30.0,
-                            (float)distriPos.y,
-                            true ));
-
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
-                            DEG((float)distriPos.theta),
-                            0.0,
-                            0,
-                            0,
-                            true ));
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)distriPos.x-100.0,
-                            (float)distriPos.y,
-                            true ));
-
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-                            0.0,
-                            0.0,
-                            (float)900.0,
-                            (float)900.0*inv,
-                            true ));
-
-
-    _actions.push_back( std::make_shared< MoveAction >(
-                            _trajectoryManager,
-                            TrajectoryManager::TrajectoryType::TYPE_TRAJ_TURNTO_XY,
-                            0.0,
-                            0.0,
-                            (float)900.0,
-                            (float)1000.0*inv,
-                            true ));
-
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP2,
-                left,
-                nullptr,
-                right,
-                nullptr,
-                _invArms
-                ));
-*/
 
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );
@@ -775,7 +427,7 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
 
 void StrategyManagerMatch3::doStrat( const Color& color )
 {
-	// Build the strat for selected color
+    // Build the strat for selected color
     buildStrat( color );
 
     tDebug( LOG ) << "Do strat for color:" << color;
