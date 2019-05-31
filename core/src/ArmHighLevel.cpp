@@ -435,7 +435,7 @@ void ArmHighLevel::setMode(enum ArmHighLevelMode mode)
     else
         _armLL->setServoPos(ARM_LL_SERVO_WRIST,0.0);
 
-    _armLL->waitServoTargetOk(ARM_LL_SERVO_WRIST,1000);
+    _armLL->waitServoTargetOk(ARM_LL_SERVO_WRIST,2000);
 }
 
 void ArmHighLevel::setVacuum(bool enable)

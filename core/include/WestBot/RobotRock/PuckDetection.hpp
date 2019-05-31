@@ -92,10 +92,11 @@ private:
     // distance between robot center and lidar center
     double _lidarR = 0.0;
 
-
     QMutex _lock;
 
 private:
+    LidarData data[LIDAR_MAX_SCAN_POINTS];
+
 
     // thread run
     void run() override;

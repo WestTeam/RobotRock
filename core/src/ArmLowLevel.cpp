@@ -104,7 +104,7 @@ bool ArmLowLevel::init(
 
         for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,80);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,50);
             _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,0);
 
             _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,512);
@@ -141,7 +141,7 @@ bool ArmLowLevel::init(
 
             {
                 _smartServo[i]->setEnable(false,true);
-                _smartServo[i]->setPositionAndSpeed(false,false,1024/2,400);
+                _smartServo[i]->setPositionAndSpeed(false,false,1024/2,100);
             }
 
             //QThread::msleep(500);
@@ -200,7 +200,7 @@ bool ArmLowLevel::init(
 
     // second step: find the Z reference (UP)
 #define CALIBRATION_Z_FAKE_REF 666666
-#define CALIBRATION_Z_STEP 600
+#define CALIBRATION_Z_STEP 1200
 #define CALIBRATION_Z_TIMEOUT 1000
 #define CALIBRATION_Z_TIMEOUT_STEP 100
 
@@ -477,16 +477,16 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
     {
         try {
             //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
-            uint16_t speed = 120;
+            uint16_t speed = 200;
             if (_vaccumEnabled)
             {
                 if (id == ARM_LL_SERVO_UPPER_ARM)
                 {
-                    speed = 100;
+                    speed = 130;
                 }
                 if (id == ARM_LL_SERVO_LOWER_ARM)
                 {
-                    speed = 100;
+                    speed = 130;
                 }
             }
             _smartServo[id]->setPositionAndSpeed(false,false,(uint16_t)pos,speed);

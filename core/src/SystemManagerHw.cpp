@@ -22,8 +22,8 @@ namespace
 
     const int GAME_DURATION = 100 * 1000; // 100s
     const QString LIDAR_TOP_TTY = "/dev/ttyAL6";
-    const QString LIDAR_FRONT_TTY = "/dev/ttyAL11";
-    const QString LIDAR_REAR_TTY = "/dev/ttyAL12";
+    const QString LIDAR_FRONT_TTY = "/dev/ttyAL12";
+    const QString LIDAR_REAR_TTY = "/dev/ttyAL11";
     const uint32_t LIDAR_BAUDRATE = 256000;
     const int DEFAULT_SIM_PORT = 4242;
 }
@@ -206,7 +206,7 @@ SystemManagerHw::SystemManagerHw(
     _lidarFront.reset( new LidarRPLidarA2(
         LIDAR_FRONT_TTY,
         LIDAR_BAUDRATE,
-        std::make_shared< ItemRegister >( _hal->_pwmCustom1Value ) ) );
+        std::make_shared< ItemRegister >( _hal->_pwmCustom2Value ) ) );
     if( ! _lidarFront->init() )
     {
         tCritical( LOG ) << "Failed to init/check health of lidar front module";
@@ -229,7 +229,7 @@ SystemManagerHw::SystemManagerHw(
     _lidarRear.reset( new LidarRPLidarA2(
         LIDAR_REAR_TTY,
         LIDAR_BAUDRATE,
-        std::make_shared< ItemRegister >( _hal->_pwmCustom2Value ) ) );
+        std::make_shared< ItemRegister >( _hal->_pwmCustom1Value ) ) );
     if( ! _lidarRear->init() )
     {
         tCritical( LOG ) << "Failed to init/check health of lidar rear module";
@@ -446,7 +446,7 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init arms manager. Abort";
     }
 #endif;
-/*
+
     _puckDetection.reset( new PuckDetection() );
 
     _puckDetection->setTargetSpeedHz(4.0);
@@ -455,7 +455,13 @@ bool SystemManagerHw::init()
     {
         tFatal( LOG ) << "Unable to init Puck Detection. Abort";
     }
-*/
+
+    while(!_puckDetection->isInitDone())
+    {
+        QThread::msleep(1000);
+        tWarning( LOG ) << "Puck Detection init still in progress";
+    }
+
     _opponentDetection.reset( new OpponentDetection() );
 
 
@@ -469,10 +475,10 @@ bool SystemManagerHw::init()
         tFatal( LOG ) << "Unable to init strategy manager. Abort";
     }
 
-    //_monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
+    _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
-    //_monitoring->setRefreshRate( 1000 );
+    _monitoring->setRefreshRate( 100 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );

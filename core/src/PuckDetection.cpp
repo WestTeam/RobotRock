@@ -63,7 +63,7 @@ bool PuckDetection::init( const Odometry::Ptr& odometry, const LidarBase::Ptr& l
         _lidar = lidar;
 
         // launch data thread
-        //this->start();
+        this->start();
     }
 
     _attached = true;
@@ -127,7 +127,7 @@ QList<PuckLidarPos> PuckDetection::locate(
 
     QList<LidarCircle::Obstacle> list = _lidarCircle.compute(a,d);
 
-    QList<LidarCircle::Obstacle> list_abs;
+    QList<LidarCircle::Obstacle> list_abs = list;
 
     RobotPos robotPos = data[0].pos;
 
@@ -137,6 +137,8 @@ QList<PuckLidarPos> PuckDetection::locate(
 
 
     QList<PuckLidarPos> ret;
+
+    assert (list_abs.length() == list.length());
 
     for (int i = 0; i < list.length(); i++)
     {//( QList<LidarCircle::Obstacle>::iterator it = list.begin(); it != list.end(); ++it){
@@ -154,7 +156,7 @@ QList<PuckLidarPos> PuckDetection::locate(
 
             ret << pos;
 
-            tInfo( LOG ) << "PuckDetection: Abs:" << list_abs[i].X << list_abs[i].Y << list_abs[i].Q;
+            //tInfo( LOG ) << "PuckDetection: Abs:" << list_abs[i].X << list_abs[i].Y << list_abs[i].Q;
             //tInfo( LOG ) << "PuckDetection: Rel:" << it->X << it->Y;
         }
     }
@@ -183,7 +185,6 @@ void PuckDetection::run()
     this->QThread::msleep(2000);
     _lidar->startScan();
 
-    LidarData data[LIDAR_MAX_SCAN_POINTS];
     uint32_t dataCount;
     RobotPos currentError;
     RobotPos absPos;
