@@ -46,11 +46,19 @@ public:
         bool invArms//if true, left is assigned to right
         );
 
+    ArmsManagerAction(
+        const ArmsManager::Ptr& armsManager,
+        Type type,
+        int score
+        );
+
+
     void execute() override;
 
 private:
     ArmsManager::Ptr _armsManager;
     Type _type;
+    int _score;
     bool _invArms;
     PuckPos* _left1;
     PuckPos* _left2;

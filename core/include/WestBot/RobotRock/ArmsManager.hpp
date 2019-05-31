@@ -66,6 +66,10 @@ public:
     void setColor(bool isPurple);
     int getScore();
 
+    void addScore(int score);
+    void setScore(int score);
+
+
     // get ideal position
     bool getCatchPosition(PuckPos* left1, PuckPos* left2, PuckPos* right1, PuckPos* right2, RobotPos &pos);
     // get a list of pucks for each arm and store each of them (if the last one cannot be stored (full), we keep it outside)

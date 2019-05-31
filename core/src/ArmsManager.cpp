@@ -73,6 +73,15 @@ int ArmsManager::getScore()
 {
     return _score;
 }
+void ArmsManager::addScore(int score)
+{
+    _score += score;
+}
+void ArmsManager::setScore(int score)
+{
+    _score = score;
+}
+
 /*
 
     bool init(

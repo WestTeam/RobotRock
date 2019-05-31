@@ -472,128 +472,294 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
 
     // NEW VERSION WITH RECALAGE
 
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
-            0.0,
-            0.0,
-            250.0,
-            inv * (-465.0),
-            true ));
 
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
-            0.0,
-            0.0,
-            0,
-            0,
-            true ));
+    if( color == Color::Blue )
+    {
 
 
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
-            0.0,
-            0.0,
-            5.0+96.0/2.0-120.0,
-            inv * (-465.0),
-            true, false ));
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                0.0,
+                0.0,
+                250.0,
+                inv * (-365.0),
+                true ));
 
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-    _actions.push_back( wait500Ms() );
-
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            true ));
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+                0.0,
+                0.0,
+                0,
+                0,
+                true ));
 
 
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                0.0,
+                0.0,
+                5.0+96.0/2.0-120.0,
+                inv * (-365.0),
+                true, true ));
 
-    // ACTION RECALAGE
-    // new pos = x(epaisseur plexi + diametreroue/2) y = on garde, theta = 0.0
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
 
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE,
-                nullptr,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
-
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_ENABLE,
-            0.0,
-            0.0,
-            0.0,
-            0.0,
-            true ));
-
-
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-            0.0,
-            0.0,
-            15.0+70.0+237.0/2.0,
-            inv * (-465.0),
-            true ));
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                true ));
 
 
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
-            0.0,
-            0.0,
-            15.0+70.0+237.0/2.0,
-            inv * -1.0*(50.0-37.0-70.0+194.6),
-            true ));
+
+        // ACTION RECALAGE
+        // new pos = x(epaisseur plexi + diametreroue/2) y = on garde, theta = 0.0
+
+        _actions.push_back(
+            std::make_shared< ArmsManagerAction >(
+                    _armsManager,
+                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    _invArms
+                    ));
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_ENABLE,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                true ));
 
 
-    // on met en place le bras
-    _actions.push_back(
-        std::make_shared< ArmsManagerAction >(
-                _armsManager,
-                ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2,
-                nullptr,
-                nullptr,
-                nullptr,
-                nullptr,
-                _invArms
-                ));
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                0.0,
+                0.0,
+                12.0+15.0+70.0+237.0/2.0,
+                inv * (-365.0),
+                true ));
 
 
-    _actions.push_back(
-        std::make_shared< MoveAction >(
-            _trajectoryManager,
-            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
-            0.0,
-            0.0,
-            15.0+70.0+237.0/2.0,
-            inv *(-250.0+37.0+70.0-194.6),
-            true ));
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                0.0,
+                0.0,
+                12.0+15.0+70.0+237.0/2.0,
+                inv * -1.0*(50.0-37.0-70.0+194.6)+inv*(-100.0),
+                true ));
+
+
+        // on met en place le bras
+        _actions.push_back(
+            std::make_shared< ArmsManagerAction >(
+                    _armsManager,
+                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    _invArms
+                    ));
+
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                0.0,
+                0.0,
+                12.0+15.0+70.0+237.0/2.0,
+                inv *(-250.0+37.0+70.0-194.6)+inv*(-100.0),
+                true , true));
+
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                true ));
+    } else {
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                0.0,
+                0.0,
+                250.0,
+                inv * (-465.0),
+                true ));
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+                0.0,
+                0.0,
+                0,
+                0,
+                true ));
+
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                0.0,
+                0.0,
+                5.0+96.0/2.0-120.0,
+                inv * (-465.0),
+                true, true ));
+
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                true ));
+
+
+
+        // ACTION RECALAGE
+        // new pos = x(epaisseur plexi + diametreroue/2) y = on garde, theta = 0.0
+
+        _actions.push_back(
+            std::make_shared< ArmsManagerAction >(
+                    _armsManager,
+                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    _invArms
+                    ));
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_ENABLE,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                true ));
+
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                0.0,
+                0.0,
+                12.0+15.0+70.0+237.0/2.0,
+                inv * (-465.0),
+                true ));
+
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+                0.0,
+                0.0,
+                12.0+15.0+70.0+237.0/2.0,
+                inv * -1.0*(50.0-37.0-70.0+194.6),
+                true ));
+
+
+        // on met en place le bras
+        _actions.push_back(
+            std::make_shared< ArmsManagerAction >(
+                    _armsManager,
+                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    _invArms
+                    ));
+
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+                0.0,
+                0.0,
+                12.0+15.0+70.0+237.0/2.0,
+                inv *(-250.0+37.0+70.0-194.6),
+                true , true));
+
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+
+        _actions.push_back( wait500Ms() );
+        _actions.push_back( wait500Ms() );
+
+        _actions.push_back(
+            std::make_shared< MoveAction >(
+                _trajectoryManager,
+                TrajectoryManager::TrajectoryType::TYPE_TRAJ_DISABLE,
+                0.0,
+                0.0,
+                0.0,
+                0.0,
+                true ));
+    }
 /*
     // ON move a l'accelerateur
     _actions.push_back(

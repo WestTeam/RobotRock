@@ -435,20 +435,30 @@ void ArmLowLevel::setZAcc(double acc)
 
 
 void ArmLowLevel::enableServo(enum ArmLowLevelLeg id, bool enable)
-{
-    try {
-        {
-            if (enable)
-                _smartServo[id]->enable();
-            else
-                _smartServo[id]->disable();
-        }
-    } catch (...) {
+{    
+    int retry_count = 10;
+    bool ok = false;
+    do {
 
-    }
+        try {
+            {
+                if (enable)
+                    _smartServo[id]->enable();
+                else
+                    _smartServo[id]->disable();
+            }
+            ok = true;
+        } catch (...) {
+            tDebug(LOG) << "SmartServo: enableServo exception" << id << enable;
+        }
+    } while (retry_count-- && !ok);
+
 }
 void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 {
+    uint8_t retry_count = 10;
+
+
 #define SERVO_RANGE_DEG (300.0)
 #define SERVO_TICK_PER_DEG (1024.0/SERVO_RANGE_DEG)
 #define SERVO_OFFSET (1024.0/2.0)
@@ -462,23 +472,33 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
     if (pos < 0)
         pos = 0;
 
-    try {
-        //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
-        uint16_t speed = 250;
-        if (_vaccumEnabled)
-        {
-            if (id == ARM_LL_SERVO_UPPER_ARM)
+    bool ok = false;
+    do
+    {
+        try {
+            //tInfo( LOG ) << id << angleDegs << SERVO_OFFSET << angleDegs*SERVO_TICK_PER_DEG <<  pos << (uint16_t)pos;
+            uint16_t speed = 120;
+            if (_vaccumEnabled)
             {
-                speed = 180;
+                if (id == ARM_LL_SERVO_UPPER_ARM)
+                {
+                    speed = 100;
+                }
+                if (id == ARM_LL_SERVO_LOWER_ARM)
+                {
+                    speed = 100;
+                }
             }
-            if (id == ARM_LL_SERVO_LOWER_ARM)
-            {
-                speed = 180;
-            }
+            _smartServo[id]->setPositionAndSpeed(false,false,(uint16_t)pos,speed);
+            ok = true;
+        } catch (...) {
+            tDebug(LOG) << "SmartServo: setPositionAndSpeed failure, (id/pos/speed/retry left)" << id << pos << retry_count;
         }
-        _smartServo[id]->setPositionAndSpeed(false,false,(uint16_t)pos,speed);
-    } catch (...) {
+    } while (retry_count-- && !ok);
 
+    if (!ok)
+    {
+        tWarning(LOG) << "SmartServo: setPositionAndSpeed FATAL (id/pos/speed)" << id << pos;
     }
 }
 void ArmLowLevel::setServosPos(double angleDegs1, double angleDegs2, double angleDegs3)
@@ -529,7 +549,7 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         moving |= _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
         moving |= _smartServo[ARM_LL_SERVO_WRIST]->moving();
 
-        if (timeoutMsLocal < (timeoutMs / 2.0))
+        if (timeoutMsLocal < (timeoutMs / 4.0))
         {
             moving = false;
             for (int i=0;i<=ARM_LL_SERVO_WRIST;i++)
@@ -545,12 +565,23 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
                         {
                             tWarning(LOG) << "waitServosTargetOk:" << i << "is close to destination, seems ok (target/pos)" << target << pos;
                         } else {
+                            try {
+                                _smartServo[i]->disable();
+                                QThread::msleep(200);
+                                _smartServo[i]->enable();
+                                _smartServo[i]->setPositionAndSpeed(false,false,target, 120);
+                                QThread::msleep(500);
+
+                            } catch (...) {
+                            }
+
                             moving |= true;
                             tWarning(LOG) << "waitServosTargetOk:" << i << "seems really bloked (target/pos)" << target << pos;
                         }
                     }
                 } catch (...) {
-
+                    moving = true;
+                    tWarning(LOG) << "waitServosTargetOk: exception for servo " << i;
                 }
             }
 /*
@@ -565,6 +596,9 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         }
 
     } while (moving && timeoutMsLocal > 0);
+
+
+    tWarning(LOG) << "waitServosTargetOk: FATAL, servo still moving after timeout";
 
     return !moving;
 }

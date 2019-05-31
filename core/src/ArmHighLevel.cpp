@@ -7,6 +7,7 @@
 
 #include <WestBot/RobotRock/ArmHighLevel.hpp>
 
+#define SERVO_WAIT 4000
 
 int circle_circle_intersection(double x0, double y0, double r0,
                                double x1, double y1, double r1,
@@ -408,7 +409,7 @@ int circle_circle_intersection(double x0, double y0, double r0,
         _armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,DEG(selected_theta1));
         _armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,DEG(selected_theta2));
 
-        return _armLL->waitServosTargetOk(2000);
+        return _armLL->waitServosTargetOk(SERVO_WAIT);
     } else {
         tWarning(LOG) << "ArmHighLevel: circle_circle_intersection: no solutions " << ok;
         return false;
@@ -539,7 +540,7 @@ bool ArmHighLevel::actionSafePosition()
     _armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,SAFE_OUT_ANGLE_1);
     _armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,SAFE_OUT_ANGLE_2);
 
-    _armLL->waitServosTargetOk(2000);
+    _armLL->waitServosTargetOk(SERVO_WAIT);
 
     moveZ(SAFE_Z);
 
@@ -548,7 +549,7 @@ bool ArmHighLevel::actionSafePosition()
     _armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,SAFE_IN_ANGLE_1);
     _armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,SAFE_IN_ANGLE_2);
 
-    _armLL->waitServosTargetOk(2000);
+    _armLL->waitServosTargetOk(SERVO_WAIT);
 
 
     return _armLL->waitServosTargetOk(1) && _armLL->waitZTargetOk(1);

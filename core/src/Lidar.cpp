@@ -132,11 +132,11 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
     {
         //tDebug( LOG ) << "Grabing scan data: OK" << scan_count;
 
-        /*
+
         if( ! _lidar.ascendScanData( nodes, scan_count ) )
         {
             return false;
-        }*/
+        }
 
         unsigned int pos = 0;
 

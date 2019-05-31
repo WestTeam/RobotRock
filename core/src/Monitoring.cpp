@@ -34,7 +34,7 @@ Monitoring::Monitoring(
 
 
     _stop = false;
-    //start();
+    start();
 }
 
 Monitoring::~Monitoring()

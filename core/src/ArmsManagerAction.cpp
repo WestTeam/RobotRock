@@ -41,6 +41,19 @@ ArmsManagerAction::ArmsManagerAction(
     }
 }
 
+ArmsManagerAction::ArmsManagerAction(
+    const ArmsManager::Ptr& armsManager,
+    Type type,
+    int score
+        )
+    : Action( "ArmsManagerAction" )
+    , _armsManager( armsManager )
+    , _type( type )
+{
+
+}
+
+
 
 void ArmsManagerAction::execute()
 {
@@ -79,8 +92,8 @@ void ArmsManagerAction::execute()
         _armsManager->_arm[1]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,22.0);
         _armsManager->_arm[1]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-22.0);
 
-        _armsManager->_arm[0]->_armLL->waitServosTargetOk(1000);
-        _armsManager->_arm[1]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[0]->_armLL->waitServosTargetOk(4000);
+        _armsManager->_arm[1]->_armLL->waitServosTargetOk(4000);
 
 
         _armsManager->_arm[0]->disable();
@@ -132,8 +145,8 @@ void ArmsManagerAction::execute()
         _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,60.0*inv);
         _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-90.0*inv);
 
-        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(4000);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(4000);
 
         _armsManager->_arm[_invArms]->moveZ(160.0);
         _armsManager->_arm[!_invArms]->moveZ(135.0);
@@ -148,7 +161,7 @@ void ArmsManagerAction::execute()
     case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP2:
         _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
 
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(4000);
 
         QThread::msleep(2000);
         _armsManager->_arm[!_invArms]->moveZ(135.0+40.0);
@@ -158,7 +171,7 @@ void ArmsManagerAction::execute()
 
     case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3:
         _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,60.0*inv);
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(4000);
 
         dist = _armsManager->_arm[!_invArms]->getObjectDistance();
 
@@ -215,19 +228,19 @@ void ArmsManagerAction::execute()
     case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2:
 
         _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
-        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(4000);
 
         _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,90.0*inv);
 
-        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(4000);
 
         _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,+90.0*inv);
 
-        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(4000);
 
-        _armsManager->_arm[_invArms]->setMode(ARM_HL_MODE_VERTICAL);
+        _armsManager->_arm[_invArms]->setMode(ARM_HL_MODE_HORIZONTAL);
 
-        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(4000);
 
         _armsManager->_arm[_invArms]->moveZ(190);
 

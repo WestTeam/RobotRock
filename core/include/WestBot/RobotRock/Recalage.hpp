@@ -80,6 +80,8 @@ private:
 
     bool _attached = false;
 
+    int _speedReductor;
+
     Odometry::Ptr _odometry;
     LidarBase::Ptr _lidar;
 
