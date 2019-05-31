@@ -94,12 +94,12 @@ public:
 
 
     ArmHighLevel::Ptr _arm[2];
+    Odometry::Ptr _odometry;
 
 private:
 
     bool _attached;
 
-    Odometry::Ptr _odometry;
 
     int _score;
     bool _isPurple;

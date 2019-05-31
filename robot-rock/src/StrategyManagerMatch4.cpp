@@ -401,9 +401,97 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
             inv * 500,
             true ));
 
+    // NEW VERSION WITH RECALAGE
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+            0.0,
+            0.0,
+            250.0,
+            inv * (-465.0),
+            true ));
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+            0.0,
+            0.0,
+            0,
+            0,
+            true ));
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL,
+            0.0,
+            250.0-96.0/2.0-120.0,
+            0,
+            0,
+            false ));
+
+    // ACTION RECALAGE
+    // new pos = x(epaisseur plexi + diametreroue/2) y = on garde, theta = 0.0
+
+        _actions.push_back(
+            std::make_shared< ArmsManagerAction >(
+                    _armsManager,
+                    ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    nullptr,
+                    _invArms
+                    ));
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+            0.0,
+            0.0,
+            15.0+70.0+237.0/2.0,
+            inv * (-465.0),
+            true ));
 
 
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+            0.0,
+            0.0,
+            15.0+70.0+237.0/2.0,
+            inv * -1.0*(50.0-37.0-70.0+194.6),
+            true ));
 
+
+    // on met en place le bras
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2,
+                nullptr,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
+
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_BACKWARD_XY_ABS,
+            0.0,
+            0.0,
+            15.0+70.0+237.0/2.0,
+            inv * -1.0*(-730.0-37.0-70.0+194.6),
+            true ));
+/*
     // ON move a l'accelerateur
     _actions.push_back(
         std::make_shared< MoveAction >(
@@ -448,7 +536,7 @@ void StrategyManagerMatch4::buildStrat( const Color& color )
             (10+70+237/2),
             inv * (194.6 - 120 - 80 ),
             true ));
-
+*/
 
 
     _stratIsRunning = true;

@@ -716,8 +716,13 @@ void TrajectoryManagerSimu::run()
                             targetPos = {currentPos.x,currentPos.y,RAD(_commandAngle)};
                             //_odometry->setPosition({currentPos.x,currentPos.y,RAD(_commandAngle)});
                             break;
+                        case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_A_REL:
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_REL:
                         case TrajectoryManager::TrajectoryType::TYPE_TRAJ_ONLY_D_REL:
+
+                            if (_commandAngle != 0.0 && _trajType == TrajectoryManager::TrajectoryType::TYPE_TRAJ_D_A_REL)
+                                currentPos.theta += _commandAngle;
+
                             _commandX = currentPos.x + _commandDistance*cos(currentPos.theta);
                             _commandY = currentPos.y + _commandDistance*sin(currentPos.theta);
 

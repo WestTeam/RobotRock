@@ -214,33 +214,42 @@ void ArmsManagerAction::execute()
 
     case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP2:
 
-        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
 
-        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-110.0*inv);
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,90.0*inv);
 
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
 
-        _armsManager->_arm[!_invArms]->setMode(ARM_HL_MODE_VERTICAL);
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,+90.0*inv);
 
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
 
-        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,-90.0*inv);
+        _armsManager->_arm[_invArms]->setMode(ARM_HL_MODE_VERTICAL);
 
-        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
 
-        _armsManager->_arm[!_invArms]->moveZ(190);
+        _armsManager->_arm[_invArms]->moveZ(190);
 
-        _armsManager->_arm[!_invArms]->disable();
+        _armsManager->_arm[_invArms]->disable();
 
         QThread::msleep(500);
 
         break;
 
 
-    case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP3:
+    case ArmsManagerAction::Type::RELEASE_PUCK_ACCELERATOR_STEP_RECALAGE:
+    {
+        // ACTION RECALAGE
+        // new pos = x(epaisseur plexi + diametreroue/2) y = on garde, theta = 0.0
+        RobotPos currentPos = _armsManager->_odometry->getPosition();
 
+        currentPos.x = 5.0+96.0/2.0;
+        currentPos.theta = 0.0;
+
+        _armsManager->_odometry->setPosition(currentPos);
         break;
+    }
 
 
 
