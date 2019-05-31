@@ -19,8 +19,11 @@
 
 #include "StrategyManagerHomologation.hpp"
 #include "StrategyManagerV1.hpp"
+#include "StrategyManagerMatch1.hpp"
 #include "StrategyManagerMatch2.hpp"
 #include "StrategyManagerMatch3.hpp"
+#include "StrategyManagerDebugPosition.hpp"
+
 
 using namespace WestBot;
 using namespace WestBot::RobotRock;
@@ -52,10 +55,12 @@ int main( int argc, char *argv[] )
     StrategyManagerHomologation::Ptr strategyManagerMatch3 =
         std::make_shared< StrategyManagerMatch3 >();
 
+
 #ifndef USE_SIMULATOR
 
     Hal::Ptr hal = std::make_shared< Hal >();
     SystemManagerHw system( hal, strategyManagerMatch3 );
+
 
     tInfo( LOG ) << "==== System started ! ==== ";
 
@@ -73,7 +78,11 @@ int main( int argc, char *argv[] )
   #endif
 #else
 
+<<<<<<< Updated upstream
     SystemManagerSimu system( strategyManagerMatch3 );
+=======
+    SystemManagerSimu system( strategyManagerMatch1 );
+>>>>>>> Stashed changes
 
     tInfo( LOG ) << "==== System started ! ==== ";
 

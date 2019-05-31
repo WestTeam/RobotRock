@@ -22,6 +22,7 @@ typedef struct
     double r; // mm
     double theta; // rad
     RobotPos pos;
+    uint32_t ts;
 } LidarData;
 
 #define LIDAR_MAX_SCAN_POINTS 8192
@@ -69,6 +70,7 @@ public:
     // cannot be called while scanning
     bool health();
 private:
+    RPLidar::measurementNode_t nodes[ LIDAR_MAX_SCAN_POINTS ];
 
 
 

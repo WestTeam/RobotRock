@@ -9,6 +9,7 @@ SOURCES =  \
     src/StrategyManagerMatch1.cpp \
     src/StrategyManagerMatch2.cpp \
     src/StrategyManagerMatch3.cpp \
+    src/StrategyManagerDebugPosition.cpp \
     src/main.cpp
 
 HEADERS += \
@@ -16,7 +17,8 @@ HEADERS += \
     include/StrategyManagerV1.hpp \
     include/StrategyManagerMatch1.hpp \
     include/StrategyManagerMatch2.hpp \
-    include/StrategyManagerMatch3.hpp
+    include/StrategyManagerMatch3.hpp \
+    include/StrategyManagerDebugPosition.hpp
 
 
 INCLUDEPATH += \

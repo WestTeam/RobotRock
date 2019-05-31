@@ -25,6 +25,9 @@ public:
         GET_PUCKS_ON_DISTRI_STEP1,
         GET_PUCKS_ON_DISTRI_STEP2,
         GET_PUCKS_ON_DISTRI_STEP3,
+        GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1, // prepare (arm not used safe mode, arm used replié mais pret)
+        GET_PUCKS_ON_DISTRI_ON_SIDE_STEP2, // go get (we activate pump and move only UPPER ARM)
+        GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3, // go back, and store if dist < 20.0
         RELEASE_ALL_PUCKS_ACCELERATOR, // release one by one all pucks into accelerator
         RELEASE_ALL_PUCKS_SCALE, // release one by one all pucks into scale
         RELEASE_ALL_PUCKS_GROUND // release one by one all pucks on the ground
@@ -45,6 +48,7 @@ public:
 private:
     ArmsManager::Ptr _armsManager;
     Type _type;
+    bool _invArms;
     PuckPos* _left1;
     PuckPos* _left2;
     PuckPos* _right1;

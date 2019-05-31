@@ -25,7 +25,7 @@ namespace
     PuckPos GndStart2 = {.x = 750, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_RED, .isOnGround = true};
     PuckPos GndStart3 = {.x = 1050, .y = (2500-1500), .z = 25, .theta = 0.0, .type = PUCK_GREEN, .isOnGround = true};
 
-#define MAIN_DISTRI_RETREY_OFFSET 50.0
+#define MAIN_DISTRI_RETREY_OFFSET 0.0
 
     PuckPos MainDistri1Red      = {.x = 1543-MAIN_DISTRI_RETREY_OFFSET, .y = (2550-1500-50-100*0), .z = 100+28.5, .theta = M_PI, .type = PUCK_RED, .isOnGround = false};
     PuckPos MainDistri2Green    = {.x = 1543-MAIN_DISTRI_RETREY_OFFSET, .y = (2550-1500-50-100*1), .z = 100+28.5, .theta = M_PI, .type = PUCK_GREEN, .isOnGround = false};
@@ -239,6 +239,10 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
     _armsManager->getCatchPosition(left,nullptr,right,nullptr,posCatchGndPuck3);
     _armsManager->getReleaseScalePosition(posScale);
 
+#define TEST_ONLY_DISTRI_ON_SIDE
+
+#ifndef TEST_ONLY_DISTRI_ON_SIDE
+
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,
@@ -347,6 +351,9 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             inv * 1000.0,
             true ));
 
+#define PUCK_DISTRI_OFFSET_ROBOT_X (230.0)
+#define PUCK_DISTRI_OFFSET_ROBOT_Y (250.0*inv)
+
     // CHECK PUCK 1
 
     _actions.push_back(
@@ -355,21 +362,79 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
             TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
             0.0,
             0.0,
-            (float)1350.0,
-            (2550-1500-50-100*0)*inv,
+            (float)(MainDistri1Red.x+PUCK_DISTRI_OFFSET_ROBOT_X),
+            (float)(MainDistri1Red.y+PUCK_DISTRI_OFFSET_ROBOT_Y),
             true ));
 
-    // Get first puck
+#endif
+
+#ifdef TEST_ONLY_DISTRI_ON_SIDE
+
     _actions.push_back(
         std::make_shared< ArmsManagerAction >(
                 _armsManager,
-                ArmsManagerAction::Type::GET_PUCKS_AND_STORE,
+                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1,
                 &MainDistri1Red,
                 nullptr,
                 nullptr,
                 nullptr,
                 _invArms
                 ));
+#endif
+
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+
+
+    // Get first puck
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP2,
+                &MainDistri1Red,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
+
+
+
+
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+    _actions.push_back( wait500Ms() );
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3,
+                &MainDistri1Red,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
+    _actions.push_back(
+        std::make_shared< ArmsManagerAction >(
+                _armsManager,
+                ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1,
+                &MainDistri1Red,
+                nullptr,
+                nullptr,
+                nullptr,
+                _invArms
+                ));
+
+
+#ifndef TEST_ONLY_DISTRI_ON_SIDE
 
     // CHECK PUCK 2
 
@@ -544,6 +609,8 @@ void StrategyManagerMatch3::buildStrat( const Color& color )
                 nullptr,
                 _invArms
                 ));
+
+#endif
 
     // ON DROP DANS LA BALANCE
     // TODO: XXX

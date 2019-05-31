@@ -119,7 +119,6 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
 {
     QMutexLocker locker( & _lock );
 
-    RPLidar::measurementNode_t nodes[ LIDAR_MAX_SCAN_POINTS ];
     size_t scan_count = _countof(nodes);
 
     count = 0;
@@ -133,10 +132,10 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
     {
         //tDebug( LOG ) << "Grabing scan data: OK" << scan_count;
 
-        if( ! _lidar.ascendScanData( nodes, scan_count ) )
+        /*if( ! _lidar.ascendScanData( nodes, scan_count ) )
         {
             return false;
-        }
+        }*/
 
         unsigned int pos = 0;
 
@@ -156,6 +155,7 @@ bool LidarRPLidarA2::get360ScanData(LidarData (&data)[LIDAR_MAX_SCAN_POINTS], ui
                 data[ count ].pos.x = (double)nodes[pos].pos_x;
                 data[ count ].pos.y = (double)nodes[pos].pos_y;
                 data[ count ].pos.theta = RAD((double)nodes[pos].pos_teta/100.0);
+                data[ count ].ts = ((uint32_t)((uint16_t)nodes[pos].pos_y)) << 16 | (uint32_t)((uint16_t)nodes[pos].pos_x);
 
                 count++;
             }

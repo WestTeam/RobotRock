@@ -31,6 +31,7 @@ ArmsManagerAction::ArmsManagerAction(
     , _right1( right1 )
     , _right2( right2 )
 {
+    _invArms = invArms;
     if (invArms)
     {
         _left1 = right1;
@@ -44,6 +45,12 @@ ArmsManagerAction::ArmsManagerAction(
 void ArmsManagerAction::execute()
 {
     tDebug( LOG ) << "Running" << name() << "action";
+
+    double inv = 1.0;
+    double dist = 0.0;
+
+    if (_invArms)
+        inv = -1.0;
 
     switch( _type )
     {
@@ -106,9 +113,67 @@ void ArmsManagerAction::execute()
 
         break;
 
+
+
     case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_STEP3:
         _armsManager->getPucksAndStore(_left1,_left2,_right1,_right2);
         break;
+
+
+        // prepare (arm not used safe mode, arm used replié mais pret)
+    case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP1:
+
+
+        _armsManager->_arm[_invArms]->setMode(ARM_HL_MODE_HORIZONTAL);
+        _armsManager->_arm[!_invArms]->setMode(ARM_HL_MODE_VERTICAL);
+
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
+        _armsManager->_arm[_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-45.0*inv);
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,60.0*inv);
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_LOWER_ARM,-90.0*inv);
+
+        _armsManager->_arm[_invArms]->_armLL->waitServosTargetOk(1000);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        _armsManager->_arm[_invArms]->moveZ(160.0);
+        _armsManager->_arm[!_invArms]->moveZ(135.0);
+
+
+        //_armsManager->_arm[0]->disable();
+        //_armsManager->_arm[1]->disable();
+
+        _armsManager->_arm[!_invArms]->setVacuum(true);
+        break;
+
+    case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP2:
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,0.0);
+
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        QThread::msleep(2000);
+        _armsManager->_arm[!_invArms]->moveZ(135.0+40.0);
+
+        break;
+
+
+    case ArmsManagerAction::Type::GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3:
+        _armsManager->_arm[!_invArms]->_armLL->setServoPos(ARM_LL_SERVO_UPPER_ARM,60.0*inv);
+        _armsManager->_arm[!_invArms]->_armLL->waitServosTargetOk(1000);
+
+        dist = _armsManager->_arm[!_invArms]->getObjectDistance();
+
+        tDebug(LOG) << "GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3: dist: " << dist;
+        if (_armsManager->_arm[!_invArms]->getObjectDistance() < 20.0)
+        {
+            tDebug(LOG) << "GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3: OK! Puck Attached, we can store it";
+            _armsManager->_arm[!_invArms]->actionPuckStore();
+        } else {
+            tDebug(LOG) << "GET_PUCKS_ON_DISTRI_ON_SIDE_STEP3: not OK, no puck Attached";
+         }
+
+        _armsManager->_arm[!_invArms]->setVacuum(false);
+        break;
+
 
     case ArmsManagerAction::Type::RELEASE_ALL_PUCKS_ACCELERATOR:
         _armsManager->releasePucksAcceletator();
