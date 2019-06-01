@@ -91,6 +91,8 @@ bool ArmLowLevel::init(
 
     _distanceSensors = distanceSensors;
 
+
+
     try {
         _smartServo[ARM_LL_SERVO_UPPER_ARM] = new SmartServo("Upper ARM protocol:"+ QString::number(upperArmProtocol) + " bus:" + QString::number(upperArmbusId));
         _smartServo[ARM_LL_SERVO_UPPER_ARM]->attach(hal,upperArmProtocol,upperArmbusId);
@@ -104,10 +106,12 @@ bool ArmLowLevel::init(
 
         for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,50);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,100);
             _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,0);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_D,25);
 
-            _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,512);
+
+            _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,250);
 
             //_smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_PUNCH,32);
 
@@ -436,27 +440,28 @@ void ArmLowLevel::setZAcc(double acc)
 
 void ArmLowLevel::enableServo(enum ArmLowLevelLeg id, bool enable)
 {    
-    int retry_count = 10;
+    int retry_count = 500;
     bool ok = false;
     do {
 
         try {
             {
                 if (enable)
-                    _smartServo[id]->enable();
+                   _smartServo[id]->enable();
                 else
                     _smartServo[id]->disable();
             }
             ok = true;
         } catch (...) {
             tDebug(LOG) << "SmartServo: enableServo exception" << id << enable;
+            QThread::sleep(50);
         }
     } while (retry_count-- && !ok);
 
 }
 void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
 {
-    uint8_t retry_count = 10;
+    uint8_t retry_count = 500;
 
 
 #define SERVO_RANGE_DEG (300.0)
@@ -493,6 +498,7 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
             ok = true;
         } catch (...) {
             tDebug(LOG) << "SmartServo: setPositionAndSpeed failure, (id/pos/speed/retry left)" << id << pos << retry_count;
+            QThread::sleep(100);
         }
     } while (retry_count-- && !ok);
 
