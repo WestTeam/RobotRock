@@ -454,7 +454,7 @@ void ArmLowLevel::enableServo(enum ArmLowLevelLeg id, bool enable)
             ok = true;
         } catch (...) {
             tDebug(LOG) << "SmartServo: enableServo exception" << id << enable;
-            QThread::sleep(50);
+            QThread::msleep(50);
         }
     } while (retry_count-- && !ok);
 
@@ -498,7 +498,7 @@ void ArmLowLevel::setServoPos(enum ArmLowLevelLeg id, double angleDegs)
             ok = true;
         } catch (...) {
             tDebug(LOG) << "SmartServo: setPositionAndSpeed failure, (id/pos/speed/retry left)" << id << pos << retry_count;
-            QThread::sleep(100);
+            QThread::msleep(100);
         }
     } while (retry_count-- && !ok);
 
