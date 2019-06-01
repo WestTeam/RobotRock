@@ -336,7 +336,7 @@ bool SystemManagerHw::init()
     _recalage.reset( new Recalage() );
 
     _recalage->setLidarPosition(0.0,0.0,0.0);
-
+/*
     _recalage->borderListAdd(0 ,0,-1500,0,-1000);
     _recalage->borderListAdd(0 ,0,1000,0,1500);
     _recalage->borderListAdd(1 ,0,1500,2000,1500);
@@ -347,6 +347,42 @@ bool SystemManagerHw::init()
     _recalage->borderListAdd(0, 1543+35,-20,1543+35,-450);
     _recalage->borderListAdd(0, 1543,-450,1543,-1050);
     _recalage->borderListAdd(1 ,2000,-1500,0,-1500);
+*/
+
+    _recalage->borderListAdd(0 ,0,-1500+100,0,-1000-100);
+    _recalage->borderListAdd(0 ,35,-1000+100,35,1000-100);
+    _recalage->borderListAdd(0 ,0,1000+100,0,1500-100);
+    _recalage->borderListAdd(1 ,0+100,1500,2000-100,1500);
+    _recalage->borderListAdd(0, 1543,1050-100,1543,450+100);
+    _recalage->borderListAdd(0, 1543+35,450-100,1543+35,20+100);
+    _recalage->borderListAdd(0, 1543+35,-20-100,1543+35,-450+100);
+    _recalage->borderListAdd(0, 1543,-450-100,1543,-1050+100);
+    _recalage->borderListAdd(0, 1543,-450-100,1543,-1050+100);
+    _recalage->borderListAdd(1 ,2000+100,-1500,0-100,-1500);
+
+
+    /*
+     * border = [0 ,0,-1500,0,-1000
+0 ,35,-1000,35,1000
+0 ,0,1000,0,1500
+1 ,0,1500,2000,1500
+0, 1543,1050,1543,450
+0, 1543+35,450,1543+35,20
+1, 1543+35-200,20,1543+35, 20
+1, 1543+35-200,-20,1543+35, -20
+0, 1543+35,-20,1543+35,-450
+0, 1543,-450,1543,-1050
+1 ,2000,-1500,0,-1500];
+
+border = [0 ,0,-1500+100,0,-1000-100
+0 ,35,-1000+100,35,1000-100
+0 ,0,1000+100,0,1500-100
+1 ,0+100,1500,2000-100,1500
+0, 1543,1050-100,1543,450+100
+0, 1543+35,450-100,1543+35,20+100
+0, 1543+35,-20-100,1543+35,-450+100
+0, 1543,-450-100,1543,-1050+100
+1 ,2000+100,-1500,0-100,-1500];
     /*
     _recalage->borderListAdd(0 ,0,-1500,0,-1000);
     _recalage->borderListAdd(0 ,0,1000,0,1500);
@@ -479,7 +515,7 @@ bool SystemManagerHw::init()
 #endif;
 
     _puckDetection.reset( new PuckDetection() );
-
+/*
     _puckDetection->setTargetSpeedHz(3.0);
 
     _puckDetection->setLidarPosition(200.0,0.0,0.0);
@@ -494,7 +530,7 @@ bool SystemManagerHw::init()
         QThread::msleep(1000);
         tWarning( LOG ) << "Puck Detection init still in progress";
     }
-
+*/
     _opponentDetection.reset( new OpponentDetection() );
 
     _opponentDetection->setTargetSpeedHz(3.0);
@@ -503,14 +539,15 @@ bool SystemManagerHw::init()
 
     if (!_opponentDetection->init(_hal,_odometry,_lidarRear))
     {
-        tFatal( LOG ) << "Unable to init Recalage. Abort";
+        tFatal( LOG ) << "Unable to init Opponent Detection. Abort";
     }
 
     while(!_opponentDetection->isInitDone())
     {
         QThread::msleep(1000);
-        tWarning( LOG ) << "Recalage init still in progress";
+        tWarning( LOG ) << "Opponent Detection init still in progress";
     }
+
 
 
     if( ! _strategyManager->init(
