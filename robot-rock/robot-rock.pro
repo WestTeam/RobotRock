@@ -11,7 +11,8 @@ SOURCES =  \
     src/StrategyManagerMatch3.cpp \
     src/StrategyManagerMatch4.cpp \
     src/StrategyManagerDebugPosition.cpp \
-    src/main.cpp
+    src/main.cpp \
+    src/StrategyManagerMatch5.cpp
 
 HEADERS += \
     include/StrategyManagerHomologation.hpp \
@@ -20,7 +21,8 @@ HEADERS += \
     include/StrategyManagerMatch2.hpp \
     include/StrategyManagerMatch3.hpp \
     include/StrategyManagerMatch4.hpp \
-    include/StrategyManagerDebugPosition.hpp
+    include/StrategyManagerDebugPosition.hpp \
+    include/StrategyManagerMatch5.hpp
 
 
 INCLUDEPATH += \

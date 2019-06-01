@@ -10,6 +10,8 @@
 //#define SIMU
 //#define USE_SIMULATOR
 
+#include <signal.h>
+
 #ifdef USE_SIMULATOR
 #include <WestBot/RobotRock/SystemManagerSimu.hpp>
 #else
@@ -22,6 +24,9 @@
 #include "StrategyManagerMatch1.hpp"
 #include "StrategyManagerMatch2.hpp"
 #include "StrategyManagerMatch3.hpp"
+#include "StrategyManagerMatch4.hpp"
+#include "StrategyManagerMatch5.hpp"
+
 #include "StrategyManagerDebugPosition.hpp"
 
 
@@ -39,6 +44,9 @@ int main( int argc, char *argv[] )
 {
     QCoreApplication app( argc, argv );
 
+    signal (SIGINT,  [](int) {QCoreApplication::quit();});
+    signal (SIGKILL,  [](int) {QCoreApplication::quit();});
+
     Handler handler( app.instance() );
     ConsoleAppender consoleAppender;
     handler.addAppender( & consoleAppender );
@@ -52,14 +60,14 @@ int main( int argc, char *argv[] )
     //StrategyManagerV1::Ptr strategyV1 =
     //    std::make_shared< StrategyManagerV1 >();
 
-    StrategyManagerHomologation::Ptr strategyManagerMatch3 =
-        std::make_shared< StrategyManagerMatch3 >();
+    StrategyManagerHomologation::Ptr strategyManagerMatch5 =
+        std::make_shared< StrategyManagerMatch5 >();
 
 
 #ifndef USE_SIMULATOR
 
     Hal::Ptr hal = std::make_shared< Hal >();
-    SystemManagerHw system( hal, strategyManagerMatch3 );
+    SystemManagerHw system( hal, strategyManagerMatch5 );
 
 
     tInfo( LOG ) << "==== System started ! ==== ";
@@ -78,11 +86,7 @@ int main( int argc, char *argv[] )
   #endif
 #else
 
-<<<<<<< Updated upstream
-    SystemManagerSimu system( strategyManagerMatch3 );
-=======
-    SystemManagerSimu system( strategyManagerMatch1 );
->>>>>>> Stashed changes
+    SystemManagerSimu system( strategyManagerMatch5 );
 
     tInfo( LOG ) << "==== System started ! ==== ";
 

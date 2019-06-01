@@ -34,7 +34,7 @@ Monitoring::Monitoring(
 
 
     _stop = false;
-    start();
+    //start();
 }
 
 Monitoring::~Monitoring()
@@ -158,6 +158,50 @@ void Monitoring::dump()
     _screen.send( "tVoltage2", QString::number( dv2 ).toLatin1() );
     _screen.send( "tVoltage3", QString::number( dv3 ).toLatin1() );
 
+
+    if (_armsManager != nullptr && _armsManager->isAttached())
+    {
+        for (int i = 0; i < 2; i++)
+        {
+
+            if  (_armsManager->_arm[i] != nullptr && _armsManager->_arm[i]->isAttached())
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    int servoId = i*4+j;
+
+                    QByteArray label = "tStatus" + QString::number( servoId ).toLatin1();
+
+
+                    ArmLowLevel* llPtr = (ArmLowLevel*)(_armsManager->_arm[i]->_armLL.get());
+
+                    try {
+                        uint8_t voltage = llPtr->_smartServo[j]->getVoltage(true);
+
+                        uint8_t temp = llPtr->_smartServo[j]->getTemp(false);
+
+                        QByteArray voltageStr = QString::number( temp ).toLatin1();
+
+                        if (llPtr->_smartServo[j] != nullptr
+                            && llPtr->_smartServo[j]->isAttached())
+                        {
+
+                            _screen.send( label, voltageStr );
+                        } else {
+                            _screen.send( label, "NOK" );
+                        }
+                    } catch (...)
+                    {
+
+                    }
+
+                }
+            }
+
+        }
+
+    }
+    /*
     _screen.send( "tStatus0", "OFF" );
     _screen.send( "tStatus1", "OFF" );
     _screen.send( "tStatus2", "OFF" );
@@ -166,4 +210,5 @@ void Monitoring::dump()
     _screen.send( "tStatus5", "OFF" );
     _screen.send( "tStatus6", "OFF" );
     _screen.send( "tStatus7", "OFF" );
+    */
 }

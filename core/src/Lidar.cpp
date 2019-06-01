@@ -21,7 +21,10 @@
 using namespace WestBot;
 using namespace WestBot::RobotRock;
 
-
+namespace
+{
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
+}
 
 LidarRPLidarA2::LidarRPLidarA2( const QString& lidarTTY, const uint32_t baudrate, ItemRegister::Ptr Pwm)
     : _lidar( lidarTTY, baudrate )

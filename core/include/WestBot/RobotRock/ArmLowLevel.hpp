@@ -118,6 +118,7 @@ public:
     double getDistance();
     bool isDistanceCoherent();
 
+    SmartServo* _smartServo[3];
 
 private:
 
@@ -133,7 +134,6 @@ private:
     ItemRegister::Ptr _vacuumPwm;
     ItemRegister::Ptr _vacuumValve;
     uint32_t* _distanceMmPtr;
-    SmartServo* _smartServo[3];
 
     int32_t _refZ;
     int32_t _refInverted;

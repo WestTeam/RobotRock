@@ -133,46 +133,53 @@ SystemManagerHw::SystemManagerHw(
             _strategyManager->obstacleAt(x, y, x, y );
         } );
 
-    char buf[2] = {static_cast< char >( 0xA5 ),0x40};
+    char buf_stop[2] = {static_cast< char >( 0xA5 ),0x25};
+    char buf_reset[2] = {static_cast< char >( 0xA5 ),0x40};
 
-    //_experiment.setColorPurple();
-    //_experiment.start();
-    //while(1);
-    QSerialPort* serial1 = new QSerialPort(LIDAR_FRONT_TTY,this);
+
+    _hal->_pwmCustom0Value.write(0);
+    _hal->_pwmCustom1Value.write(0);
+    _hal->_pwmCustom2Value.write(0);
+    _hal->_pwmCustom3Value.write(0);
+
+    QThread::msleep(2000);
+
+/*
+    QSerialPort* serial1 = new QSerialPort(LIDAR_FRONT_TTY);
     tInfo( LOG ) << "1";
     serial1->setBaudRate(LIDAR_BAUDRATE);
     tInfo( LOG ) << "2";
-    serial1->open(QIODevice::ReadWrite);
-    tInfo( LOG ) << "3";
-    serial1->write(buf,2);
-    tInfo( LOG ) << "4";
+    bool ok = serial1->open(QIODevice::WriteOnly);
+    tInfo( LOG ) << "3" << ok;
+    qint64 count = serial1->write(buf_stop,2);
+    tInfo( LOG ) << "4" << count;
     serial1->flush();
-    /*tInfo( LOG ) << "5";
-    serial1.write(buf,2);
-    tInfo( LOG ) << "6";
-    serial1.flush();
-    tInfo( LOG ) << "7";*/
+    count = serial1->write(buf_reset,2);
+    tInfo( LOG ) << "4" << count;
+    serial1->flush();
+
 
     serial1->close();
     delete serial1;
 
-    serial1 = new QSerialPort(LIDAR_REAR_TTY,this);
+    serial1 = new QSerialPort(LIDAR_REAR_TTY);
     tInfo( LOG ) << "1";
     serial1->setBaudRate(LIDAR_BAUDRATE);
     tInfo( LOG ) << "2";
-    serial1->open(QIODevice::ReadWrite);
-    tInfo( LOG ) << "3";
-    serial1->write(buf,2);
-    tInfo( LOG ) << "4";
+    ok = serial1->open(QIODevice::WriteOnly);
+    tInfo( LOG ) << "3" << ok;
+    count = serial1->write(buf_stop,2);
+    tInfo( LOG ) << "4" << count;
     serial1->flush();
-    /*tInfo( LOG ) << "5";
-    serial1.write(buf,2);
-    tInfo( LOG ) << "6";
-    serial1.flush();
-    tInfo( LOG ) << "7";*/
+
+    count = serial1->write(buf_reset,2);
+    tInfo( LOG ) << "4" << count;
+    serial1->flush();
+
 
     serial1->close();
     delete serial1;
+    */
 
 
     tInfo( LOG ) << "8";
@@ -328,7 +335,31 @@ bool SystemManagerHw::init()
 
     _recalage.reset( new Recalage() );
 
-    _recalage->setLidarPosition(100.0,0.0,0.0);
+    _recalage->setLidarPosition(0.0,0.0,0.0);
+
+    _recalage->borderListAdd(0 ,0,-1500,0,-1000);
+    _recalage->borderListAdd(0 ,0,1000,0,1500);
+    _recalage->borderListAdd(1 ,0,1500,2000,1500);
+    _recalage->borderListAdd(0, 1543,1050,1543,450);
+    _recalage->borderListAdd(0, 1543+35,450,1543+35,20);
+    _recalage->borderListAdd(1, 1543+35-200,20,1543+35, 20);
+    _recalage->borderListAdd(1, 1543+35-200,-20,1543+35, -20);
+    _recalage->borderListAdd(0, 1543+35,-20,1543+35,-450);
+    _recalage->borderListAdd(0, 1543,-450,1543,-1050);
+    _recalage->borderListAdd(1 ,2000,-1500,0,-1500);
+    /*
+    _recalage->borderListAdd(0 ,0,-1500,0,-1000);
+    _recalage->borderListAdd(0 ,0,1000,0,1500);
+    _recalage->borderListAdd(1 ,0,1500,2000,1500);
+    _recalage->borderListAdd(0, 1543,1050,1543,450);
+    _recalage->borderListAdd(0, 1543+35,450,1543+35,20);
+    _recalage->borderListAdd(1, 1543+35-200,20,1543+35, 20);
+    _recalage->borderListAdd(1, 1543+35-200,-20,1543+35, -20);
+    _recalage->borderListAdd(0, 1543+35,-20,1543+35,-450);
+    _recalage->borderListAdd(0, 1543,-450,1543,-1050);
+    _recalage->borderListAdd(1 ,2000,-1500,0,-1500);*/
+
+
     _recalage->setTargetSpeedHz(3.0);
 
     if( ! _recalage->init( _hal, _odometry, ( LidarBase::Ptr ) _lidarTop) )
@@ -449,7 +480,9 @@ bool SystemManagerHw::init()
 
     _puckDetection.reset( new PuckDetection() );
 
-    _puckDetection->setTargetSpeedHz(4.0);
+    _puckDetection->setTargetSpeedHz(3.0);
+
+    _puckDetection->setLidarPosition(200.0,0.0,0.0);
 
     if (!_puckDetection->init(_odometry,_lidarFront))
     {
@@ -463,6 +496,21 @@ bool SystemManagerHw::init()
     }
 
     _opponentDetection.reset( new OpponentDetection() );
+
+    _opponentDetection->setTargetSpeedHz(3.0);
+
+    _opponentDetection->setLidarPosition(100.0,0.0,0.0);
+
+    if (!_opponentDetection->init(_hal,_odometry,_lidarRear))
+    {
+        tFatal( LOG ) << "Unable to init Recalage. Abort";
+    }
+
+    while(!_opponentDetection->isInitDone())
+    {
+        QThread::msleep(1000);
+        tWarning( LOG ) << "Recalage init still in progress";
+    }
 
 
     if( ! _strategyManager->init(
@@ -478,7 +526,7 @@ bool SystemManagerHw::init()
     _monitoring.reset( new Monitoring( _hal, _odometry, _armsManager ) );
 
     //_monitoring->start();
-    _monitoring->setRefreshRate( 100 );
+    _monitoring->setRefreshRate( 500 );
 
     // Override output registers
     _hal->_outputOverride.write( 0x01010101 );

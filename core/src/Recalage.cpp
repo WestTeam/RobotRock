@@ -45,7 +45,6 @@ Recalage::Recalage()
     _speedTargetHz = 1.0;
     _currentSpeedHz = 0.0;
 
-    _speedReductor = 0;
 }
 
 
@@ -400,69 +399,6 @@ bool Recalage::calibrate(
     return true;
 }
 
-
-
-QList<LidarCircle::Obstacle> Recalage::locate(
-    LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
-    uint32_t dataCount)
-{
-    QVector<float> d;
-    QVector<float> a;
-    QVector<float> q;
-
-    for (int i = 0; i < dataCount; i++)
-    {
-        d << data[i].r;
-        a << data[i].theta;
-        q << data[i].quality;
-    }
-
-    LidarCircle _lidarCircle(100.0,_lidarPosX,_lidarPosY,-1.0);
-    QList<LidarCircle::Obstacle> ret;
-
-
-    QList<LidarCircle::Obstacle> list = _lidarCircle.compute(a,d);
-
-    QList<LidarCircle::Obstacle> list_rel = list;
-
-    QList<LidarCircle::Obstacle> list_abs;
-
-    RobotPos robotPos = data[0].pos;
-
-
-    _lidarCircle.transformToRobot(list_rel);
-    list_abs = list_rel;
-    _lidarCircle.transformToAbs(list_abs,robotPos.x,robotPos.y,robotPos.theta);
-    _lidarCircle.associate(list_abs);
-    //tInfo( LOG ) << "lidarcicle count" << list.count();
-
-    //
-
-
-
-    for (int i = 0; i < list.size(); i++)
-    {//( QList<LidarCircle::Obstacle>::iterator it = list.begin(); it != list.end(); ++it){
-
-        //pos.Q = it->Q;
-        //pos.X = robotPos.x+(_lidarPosX+it->X)*cos(robotPos.theta)+(_lidarPosY+it->Y)*sin(robotPos.theta);
-        //pos.Y = robotPos.y+(_lidarPosY+it->Y)*cos(robotPos.theta)-(_lidarPosX+it->X)*sin(robotPos.theta);
-
-        float dist = hypot(list_rel[i].X,list_rel[i].Y);
-
-        if (list_rel[i].Q >= 0.3 && dist <= 1000.0 && list_abs[i].type == LidarCircle::Obstacle::Type::ROBOT)
-        {
-
-            ret << list_abs[i];
-
-            tInfo( LOG ) << "Robot Detection:Abs:" << dist << list_abs[i].X << list_abs[i].Y << list_abs[i].Q;
-            //tInfo( LOG ) << "Robot Detection:Rel:" << dist << list_rel[i].X << list_rel[i].Y << list_rel[i].Q;
-        }
-    }
-
-    return ret;
-}
-
-
 void Recalage::run()
 {
     tDebug( LOG ) << "Recalage: Run";
@@ -493,140 +429,115 @@ void Recalage::run()
     {
         if( ! _initDone )
         {
-                ok = _lidar->get360ScanData(data,dataCount);
-                if (ok && dataCount != 0)
+            ok = _lidar->get360ScanData(data,dataCount);
+            if (ok && dataCount != 0)
+            {
+                uint64_t now = QDateTime::currentMSecsSinceEpoch();
+
+                if (last_scan_ok != 0)
                 {
-                    uint64_t now = QDateTime::currentMSecsSinceEpoch();
-
-                    if (last_scan_ok != 0)
-                    {
-                        uint64_t period = now-last_scan_ok;
-
-                        last_scan_ok = now;
-
-                        double freq = 1.0/((double)(period)/1000.0);
-                        _currentSpeedHz = freq;
-                        tDebug( LOG ) << "Recalage: freq" << freq << period << consecutive_speed_ko;
-
-                        if (freq <= _speedTargetHz)
-                        {
-                            consecutive_speed_ok = 0;
-                            consecutive_speed_ko++;
-                            if (consecutive_speed_ko==STABLE_COUNT)
-                            {
-                                mPercentage+=PERCENTAGE_STEP;
-                                if (mPercentage >= 100.0)
-                                    mPercentage = 100.0;
-
-                                _lidar->startMotor(mPercentage);
-                                //this->QThread::msleep(2000);
-                                last_scan_ok = 0;
-                            }
-                        } else {
-                            consecutive_speed_ok++;
-                            if (consecutive_speed_ok==STABLE_COUNT)
-                            {
-                                _initDone = true;
-                            }
-                        }
-                    } else {
-                        consecutive_speed_ok = 0;
-                        consecutive_speed_ko = 0;
-                        last_scan_ok = now;
-                    }
-
-                    retry_count = 0;
-
-                } else {
-                    retry_count++;
-                    if (retry_count == RETRY_COUNT)
-                    {
-                        consecutive_speed_ko = 0;
-                        consecutive_speed_ok = 0;
-                        retry_count = 0;
-
-                        mPercentage+=PERCENTAGE_STEP;
-                        if (mPercentage >= 100.0)
-                            mPercentage = 100.0;
-
-                        _lidar->startMotor(mPercentage);
-                        //this->QThread::msleep(1000);
-                        _lidar->stopScan();
-                        _lidar->startScan();
-
-                        last_scan_ok = 0;
-                    }
-                }
-            }
-        else
-        {
-                ok = _lidar->get360ScanData(data,dataCount);
-
-                if (ok && dataCount != 0)
-                {
-                    uint64_t now = QDateTime::currentMSecsSinceEpoch();
-
                     uint64_t period = now-last_scan_ok;
+
                     last_scan_ok = now;
 
-                    if (last_scan_ok != 0)
+                    double freq = 1.0/((double)(period)/1000.0);
+                    _currentSpeedHz = freq;
+                    tDebug( LOG ) << "Recalage: freq" << freq << period << consecutive_speed_ko;
+
+                    if (freq <= _speedTargetHz)
                     {
-                        double freq = 1.0/((double)(period)/1000.0);
-                        _currentSpeedHz = freq;
+                        consecutive_speed_ok = 0;
+                        consecutive_speed_ko++;
+                        if (consecutive_speed_ko==STABLE_COUNT)
+                        {
+                            mPercentage+=PERCENTAGE_STEP;
+                            if (mPercentage >= 100.0)
+                                mPercentage = 100.0;
+
+                            _lidar->startMotor(mPercentage);
+                            //this->QThread::msleep(2000);
+                            last_scan_ok = 0;
+                        }
+                    } else {
+                        consecutive_speed_ok++;
+                        if (consecutive_speed_ok==STABLE_COUNT)
+                        {
+                            _initDone = true;
+                        }
                     }
+                } else {
+                    consecutive_speed_ok = 0;
+                    consecutive_speed_ko = 0;
+                    last_scan_ok = now;
+                }
 
-                    // if != 0 we continue (ie we do not process the data)
-                    if (dropScanCount)
-                    {
-                        dropScanCount--;
-                        continue;
-                    }
+                retry_count = 0;
 
-                    bool ok;
-                    // we check if the first pos is the same as last pos
-                    ok = (data[0].pos == data[dataCount-1].pos);
+            } else {
+                retry_count++;
+                if (retry_count == RETRY_COUNT)
+                {
+                    consecutive_speed_ko = 0;
+                    consecutive_speed_ok = 0;
+                    retry_count = 0;
 
-                    // first calibration in order to correct theta first
+                    mPercentage+=PERCENTAGE_STEP;
+                    if (mPercentage >= 100.0)
+                        mPercentage = 100.0;
+
+                    _lidar->startMotor(mPercentage);
+                    _lidar->stopScan();
+                    _lidar->startScan();
+
+                    last_scan_ok = 0;
+                }
+            }
+        }
+        else
+        {
+            ok = _lidar->get360ScanData(data,dataCount);
+
+            if (ok && dataCount != 0)
+            {
+                uint64_t now = QDateTime::currentMSecsSinceEpoch();
+
+                uint64_t period = now-last_scan_ok;
+                last_scan_ok = now;
+
+                if (last_scan_ok != 0)
+                {
+                    double freq = 1.0/((double)(period)/1000.0);
+                    _currentSpeedHz = freq;
+                }
+
+                // if != 0 we continue (ie we do not process the data)
+                if (dropScanCount)
+                {
+                    dropScanCount--;
+                    continue;
+                }
+
+                bool ok;
+                // we check if the first pos is the same as last pos
+                ok = (data[0].pos == data[dataCount-1].pos);
+
+                // first calibration in order to correct theta first
+                if (ok)
+                {
+                    ok = calibrate(data,dataCount,currentError,absPos,0.0);
+                }
+
+
+                if (ok)
+                {
+                    double thetaBias = currentError.theta;
+
+                    // second one to have correction on X/Y
+                    ok = calibrate(data,dataCount,currentError,absPos,thetaBias);
+
                     if (ok)
                     {
-                        //ok = calibrate(data,dataCount,currentError,absPos,0.0);
-
-                        QList<LidarCircle::Obstacle> list = locate(data,dataCount);
-
-                        uint8_t speed_reductor = 0;
-
-                        for (int i = 0; i < list.length(); i++)
-                        {
-                            float dist = hypot(list[i].X-data[0].pos.x, list[i].Y-data[0].pos.y);
-
-                            if (dist < 1000)
-                                speed_reductor = 100-50;
-                            if (dist < 800)
-                                speed_reductor = 100-30;
-                            if (dist < 650)
-                                speed_reductor = 100-0;
-                            if (dist < 400)
-                                speed_reductor = 100-0;
-                        }
-
-                        _hal->_pidDistanceSpeedReductor.write(speed_reductor);
-                        _hal->_pidAngleSpeedReductor.write(speed_reductor);
-                        if (speed_reductor != 0 || _speedReductor != speed_reductor)
-                            tDebug( LOG ) << "Recalage: Speed Reductor to " << speed_reductor << "%";
-
-                        _speedReductor = speed_reductor;
-
-                    }
-
-
-                    if (false)//(ok)
-                    {
-                        double thetaBias = currentError.theta;
-
-                        // second one to have correction on X/Y
-                        ok = calibrate(data,dataCount,currentError,absPos,thetaBias);
-
-                        if (ok)
+                        if (fabs(currentError.x) <= 100.0 || fabs(currentError.y) <= 100.0 || fabs(currentError.theta) <= RAD(15.0))
                         {
                             tDebug( LOG ) << "Recalage: Corrected Pos X:" << absPos.x << "Y:" << absPos.y << "Theta:" << absPos.theta;
                             tDebug( LOG ) << "Recalage: Detected Error X:" << currentError.x << "Y:" << currentError.y << "Theta:" << currentError.theta << thetaBias;
@@ -656,290 +567,12 @@ void Recalage::run()
                                 // in case buffering with previous position occured
                                 dropScanCount = 2;
                             }
+                        } else {
+                            tDebug( LOG ) << "Recalage: Detected Error Too Big, we skipped it X:" << currentError.x << "Y:" << currentError.y << "Theta:" << currentError.theta << thetaBias;
                         }
                     }
                 }
             }
         }
-/*
-        bool ok;
-        ok = _lidar->get360ScanData(data,dataCount);
-        if (ok && dataCount != 0)
-            calibrate(data,dataCount,currentError,absPos);
-
-        this->QThread::msleep(2000);
-*/
     }
-
-
-
-/*
-
-    void borderListClear();
-    bool borderListAdd( uint8_t dir,double ax, double ay, double bx, double by );
-
-    void setLidarPosition(double x, double y);
-    void setLidarThetaOffset(double theta0);
-
-    void setTargetSpeedHz(double hz);
-    bool getSpeedHz(double &hz);
-
-    void setCalibrationMode(bool continiuous = false);
-
-    bool triggerCalibration(bool blocking);
-
-    void getAccumulatedError(RobotPos &pos);
-    void getLatestCalibratedPos(RobotPos &pos);
-
-    //void errorInit( double errX, double errY, double errTheta );
-
-    //void errorModify( double errX, double errY, double errTheta );
-
-    bool calibrate(
-        LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
-        uin32_t data_count,
-        RobotPos &currentError,
-        RobotPos &absPos);
-*/
-
-
-/*
-RobotPos Recalage::getPos()
-{
-    QMutexLocker locker( _lock );
-    RobotPos pos;
-
-    pos.theta = _odoThetaReg->read< int16_t >();
-    pos.x = _odoXReg->read< int16_t >();
-    pos.y = _odoYReg->read< int16_t >();
-
-    return pos;
 }
-
-RobotPos Recalage::sendPos( const RobotPos& robotPos )
-{
-    RobotPos pos;
-    pos.x = ( robotPos.x - error.x ) * cos( error.theta ) -
-            ( robotPos.y - error.y ) * sin( error.theta );
-    pos.y = ( robotPos.x - error.x ) * sin( error.theta ) +
-            ( robotPos.y - error.y ) * cos( error.theta );
-    pos.theta = robotPos.theta + error.theta;
-
-    //_odoThetaReg->write( static_cast< int >( pos.theta ) );
-    //_odoXReg->write( static_cast< int >( pos.x ) );
-    //_odoYReg->write( static_cast< int >( pos.y ) );
-
-    return pos;
-}
-
-void Recalage::errorInit( double errX, double errY, double errTheta )
-{
-    error.x = errX;
-	error.y = errY;
-	error.theta = errTheta;
-}
-
-void Recalage::errorModify( double errX, double errY, double errTheta )
-{
-    error.x = error.x * cos( errTheta ) +
-              error.y * sin( errTheta ) +
-              errX;
-    error.y = -error.x * sin( errTheta ) +
-              error.y * cos( errTheta ) +
-              errY;
-	error.theta += errTheta;
-}
-
-bool Recalage::calibrate(
-    int mesLen,					// nb de mesures télémètre
-    const double* mesR,			// mesure télémètre
-    const double* mesTheta )    // angle correspondant à la masure
-{
-    tInfo( LOG ) << "Calibrating...";
-
-    double errX = 0;
-    double errY = 0;
-    double errTheta = 0;
-
-    RobotPos robotPos = getPos(); // Position du robot
-
-#ifdef DEBUG
-    for( int pos = 0; pos < mesLen; ++pos )
-    {
-        tDebug( LOG ) << "Dist:" << mesR[ pos ] << "Theta:" << mesTheta[ pos ];
-    }
-#endif
-
-    QMutexLocker locker( _lock );
-
-    //position du télémètre
-    double telemTheta = robotPos.theta + TELEM_THETA0;
-    double telemX = robotPos.x + TELEM_R*cos(robotPos.theta+TELEM_THETA);
-    double telemY = robotPos.y + TELEM_R*sin(robotPos.theta+TELEM_THETA);
-
-    //initialisation tableaux de point associés à une bordure
-    typedef struct {
-        MatrixXd dot;
-        int len;
-    }Mesure;
-    Mesure mesure[tableBorderNb];
-    for(int k=0; k<tableBorderNb; k++) {
-        mesure[k].dot.resize(mesLen,2);
-        mesure[k].len = 0;
-    }
-
-    //association point bordure
-    for(unsigned int j =0; j<mesLen; j++) {
-        //drop false points
-        if(mesR[j]<ALGO_TELEM_DROP_MESURE)
-            continue;
-
-        //position du point mesuré
-        double theta = telemTheta + mesTheta[j];
-        double x = telemX + mesR[j]*cos(theta);
-        double y = telemY + mesR[j]*sin(theta);
-
-        //associate dot to border
-        double d = INFINITY;
-        int K = 0;
-        for(int k=0; k<tableBorderNb; k++) {
-            double dist;
-            //AB.AP<0 => distance = AP
-            if( (tableBorder[k].bx-tableBorder[k].ax)*(x-tableBorder[k].ax) + (tableBorder[k].by-tableBorder[k].ay)*(y-tableBorder[k].ay) < 0 )
-                dist = sqrt( (x-tableBorder[k].ax)*(x-tableBorder[k].ax) + (y-tableBorder[k].ay)*(y-tableBorder[k].ay) );
-            //BA.BP<0 => distance = BP
-            else if( (tableBorder[k].ax-tableBorder[k].bx)*(x-tableBorder[k].bx) + (tableBorder[k].ay-tableBorder[k].by)*(y-tableBorder[k].by) < 0 )
-                dist = sqrt( (x-tableBorder[k].bx)*(x-tableBorder[k].bx) + (y-tableBorder[k].by)*(y-tableBorder[k].by) );
-            //sinon => distance = norm(AB^AP)/norm(AB)
-            else
-                dist = abs( (tableBorder[k].bx-tableBorder[k].ax)*(y-tableBorder[k].ay) + (tableBorder[k].by-tableBorder[k].ay)*(x-tableBorder[k].ax) )/( sqrt((tableBorder[k].ax-tableBorder[k].bx)*(tableBorder[k].ax-tableBorder[k].bx)+(tableBorder[k].ay-tableBorder[k].by)*(tableBorder[k].ay-tableBorder[k].by)) );
-
-            if(dist<d) {
-                d = dist;
-                K = k;
-            }
-        }
-        if(d<ALGO_BORDER_ASSOCIATE_DROP) {
-            mesure[K].dot(mesure[K].len,0) = x;
-            mesure[K].dot(mesure[K].len,1) = y;
-            mesure[K].len++;
-        }
-    }
-
-    //suppression points
-    int mesureLen = 0;
-    {
-        for(int k=0; k<tableBorderNb; k++) {
-
-            //qDebug() << "border" << k << mesure[k].len << "dir" << tableBorder[k].dir;
-
-            if(mesure[k].len<5){
-                mesure[k].len = 0;
-                continue;
-            }
-
-            int X,Y;
-            if(tableBorder[k].dir) {
-                X = 0;
-                Y = 1;
-            }
-            else {
-                X = 1;
-                Y = 0;
-            }
-
-
-            MatrixXd in(mesure[k].len,2);
-            VectorXd out(mesure[k].len);
-            for(int j =0; j<mesure[k].len; j++) {
-                in(j,0) = mesure[k].dot(j,X);
-                in(j,1) = 1;
-                out(j) = mesure[k].dot(j,Y);
-            }
-
-            MatrixXd droite = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
-            VectorXf u(2);
-            u(0) = -droite(0,0);
-            u(1) = 1;
-            u = u/u.norm();
-
-            int len = 0;
-            for(int j =0; j<mesure[k].len; j++) {
-                double d = abs( (mesure[k].dot(j,X))*(u[0]) + (mesure[k].dot(j,Y)-droite(1,0))*(u[1]) );
-                if(d<ALGO_BORDER_FILTER_DROP) {
-                    mesure[k].dot(len,0) = mesure[k].dot(j,0);
-                    mesure[k].dot(len,1) = mesure[k].dot(j,1);
-                    len++;
-                }
-            }
-            mesure[k].len = len;
-            mesureLen += len;
-
-            //qDebug() << "border end" << k << mesure[k].len << "dir" << tableBorder[k].dir;
-        }
-    }
-
-    if( mesureLen < 50 )
-    {
-        tDebug( LOG ) << "No object found";
-        return false;
-    }
-
-    //calcul erreur odometrie
-    int lenX = 0;
-    int lenY = 0;
-    {
-        MatrixXd in(mesureLen,3);
-        VectorXd out(mesureLen);
-        int i = 0;
-        for(int k=0; k<tableBorderNb; k++) {
-            if(mesure[k].len==0)
-                continue;
-
-            for(int j =0; j<mesure[k].len; j++) {
-                if(tableBorder[k].dir) {
-                    in(i,0) = -mesure[k].dot(j,0);
-                    in(i,1) = 0;
-                    in(i,2) = 1;
-                    out(i) = tableBorder[k].ay - mesure[k].dot(j,1);
-                    lenY ++;
-                }
-                else {
-                    in(i,0) = mesure[k].dot(j,1);
-                    in(i,1) = 1;
-                    in(i,2) = 0;
-                    out(i) = tableBorder[k].ax - mesure[k].dot(j,0);
-                    lenX ++;
-                }
-                i++;
-            }
-        }
-
-        MatrixXd A = in.jacobiSvd(ComputeThinU|ComputeThinV).solve(out);
-        errX = A(1,0);
-        errY = A(2,0);
-        errTheta = asin(A(0,0));
-    }
-
-    double qualityX = (double)lenX / 400.0;
-    double qualityY = (double)lenY / 400.0;
-    double qualityTheta;
-    if(qualityX>1)
-        qualityX = 1;
-    if(qualityY>1)
-        qualityY = 1;
-    if(qualityX>qualityY)
-        qualityTheta = qualityX;
-    else
-        qualityTheta = qualityY;
-
-    tDebug( LOG ) << "Calibrate quality" << qualityX << qualityY << qualityTheta;
-
-    errorModify(errX*qualityX,errY*qualityY,errTheta*qualityTheta);
-
-    tDebug( LOG ) << "Calibrate error" << errX << errY << errTheta;
-
-    sendPos( robotPos ); // Apply new robot position based on previous computed error
-
-    return true;
-}*/

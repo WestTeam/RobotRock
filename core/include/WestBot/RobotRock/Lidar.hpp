@@ -45,7 +45,6 @@ public:
 class LidarRPLidarA2 : public LidarBase
 {
 public:
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Lidar" )
 
     using Ptr = std::shared_ptr< LidarRPLidarA2 >;
 

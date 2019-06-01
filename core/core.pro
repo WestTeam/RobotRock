@@ -50,7 +50,8 @@ SOURCES += \
     src/Pid.cpp \
     src/ArmsManager.cpp \
     src/PuckDetection.cpp \
-    src/ArmsManagerAction.cpp
+    src/ArmsManagerAction.cpp \
+    src/RecalageAction.cpp
 
 HEADERS += \
     include/Macros.hpp \
@@ -99,7 +100,8 @@ HEADERS += \
     include/WestBot/RobotRock/ArmsManager.hpp \
     include/WestBot/RobotRock/LidarCircle.hpp \
     include/WestBot/RobotRock/PuckDetection.hpp \
-    include/WestBot/RobotRock/ArmsManagerAction.hpp
+    include/WestBot/RobotRock/ArmsManagerAction.hpp \
+    include/WestBot/RobotRock/RecalageAction.hpp
 
 INCLUDEPATH += \
     ../3rdparty/HumanAfterAll/include/ \

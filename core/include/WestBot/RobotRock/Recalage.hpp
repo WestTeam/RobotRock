@@ -31,7 +31,7 @@ namespace RobotRock {
 class Recalage: public QThread
 {
 public:
-    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Recalage" );
+    HUMANAFTERALL_LOGGING_CATEGORY( LOG, "WestBot.RobotRock.Recalage" )
 
     using Ptr = std::shared_ptr< Recalage >;
 
@@ -61,10 +61,6 @@ public:
 
     //void errorModify( double errX, double errY, double errTheta );
 
-    QList<LidarCircle::Obstacle> locate(
-        LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
-        uint32_t dataCount);
-
     bool calibrate(
         LidarData (&data)[LIDAR_MAX_SCAN_POINTS],
         uint32_t dataCount,
@@ -79,8 +75,6 @@ private:
     Hal::Ptr _hal;
 
     bool _attached = false;
-
-    int _speedReductor;
 
     Odometry::Ptr _odometry;
     LidarBase::Ptr _lidar;
