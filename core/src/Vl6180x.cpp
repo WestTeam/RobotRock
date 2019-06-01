@@ -30,23 +30,6 @@ namespace
     }
 }
 
-typedef struct
-{
-    uint8_t     fanion;
-    uint16_t    size;
-    uint16_t    crc; // sum data + id
-    uint16_t    id;
-} __attribute__( ( packed ) ) ProtocolHeader;
-
-typedef struct
-{
-    ProtocolHeader header;
-    uint8_t dist;
-    uint8_t status;
-} __attribute__( ( packed ) ) Trame;
-
-Trame trame;
-
 Vl6180x::Vl6180x( const QString& tty )
 {
     _tty = tty;
@@ -129,8 +112,10 @@ void Vl6180x::readData()
 
             if( crc != trame.header.crc )
             {
-                //tWarning( LOG ) << _tty << "Trame not valid: CRC error" << crc << trame.header.crc;
+                tWarning( LOG ) << _tty << "Trame not valid: CRC error" << crc << trame.header.crc;
                 return;
+            } else {
+                //tInfo( LOG ) << _tty << "Trame OK";
             }
             /*else {
                 tInfo( LOG ) << _tty << "OK";

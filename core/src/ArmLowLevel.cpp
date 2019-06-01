@@ -543,6 +543,7 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
 {
     double timeoutMsLocal = timeoutMs;
     bool moving = true;
+    bool moving1, moving2, moving3;
 
     if (timeoutMsLocal == 0)
         timeoutMsLocal = WAIT_MAX_MS;
@@ -550,9 +551,22 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
         QThread::msleep( WAIT_STEP_MS );
         timeoutMsLocal -= WAIT_STEP_MS;
 
-        moving = _smartServo[ARM_LL_SERVO_UPPER_ARM]->moving();
-        moving |= _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
-        moving |= _smartServo[ARM_LL_SERVO_WRIST]->moving();
+        //tDebug(LOG) << timeoutMsLocal << timeoutMs ;
+        moving1 = _smartServo[ARM_LL_SERVO_UPPER_ARM]->moving();
+        moving2 = _smartServo[ARM_LL_SERVO_LOWER_ARM]->moving();
+        moving3 = _smartServo[ARM_LL_SERVO_WRIST]->moving();
+
+        if (moving1)
+            tDebug(LOG) << "upper" << timeoutMsLocal << timeoutMs << moving1 ;
+        if (moving2)
+            tDebug(LOG) << "lower" << timeoutMsLocal << timeoutMs << moving2 ;
+        if (moving3)
+            tDebug(LOG) << "writs" << timeoutMsLocal << timeoutMs << moving3 ;
+
+        moving = moving1;
+        moving |= moving2;
+        moving |= moving3;
+
 
         if (timeoutMsLocal < (timeoutMs / 4.0))
         {
@@ -602,8 +616,8 @@ bool ArmLowLevel::waitServosTargetOk(double timeoutMs)
 
     } while (moving && timeoutMsLocal > 0);
 
-
-    tWarning(LOG) << "waitServosTargetOk: FATAL, servo still moving after timeout";
+    if (moving)
+        tWarning(LOG) << "waitServosTargetOk: FATAL, servo still moving after timeout" << moving << moving1 << moving2 << moving3 <<  timeoutMs;
 
     return !moving;
 }

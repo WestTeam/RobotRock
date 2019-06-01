@@ -17,6 +17,25 @@ namespace RobotRock {
  * \brief The Vl6180x class process incoming data from a serial link.
  */
 
+
+typedef struct
+{
+    uint8_t     fanion;
+    uint16_t    size;
+    uint16_t    crc; // sum data + id
+    uint16_t    id;
+} __attribute__( ( packed ) ) ProtocolHeader;
+
+typedef struct
+{
+    ProtocolHeader header;
+    uint8_t dist;
+    uint8_t status;
+} __attribute__( ( packed ) ) Trame;
+
+
+
+
 #define VL6180X_MAX_SENSOR_COUNT 4
 
 class Vl6180x : public QThread
@@ -64,6 +83,8 @@ private:
     void readData();
 
 private:
+    Trame trame;
+
     QSerialPort* _serial;
     QString _tty;
     uint32_t _distance[ VL6180X_MAX_SENSOR_COUNT ];
