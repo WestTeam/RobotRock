@@ -106,12 +106,11 @@ bool ArmLowLevel::init(
 
         for (int i=ARM_LL_SERVO_UPPER_ARM;i<=ARM_LL_SERVO_WRIST;i++)
         {
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,100);
+            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_P,80);
             _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_I,0);
-            _smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_D,25);
 
 
-            _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,250);
+            _smartServo[i]->setRawWrite16(DYNAMIXEL_REGS_MAX_TORQUE_L,512);
 
             //_smartServo[i]->setRawWrite8(DYNAMIXEL_REGS_PUNCH,32);
 
