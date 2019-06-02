@@ -200,7 +200,7 @@ void OpponentDetection::run()
 
                     double freq = 1.0/((double)(period)/1000.0);
                     _currentSpeedHz = freq;
-                    tDebug( LOG ) << "Recalage: freq" << freq << period << consecutive_speed_ko;
+                    tDebug( LOG ) << "Opponent Detection: freq" << freq << period << consecutive_speed_ko;
 
                     if (freq <= _speedTargetHz)
                     {
@@ -303,7 +303,7 @@ void OpponentDetection::run()
                     _hal->_pidDistanceSpeedReductor.write(speed_reductor);
                     _hal->_pidAngleSpeedReductor.write(speed_reductor);
                     if (speed_reductor != 0 || _speedReductor != speed_reductor)
-                        tDebug( LOG ) << "Recalage: Speed Reductor to " << speed_reductor << "%";
+                        tDebug( LOG ) << "Opponent Detection: Speed Reductor to " << speed_reductor << "%";
 
                     _speedReductor = speed_reductor;
                 }

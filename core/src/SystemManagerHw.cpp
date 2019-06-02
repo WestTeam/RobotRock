@@ -335,7 +335,7 @@ bool SystemManagerHw::init()
 
     _recalage.reset( new Recalage() );
 
-    _recalage->setLidarPosition(0.0,0.0,0.0);
+    _recalage->setLidarPosition(18.0,0.0,-M_PI);
 /*
     _recalage->borderListAdd(0 ,0,-1500,0,-1000);
     _recalage->borderListAdd(0 ,0,1000,0,1500);
@@ -397,8 +397,8 @@ border = [0 ,0,-1500+100,0,-1000-100
 
 
     _recalage->setTargetSpeedHz(3.0);
-
-    if( ! _recalage->init( _hal, _odometry, ( LidarBase::Ptr ) _lidarTop) )
+/*
+    if( ! _recalage->init( _hal, _odometry, ( LidarBase::Ptr ) _lidarRear) )
     {
         tWarning( LOG ) << "Failed to init recalage module";
         return false;
@@ -409,7 +409,7 @@ border = [0 ,0,-1500+100,0,-1000-100
         QThread::msleep(1000);
         tWarning( LOG ) << "Recalage init still in progress";
     }
-
+*/
 
     _trajectoryManager.reset(
         new TrajectoryManagerHw( _hal ) );
@@ -536,7 +536,7 @@ border = [0 ,0,-1500+100,0,-1000-100
     _opponentDetection->setTargetSpeedHz(3.0);
 
     _opponentDetection->setLidarPosition(100.0,0.0,0.0);
-
+/*
     if (!_opponentDetection->init(_hal,_odometry,_lidarRear))
     {
         tFatal( LOG ) << "Unable to init Opponent Detection. Abort";
@@ -547,7 +547,7 @@ border = [0 ,0,-1500+100,0,-1000-100
         QThread::msleep(1000);
         tWarning( LOG ) << "Opponent Detection init still in progress";
     }
-
+*/
 
 
     if( ! _strategyManager->init(
@@ -608,6 +608,8 @@ void SystemManagerHw::start()
     _game->start();
 
     _experiment.start();
+
+    //_recalage->setCalibrationMode(true);
 }
 
 void SystemManagerHw::stop()

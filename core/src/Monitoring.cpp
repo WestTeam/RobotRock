@@ -34,7 +34,7 @@ Monitoring::Monitoring(
 
 
     _stop = false;
-    //start();
+    start();
 }
 
 Monitoring::~Monitoring()
@@ -159,7 +159,7 @@ void Monitoring::dump()
     _screen.send( "tVoltage3", QString::number( dv3 ).toLatin1() );
 
 
-    if (_armsManager != nullptr && _armsManager->isAttached())
+    if (false)//_armsManager != nullptr && _armsManager->isAttached())
     {
         for (int i = 0; i < 2; i++)
         {

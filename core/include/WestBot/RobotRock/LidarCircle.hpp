@@ -191,67 +191,6 @@ public:
         }
     }
 
-    float locate( QList<Obstacle>& obs, float* x, float* y, float* a) {
-        float Xc = 0;
-        float Yc = 0;
-        float Xr = 0;
-        float Yr = 0;
-        float N = 0;
-        for(int o=0; o<obs.length(); o++) {
-            if(obs[o].type >= 6)
-                continue;
-            Xc += obs[o].X;
-            Yc += obs[o].Y;
-            Xr += BALISE_X[obs[o].type];
-            Yr += BALISE_Y[obs[o].type];
-            N += 1;
-        }
-        Xc /= N;
-        Yc /= N;
-        Xr /= N;
-        Yr /= N;
-        if(N<2)
-            return 1e9;
-
-        float A = 0;
-        for(int o=0; o<obs.length(); o++) {
-            if(obs[o].type >= 6)
-                continue;
-            A += asinf(
-                    ( (obs[o].X-Xc)*(BALISE_Y[obs[o].type]-Yr)-(BALISE_X[obs[o].type]-Xr)*(obs[o].Y-Yc) )
-                    / sqrtf((obs[o].X-Xc)*(obs[o].X-Xc)+(obs[o].Y-Yc)*(obs[o].Y-Yc))
-                    / sqrtf((BALISE_X[obs[o].type]-Xr)*(BALISE_X[obs[o].type]-Xr)+(BALISE_Y[obs[o].type]-Yr)*(BALISE_Y[obs[o].type]-Yr))
-                    );
-        }
-        A /= N;
-        transformToAbs(obs,0,0,A);
-
-        float X = 0;
-        float Y = 0;
-        for(int o=0; o<obs.length(); o++) {
-            if(obs[o].type >= 6)
-                continue;
-            X += obs[o].X-BALISE_X[obs[o].type];
-            Y += obs[o].Y-BALISE_Y[obs[o].type];
-        }
-        X /= -N;
-        Y /= -N;
-        transformToAbs(obs,X,Y,0);
-
-        float Q = 0;
-        for(int o=0; o<obs.length(); o++) {
-            if(obs[o].type >= 6)
-                continue;
-            Q += (obs[o].X-BALISE_X[obs[o].type])*(obs[o].X-BALISE_X[obs[o].type])+(obs[o].Y-BALISE_Y[obs[o].type])*(obs[o].Y-BALISE_Y[obs[o].type]);
-        }
-        Q /= N;
-
-        *x = X;
-        *y = Y;
-        *a = A;
-        return Q;
-    }
-
 
     const float BALISE_X[6] = {50,1000,1950,1950,1000,50};
     const float BALISE_Y[6] = {-1594,-1594,-1594,1594,1594,1594};
@@ -316,12 +255,7 @@ int main(int argc, char *argv[])
         if(obs[o].Q!=0)
             qDebug() << o << obs[o].x.length() << obs[o].X << obs[o].Y << obs[o].Q << obs[o].type;
 
-    {
-        float x,y,a;
-        float q = circle.locate(obs,&x,&y,&a);
-        qDebug() << "";
-        qDebug() << x << y << a << q;
-    }
+
     return app.exec();
 }
 }*/

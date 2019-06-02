@@ -190,7 +190,7 @@ void StrategyManagerMatch5::buildStrat( const Color& color )
     float shift = 0.0;
     float offset = 0.0;
 
-    RobotPos initPos = {.x = 600.0, .y = 1270.0, .theta = -M_PI/2};
+    RobotPos initPos = {.x = 600.0+75.0, .y = 1500.0-450+52+172.8, .theta = -M_PI/2};
 
     if( color == Color::Yellow )
     {
@@ -471,9 +471,27 @@ void StrategyManagerMatch5::buildStrat( const Color& color )
             true ));
 
     // NEW VERSION WITH RECALAGE
+    _actions.push_back( std::make_shared< MoveAction >(
+        _trajectoryManager,
+        TrajectoryManager::TrajectoryType::TYPE_TRAJ_GOTO_FORWARD_XY_ABS,
+        0.0,
+        0.0,
+        (float)initPos.x,
+        (float)initPos.y,
+        true ));
 
 
-    if( color == Color::Blue )
+    _actions.push_back(
+        std::make_shared< MoveAction >(
+            _trajectoryManager,
+            TrajectoryManager::TrajectoryType::TYPE_TRAJ_A_ABS,
+            DEG(initPos.theta),
+            0.0,
+            0,
+            0,
+            true ));
+
+/*    if( color == Color::Blue )
     {
 
 
@@ -806,7 +824,6 @@ void StrategyManagerMatch5::buildStrat( const Color& color )
             inv * (194.6 - 120 - 80 ),
             true ));
 */
-
 
     _stratIsRunning = true;
     _trajectoryManager->setAbort( false );

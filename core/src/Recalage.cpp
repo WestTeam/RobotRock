@@ -231,7 +231,7 @@ bool Recalage::calibrate(
 
 
         //position du point mesuré
-        double theta = telemTheta + data[j].theta;
+        double theta = telemTheta - data[j].theta;
         double x = telemX + data[j].r*cos(theta);
         double y = telemY + data[j].r*sin(theta);
 
@@ -568,6 +568,7 @@ void Recalage::run()
                                 dropScanCount = 2;
                             }
                         } else {
+                            tDebug( LOG ) << "Recalage: Detected Error Too Big, Corrected Pos X:" << absPos.x << "Y:" << absPos.y << "Theta:" << absPos.theta;
                             tDebug( LOG ) << "Recalage: Detected Error Too Big, we skipped it X:" << currentError.x << "Y:" << currentError.y << "Theta:" << currentError.theta << thetaBias;
                         }
                     }
