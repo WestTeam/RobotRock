@@ -1,4 +1,4 @@
-# Copyright (c) 2018 All Rights Reserved WestBot
+# Copyright (c) 2018-2019 All Rights Reserved WestBot
 
 QT += core network serialport
 QT -= gui
